@@ -405,6 +405,12 @@ Status Protocol (OCSP) {{RFC6960}} to check the validity of server
 certificates.  TLS renegotiation indications defined in RFC 5746
 {{RFC5746}} MUST be supported.
 
+Use of TLS-PSK is NOT RECOMMENDED.  TEAP has not been designed to work
+with TLS-PSK, and no use-cases, security analyses, or implementations
+have been done.  TLS-PSK may work (or not) with TEAP, depending on the
+status of a particular implementation, and it therefore not useful to
+deploy it.
+
 The EAP server initiates the TEAP conversation with an EAP request
 containing a TEAP/Start packet.  This packet includes a set Start (S)
 bit, the TEAP version as specified in [](#version-negotiation), and an authority

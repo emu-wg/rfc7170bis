@@ -3506,6 +3506,27 @@ We wish to thank the many reviewers and commenters in the EMU WG,
 including Eliot Lear, Jouni Malinen, Joe Salowey, Heikki Vatiainen,
 and Bruno Pereria Vidal.
 
+# Contributors
+~~~~
+  Hao Zhou
+  (Original Author of RFC 7170)
+
+  Joseph Salowey
+  Venafi
+  joe@salowey.net
+  (Original Author of RFC 7170)
+
+  Nancy Cam-Winget
+  Cisco
+  email: ncamwing@cisco.com
+  (Original Author of RFC 7170)
+
+  Stephen Hanna
+  email: steve.hanna@infineon.com
+  (Original Author of RFC 7170)
+~~~~
+
+
 # Changes from RFC 7170
 
 Alan DeKok was added as editor.

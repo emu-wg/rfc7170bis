@@ -3508,22 +3508,22 @@ and Bruno Pereria Vidal.
 
 # Contributors
 ~~~~
-  Hao Zhou
-  (Original Author of RFC 7170)
+      Hao Zhou
+      (Original Co-author of RFC 7170)
 
-  Joseph Salowey
-  Venafi
-  joe@salowey.net
-  (Original Author of RFC 7170)
+      Joseph Salowey
+      Venafi
+      joe@salowey.net
+      (Original Co-author of RFC 7170)
 
-  Nancy Cam-Winget
-  Cisco
-  email: ncamwing@cisco.com
-  (Original Author of RFC 7170)
+      Nancy Cam-Winget
+      Cisco
+      email: ncamwing@cisco.com
+      (Original Co-author of RFC 7170)
 
-  Stephen Hanna
-  email: steve.hanna@infineon.com
-  (Original Author of RFC 7170)
+      Stephen Hanna
+      email: steve.hanna@infineon.com
+      (Original Co-author of RFC 7170)
 ~~~~
 
 

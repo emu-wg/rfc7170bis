@@ -1,7 +1,7 @@
 ---
 title: Tunnel Extensible Authentication Protocol (TEAP) Version 1
 abbrev: TEAP
-docname: draft-ietf-emu-rfc7170bis-03
+docname: draft-ietf-emu-rfc7170bis-latest
 
 stand_alone: true
 ipr: trust200902
@@ -777,7 +777,7 @@ certificate.  As noted in {{RFC5280}}:
       the subjectAltName extension (e.g., a key bound only to an email
       address or URI), then the subject name MUST be an empty sequence
       and the subjectAltName extension MUST be critical.
-    
+
       Where it is non-empty, the subject field MUST contain an X.500
       distinguished name (DN).
 
@@ -1457,7 +1457,7 @@ Length
 Identity-Type
 
 > The Identity-Type field is two octets.  Values include:
->  
+>
 >>  1  User
 >>
 >> 2  Machine
@@ -1617,7 +1617,7 @@ Error-Code
 
 > The Error-Code field is four octets.  Currently defined values for
 > Error-Code include:
->    
+>
 >> 1     User account expires soon
 >>
 >> 2     User account credential expires soon
@@ -1631,7 +1631,7 @@ Error-Code
 >> 6     User account credentials change required
 >>
 >> 1001  Inner Method Error
->>   
+>>
 >> 1002  Unspecified authentication infrastructure problem
 >>
 >> 1003  Unspecified authentication failure
@@ -1820,7 +1820,7 @@ MUST process this TLV.  The processing for the TLV is as follows:
 > If the receiving entity chooses NOT to process any TLV in the
 > list, then it sends back a Result TLV with the same code in the
 > Status field of the Request-Action TLV.
-> 
+>
 > If multiple Request-Action TLVs are in the request, the session
 > can continue if any of the TLVs in any Request-Action TLV are
 > processed.
@@ -4258,7 +4258,7 @@ conversation will appear as follows:
                               <- EAP-Request/
                               EAP-Type=TEAP, V=1
                               (TEAP Start, S bit set, Authority-ID)
-   
+
       EAP-Response/
       EAP-Type=TEAP, V=1
       (TLS client_hello without
@@ -4272,44 +4272,44 @@ conversation will appear as follows:
       (TLS Client Key Exchange
        TLS change_cipher_spec,
        TLS finished)
-   
+
                               <- EAP-Request/
                               EAP-Type=TEAP, V=1
                               (TLS change_cipher_spec
                                TLS finished)
                                EAP-Payload-TLV[
                                EAP-Request/Identity])
-   
+
          // TLS channel established
             (messages sent within the TLS channel)
-   
+
          // First EAP Payload TLV is piggybacked to the TLS Finished as
             Application Data and protected by the TLS tunnel.
-   
+
       EAP-Payload TLV/
       EAP Identity Response ->
-   
+
                              <-  EAP Payload TLV, EAP-Request,
                                  (EAP-MSCHAPV2, Challenge)
-   
+
       EAP Payload TLV, EAP-Response,
       (EAP-MSCHAPV2, Response) ->
-   
+
                              <-  EAP Payload TLV, EAP-Request,
                                  (EAP-MSCHAPV2, Success Request)
-   
+
       EAP Payload TLV, EAP-Response,
       (EAP-MSCHAPV2, Success Response) ->
-   
+
                            <- Intermediate-Result-TLV (Success),
                                Crypto-Binding TLV (Request),
                                   Result TLV (Success)
-   
+
          Intermediate-Result-TLV (Success),
          Result TLV (Failure)
          Error TLV with
          (Error Code = 2001) ->
-   
+
       // TLS channel torn down
          (messages sent in cleartext)
 

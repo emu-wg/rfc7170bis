@@ -51,6 +51,7 @@ normative:
   RFC5929:
   RFC6677:
   RFC7170:
+  RFC9190:
 
 informative:
   IEEE.802-1X.2013:
@@ -168,22 +169,6 @@ appear in all capitals, as shown here.
 Much of the terminology in this document comes from {{RFC3748}}.
 Additional terms are defined below:
 
-Protected Access Credential (PAC)
-
-> Credentials distributed to a peer for future optimized network
-> authentication.  The PAC consists of a minimum of two components:
-> a shared secret and an opaque element.  The shared secret
-> component contains the pre-shared key between the peer and the
-> authentication server.  The opaque part is provided to the peer
-> and is presented to the authentication server when the peer wishes
-> to obtain access to network resources.  The opaque element and
-> shared secret are used with TLS stateless session resumption
-> defined in {{RFC5077}} to establish a protected TLS session.  The
-> secret key and opaque part may be distributed using {{RFC5077}}
-> messages or using TLVs within the TEAP tunnel.  Finally, a PAC may
-> optionally include other information that may be useful to the
-> peer.
-
 Type-Length-Value (TLV)
 
 > The TEAP protocol utilizes objects in TLV format.  The TLV format
@@ -208,21 +193,11 @@ authorization policies.  TEAP makes use of TLV objects to carry out
 the inner authentication, results, and other information, such as
 channel-binding information.
 
-TEAP makes use of the TLS SessionTicket extension {{RFC5077}}, which
-supports TLS session resumption without requiring session-specific
-state stored at the server.  In this document, the SessionTicket is
-referred to as the Protected Access Credential opaque data (or PAC-
-Opaque).  The PAC-Opaque may be distributed through the use of the
-NewSessionTicket message or through a mechanism that uses TLVs within
-Phase 2 of TEAP.  The secret key used to resume the session in TEAP
-is referred to as the Protected Access Credential key (or PAC-Key).
-When the NewSessionTicket message is used to distribute the PAC-
-Opaque, the PAC-Key is the master secret for the session.  If TEAP
-Phase 2 is used to distribute the PAC-Opaque, then the PAC-Key is
-distributed along with the PAC-Opaque.  TEAP implementations MUST
-support the {{RFC5077}} mechanism for distributing a PAC-Opaque, and it
-is RECOMMENDED that implementations support the capability to
-distribute the ticket and secret key within the TEAP tunnel.
+{{RFC7170}} defined a Protected Access Credential (PAC) to mirror
+EAP-FAST {{RFC4851}}.  However, implementation experience and analysis
+determined that the PAC was not necessary.  Instead, TEAP performs
+session resumption using the NewSessionTicket message as defined in
+{{RFC9190}} Section 2.1.2 and Section 2.1.3.
 
 The TEAP conversation is used to establish or resume an existing
 session to typically establish network connectivity between a peer
@@ -462,103 +437,11 @@ tunnel establishment based on a TLS abbreviated handshake.  After a
 successful conclusion of the TEAP Phase 1 conversation, the
 conversation then continues on to Phase 2.
 
-### TLS Session Resume Using a PAC {#resume-pac}
+### TLS Session Resumption
 
 TEAP supports the resumption of sessions based on server state being
 stored on the client side using the TLS SessionTicket extension
-techniques described in {{RFC5077}}.  This version of TEAP supports the
-provisioning of a ticket called a Protected Access Credential (PAC)
-through the use of the NewSessionTicket handshake described in
-{{RFC5077}}, as well as provisioning of a PAC inside the protected
-tunnel.  Implementations MUST support the TLS Ticket extension
-{{RFC5077}} mechanism for distributing a PAC and may provide additional
-ways to provision the PAC, such as manual configuration.  Since the
-PAC mentioned here is used for establishing the TLS tunnel, it is
-more specifically referred to as the Tunnel PAC.  The Tunnel PAC is a
-security credential provided by the EAP server to a peer and
-comprised of:
-
-1.  PAC-Key: this is the key used by the peer as the TLS master
-secret to establish the TEAP Phase 1 tunnel.  The PAC-Key is a
-strong, high-entropy, at minimum 48-octet key and is typically
-the master secret from a previous TLS session.  The PAC-Key is a
-secret and MUST be treated accordingly.  Otherwise, if leaked, it
-could lead to user credentials being compromised if sent within
-the tunnel established using the PAC-Key.  In the case that a
-PAC-Key is provisioned to the peer through another means, it MUST
-have its confidentiality and integrity protected by a mechanism,
-such as the TEAP Phase 2 tunnel.  The PAC-Key MUST be stored
-securely by the peer.
-
-2.  PAC-Opaque: this is a variable-length field containing the ticket
-that is sent to the EAP server during the TEAP Phase 1 tunnel
-establishment based on {{RFC5077}}.  The PAC-Opaque can only be
-interpreted by the EAP server to recover the required information
-for the server to validate the peer's identity and
-authentication.  The PAC-Opaque includes the PAC-Key and other
-TLS session parameters.  It may contain the PAC's peer identity.
-The PAC-Opaque format and contents are specific to the PAC
-issuing server.  The PAC-Opaque may be presented in the clear, so
-an attacker MUST NOT be able to gain useful information from the
-PAC-Opaque itself.  The server issuing the PAC-Opaque needs to
-ensure it is protected with strong cryptographic keys and
-algorithms.  The PAC-Opaque may be distributed using the
-NewSessionTicket message defined in {{RFC5077}}, or it may be
-distributed through another mechanism such as the Phase 2 TLVs
-defined in this document.
-
-3.  PAC-Info: this is an optional variable-length field used to
-provide, at a minimum, the authority identity of the PAC issuer.
-Other useful but not mandatory information, such as the PAC-Key
-lifetime, may also be conveyed by the PAC-issuing server to the
-peer during PAC provisioning or refreshment.  PAC-Info is not
-included if the NewSessionTicket message is used to provision the
-PAC.
-
-The use of the PAC is based on the SessionTicket extension defined in
-{{RFC5077}}.  The EAP server initiates the TEAP conversation as normal.
-Upon receiving the Authority-ID TLV from the server, the peer checks
-to see if it has an existing valid PAC-Key and PAC-Opaque for the
-server.  If it does, then it obtains the PAC-Opaque and puts it in
-the SessionTicket extension in the ClientHello.  It is RECOMMENDED in
-TEAP that the peer include an empty Session ID in a ClientHello
-containing a PAC-Opaque.  This version of TEAP supports the
-NewSessionTicket Handshake message as described in {{RFC5077}} for
-distribution of a new PAC, as well as the provisioning of PAC inside
-the protected tunnel.  If the PAC-Opaque included in the
-SessionTicket extension is valid and the EAP server permits the
-abbreviated TLS handshake, it will select the ciphersuite from
-information within the PAC-Opaque and finish with the abbreviated TLS
-handshake.  If the server receives a Session ID and a PAC-Opaque in
-the SessionTicket extension in a ClientHello, it should place the
-same Session ID in the ServerHello if it is resuming a session based
-on the PAC-Opaque.  The conversation then proceeds as described in
-{{RFC5077}} until the handshake completes or a fatal error occurs.
-After the abbreviated handshake completes, the peer and the server
-are ready to commence Phase 2.
-
-### Transition between Abbreviated and Full TLS Handshake
-
-If session resumption based on server-side or client-side state
-fails, the server can gracefully fall back to a full TLS handshake.
-If the ServerHello received by the peer contains an empty Session ID
-or a Session ID that is different than in the ClientHello, the server
-may fall back to a full handshake.  The peer can distinguish the
-server's intent to negotiate a full or abbreviated TLS handshake by
-checking the next TLS handshake messages in the server response to
-the ClientHello.  If ChangeCipherSpec follows the ServerHello in
-response to the ClientHello, then the server has accepted the session
-resumption and intends to negotiate the abbreviated handshake.
-Otherwise, the server intends to negotiate the full TLS handshake.  A
-peer can request that a new PAC be provisioned after the full TLS
-handshake and mutual authentication of the peer and the server.  A
-peer SHOULD NOT request that a new PAC be provisioned after the
-abbreviated handshake, as requesting a new session ticket based on
-resumed session is not permitted.  In order to facilitate the
-fallback to a full handshake, the peer SHOULD include ciphersuites
-that allow for a full handshake and possibly PAC provisioning so the
-server can select one of these in case session resumption fails.  An
-example of the transition is shown in Appendix C.
+techniques described in {{RFC5077}} and {{RFC9190}}.
 
 ## TEAP Authentication Phase 2: Tunneled Authentication
 
@@ -736,8 +619,7 @@ cleartext EAP Success or EAP Failure.
 
 If the peer receives a Result TLV indicating success from the server,
 but its authentication policies are not satisfied (for example, it
-requires a particular authentication mechanism be run or it wants to
-request a PAC), it may request further action from the server using
+requires a particular authentication mechanism be run), it may request further action from the server using
 the Request-Action TLV.  The Request-Action TLV is sent with a Status
 field indicating what EAP Success/Failure result the peer would
 expect if the requested action is not granted.  The value of the
@@ -957,7 +839,7 @@ Response.
 ## Peer Services
 
 Several TEAP services, including server unauthenticated provisioning,
-PAC provisioning, certificate provisioning, and channel binding,
+certificate provisioning, and channel binding,
 depend on the peer trusting the TEAP server.  Peers MUST authenticate
 the server before these peer services are used.  TEAP peer
 implementations MUST have a configuration where authentication fails
@@ -989,29 +871,6 @@ the EAP server is the authenticated party if the machine cannot trust
 the user not to disclose the shared secret to an attacker.  In these
 cases, the parties who participate in the authentication need to be
 considered when evaluating whether to use peer services.
-
-### PAC Provisioning
-
-To request provisioning of a PAC, a peer sends a PAC TLV as defined
-in [](#pac-tlv-format) containing a PAC Attribute as defined in
-[](#pac-attr-format) of PAC-Type set to the appropriate value.  The peer
-MUST successfully authenticate the EAP server and validate the
-Crypto-Binding TLV as defined in [](#crypto-binding-tlv) before issuing the
-request.
-
-The peer MAY only request a single Tunnel PAC it wants to be
-provisioned. Additional PAC TLVs MUST be ignored by the server. The
-EAP server will send the PAC after its internal policy has been
-satisfied, or it MAY ignore the request or request additional
-authentications if its policy dictates.  The server MAY cache the
-request and provision the PACs requested after all of its internal
-policies have been satisfied.  If a peer receives a PAC with an
-unknown type, it MUST ignore it.  A PAC TLV containing a
-PAC-Acknowledge attribute MUST be sent by the peer to acknowledge the
-receipt of the Tunnel PAC.  A PAC TLV containing a PAC-Acknowledge
-attribute MUST NOT be used by the peer to acknowledge the receipt of
-other types of PACs.  If the peer receives a PAC TLV with an unknown
-attribute, it SHOULD ignore the unknown attribute.
 
 ### Certificate Provisioning within the Tunnel {#cert-provisioning}
 
@@ -1105,7 +964,7 @@ perform any needed data exchange.
 
 It is RECOMMENDED that client implementations and deployments
 authenticate TEAP servers if at all possible.  Authenticating the
-server means that a PAC can be provisioned securely with no chance of
+server means that a client can be provisioned securely with no chance of
 an attacker eaves-dropping on the connection.
 
 ### Channel Binding
@@ -1348,7 +1207,7 @@ A 14-bit field, denoting the TLV type.  Allocated types include:
 >
 > 10 Intermediate-Result TLV ([](#intermediate-result-tlv))
 >
-> 11 PAC TLV ([](#pac-tlv-format))
+> 11 PAC TLV (DEPRECATED)
 >
 > 12 Crypto-Binding TLV ([](#crypto-binding-tlv))
 >
@@ -2008,328 +1867,6 @@ TLVs
 > the TLVs associated with the Intermediate Result TLV.  The TLVs in
 > this field MUST NOT have the mandatory bit set.
 
-### PAC TLV Format {#pac-tlv-format}
-
-The PAC TLV provides support for provisioning the Protected Access
-Credential (PAC).  The PAC TLV carries the PAC and related
-information within PAC attribute fields.  Additionally, the PAC TLV
-MAY be used by the peer to request provisioning of a PAC of the type
-specified in the PAC-Type PAC attribute.  The PAC TLV MUST only be
-used in a protected tunnel providing encryption and integrity
-protection.  A general PAC TLV format is defined as follows:
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|M|R|         TLV Type          |            Length             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                        PAC Attributes...
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-~~~~
-
-M
-
-> 0 or 1
-
-R
-
-> Reserved, set to zero (0)
-
-TLV Type
-
-> 11 - PAC TLV
-
-Length
-
-> Two octets containing the length of the PAC Attributes field in
-> octets.
-
-PAC Attributes
-
-> A list of PAC attributes in the TLV format.
-
-#### Formats for PAC Attributes {#pac-attr-format}
-
-Each PAC attribute in a PAC TLV is formatted as a TLV defined as
-follows:
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|            Type               |            Length             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                              Value...
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-~~~~
-
-Type
-
-> The Type field is two octets, denoting the attribute type.
-> Allocated types include:
->
->> 1 - PAC-Key
->>
->> 2 - PAC-Opaque
->>
->> 3 - PAC-Lifetime
->>
->> 4 - A-ID
->>
->> 5 - I-ID
->>
->> 6 - Reserved
->>
->> 7 - A-ID-Info
->>
->> 8 - PAC-Acknowledgement
->>
->> 9 - PAC-Info
->>
->> 10 - PAC-Type
-
-Length
-
-> Two octets containing the length of the Value field in octets.
-
-Value
-
-> The value of the PAC attribute.
-
-#### PAC-Key
-
-The PAC-Key is a secret key distributed in a PAC attribute of type
-PAC-Key.  The PAC-Key attribute is included within the PAC TLV
-whenever the server wishes to issue or renew a PAC that is bound to a
-key such as a Tunnel PAC.  The key is a randomly generated octet
-string that is 48 octets in length.  The generator of this key is the
-issuer of the credential, which is identified by the Authority
-Identifier (A-ID).
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|            Type               |            Length             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-~                              Key                              ~
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-~~~~
-
-Type
-
-> 1 - PAC-Key
-
-Length
-
-> 2-octet length indicating the length of the key.
-
-Key
-
-> The value of the PAC-Key.
-
-#### PAC-Opaque
-
-The PAC-Opaque attribute is included within the PAC TLV whenever the
-server wishes to issue or renew a PAC.
-
-The PAC-Opaque is opaque to the peer, and thus the peer MUST NOT
-attempt to interpret it.  A peer that has been issued a PAC-Opaque by
-a server stores that data and presents it back to the server
-according to its PAC-Type.  The Tunnel PAC is used in the ClientHello
-SessionTicket extension field defined in {{RFC5077}}.  If a peer has
-opaque data issued to it by multiple servers, then it stores the data
-issued by each server separately according to the A-ID.  This
-requirement allows the peer to maintain and use each opaque datum as
-an independent PAC pairing, with a PAC-Key mapping to a PAC-Opaque
-identified by the A-ID.  As there is a one-to-one correspondence
-between the PAC-Key and PAC-Opaque, the peer determines the PAC-Key
-and corresponding PAC-Opaque based on the A-ID provided in the
-TEAP/Start message and the A-ID provided in the PAC-Info when it was
-provisioned with a PAC-Opaque.
-
-The PAC-Opaque attribute format is summarized as follows:
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|            Type               |            Length             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                              Value ...
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-~~~~
-
-Type
-
-> 2 - PAC-Opaque
-
-Length
-
-> The Length field is two octets, which contains the length of the
-> Value field in octets.
-
-Value
-
-> The Value field contains the actual data for the PAC-Opaque.  It
-> is specific to the server implementation.
-
-#### PAC-Info
-
-The PAC-Info is comprised of a set of PAC attributes as defined in
-[](#pac-attr-format).  The PAC-Info attribute MUST contain the A-ID,
-A-ID-Info, and PAC-Type attributes.  Other attributes MAY be included
-in the PAC-Info to provide more information to the peer.  The
-PAC-Info attribute MUST NOT contain the PAC-Key, PAC-Acknowledgement,
-PAC-Info, or PAC-Opaque attributes.  The PAC-Info attribute is
-included within the PAC TLV whenever the server wishes to issue or
-renew a PAC.
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|            Type               |            Length             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                           Attributes...
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-~~~~
-
-Type
-
-> 9 - PAC-Info
-
-Length
-
-> 2-octet field containing the length of the Attributes field in
-> octets.
-
-Attributes
-
-> The Attributes field contains a list of PAC attributes.  Each
-> mandatory and optional field type is defined as follows:
->
-> 3 - PAC-Lifetime
-
->> This is a 4-octet quantity representing the expiration time of
->> the credential expressed as the number of seconds, excluding
->> leap seconds, after midnight UTC, January 1, 1970.  This
->> attribute MAY be provided to the peer as part of the PAC-Info.
->
-> 4 - A-ID
->
->> The A-ID is the identity of the authority that issued the PAC.
->> The A-ID is intended to be unique across all issuing servers to
->> avoid namespace collisions.  The A-ID is used by the peer to
->> determine which PAC to employ.  The A-ID is treated as an
->> opaque octet string.  This attribute MUST be included in the
->> PAC-Info attribute.  The A-ID MUST match the Authority-ID the
->> server used to establish the tunnel.  One method for generating
->> the A-ID is to use a high-quality random number generator to
->> generate a random number.  An alternate method would be to take
->> the hash of the public key or public key certificate belonging
->> to a server represented by the A-ID.
->
-> 5 - I-ID
->
->> Initiator Identifier (I-ID) is the peer identity associated
->> with the credential.  This identity is derived from the inner
->> authentication or from the client-side authentication during
->> tunnel establishment if an inner method is not used.  The
->> server employs the I-ID in the TEAP Phase 2 conversation to
->> validate that the same peer identity used to execute TEAP Phase
->> 1 is also used in at minimum one inner methods in TEAP
->> Phase 2.  If the server is enforcing the I-ID validation on the
->> inner method, then the I-ID MUST be included in the
->> PAC-Info, to enable the peer to also enforce a unique PAC for
->> each unique user.  If the I-ID is missing from the PAC-Info, it
->> is assumed that the Tunnel PAC can be used for multiple users
->> and the peer will not enforce the unique-Tunnel-PAC-per-user
->> policy.
->
-> 7 - A-ID-Info
->
->> Authority Identifier Information is intended to provide a user-
->> friendly name for the A-ID.  It may contain the enterprise name
->> and server name in a human-readable format.  This TLV serves as
->> an aid to the peer to better inform the end user about the
->> A-ID.  The name is encoded in UTF-8 {{RFC3629}} format.  This
->> attribute MUST be included in the PAC-Info.
->
-> 10 - PAC-Type
->
->> The PAC-Type is intended to provide the type of PAC.  This
->> attribute SHOULD be included in the PAC-Info.  If the PAC-Type
->> is not present, then it defaults to a Tunnel PAC (Type 1).
-
-#### PAC-Acknowledgement TLV
-
-The PAC-Acknowledgement is used to acknowledge the receipt of the
-Tunnel PAC by the peer.  The peer includes the PAC-Acknowledgement
-TLV in a PAC TLV sent to the server to indicate the result of the
-processing and storing of a newly provisioned Tunnel PAC.  This TLV
-is only used when Tunnel PAC is provisioned.
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|            Type               |            Length             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|            Result             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-~~~~
-
-Type
-
-> 8 - PAC-Acknowledgement
-
-Length
-
-> The length of this field is two octets containing a value of 2.
-
-Result
-
-> The resulting value MUST be one of the following:
->
->> 1 - Success
->>
->> 2 - Failure
-
-#### PAC-Type TLV
-
-The PAC-Type TLV is a TLV intended to specify the PAC-Type.  It is
-included in a PAC TLV sent by the peer to request PAC provisioning
-from the server.  Its format is described below:
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|            Type               |            Length             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|         PAC-Type              |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-~~~~
-
-Type
-
-> 10 - PAC-Type
-
-Length
-
-> 2-octet field with a value of 2.
-
-PAC-Type
-
-> This 2-octet field defines the type of PAC being requested or
-> provisioned.  The following values are defined:
->
->> 1 - Tunnel PAC
-
 ### Crypto-Binding TLV {#crypto-binding-tlv}
 
 The Crypto-Binding TLV is used to prove that both the peer and server
@@ -2819,7 +2356,6 @@ Request  Response    Success   Failure   TLVs
 0+       0+          0+        0+        Request-Action
 0-1      0-1         0         0         EAP-Payload
 0-1      0-1         0-1       0-1       Intermediate-Result
-0+       0+          0+        0         PAC TLV
 0-1      0-1         0-1       0-1       Crypto-Binding
 0-1      0           0         0         Basic-Password-Auth-Req
 0        0-1         0         0         Basic-Password-Auth-Resp
@@ -2844,7 +2380,7 @@ and MAC algorithm to use.
 ## TEAP Authentication Phase 1: Key Derivations {#phase1}
 
 With TEAPv1, the TLS master secret is generated as specified in TLS.
-If a PAC is used, then the master secret is obtained as described in
+If session resumption is used, then the master secret is obtained as described in
 {{RFC5077}}.
 
 TEAPv1 makes use of the TLS Keying Material Exporters defined in
@@ -3100,13 +2636,38 @@ Authority (IANA) regarding registration of values related to the TEAP
 protocol, in accordance with BCP 26 {{RFC5226}}.
 
 IANA is instructed to update the references in the "Tunnel Extensible
-Authentication Protocol (TEAP) Parameters" registry to point to this
-document instead of to {{RFC7170}}
+Authentication Protocol (TEAP) Parameters" registry as follows.
 
-IANA is instructed to add a "NOTE" at the beginning of the TEAP
-parameters registry which states:
+~~~~
+Value,Description,Reference
+0,Unassigned,
+1,Authority-ID TLV,[THIS-DOCUMENT]
+2,Identity-Type TLV,[THIS-DOCUMENT]
+3,Result TLV,[THIS-DOCUMENT]
+4,NAK TLV,[THIS-DOCUMENT]
+5,Error TLV,[THIS-DOCUMENT]
+6,Channel-Binding TLV,[THIS-DOCUMENT]
+7,Vendor-Specific TLV,[THIS-DOCUMENT]
+8,Request-Action TLV,[THIS-DOCUMENT]
+9,EAP-Payload TLV,[THIS-DOCUMENT]
+10,Intermediate-Result TLV,[THIS-DOCUMENT]
+11,PAC TLV,(DEPRECATED) [RFC7170] 
+12,Crypto-Binding TLV,[THIS-DOCUMENT]
+13,Basic-Password-Auth-Req TLV,[THIS-DOCUMENT]
+14,Basic-Password-Auth-Resp TLV,[THIS-DOCUMENT]
+15,PKCS#7 TLV,[THIS-DOCUMENT]
+16,PKCS#10 TLV,[THIS-DOCUMENT]
+17,Trusted-Server-Root TLV,[THIS-DOCUMENT]
+18-16383,Unassigned,
+~~~~
 
-> The values in this registry were originally defined in {{RFC7170}}
+IANA is instructed to update the "TEAP PAC TLV (value 11) PAC
+Attribute Type Codes" and "TEAP PAC TLV (value 11) PAC-Type Type
+Codes" registries with a NOTE:
+
+~~~~
+This registry was deprecated by [THIS-DOCUMENT]
+~~~~
 
 # Security Considerations
 
@@ -3311,7 +2872,7 @@ TEAP provides protection from man-in-the-middle attacks even if a
 deployment chooses to execute inner methods both with and without
 TEAP protection.  TEAP prevents this attack in two ways:
 
-1. By using the PAC-Key to mutually authenticate the peer and server
+1. By using a session ticket to mutually authenticate the peer and server
 during TEAP authentication Phase 1 establishment of a secure
 tunnel.
 
@@ -3333,16 +2894,6 @@ ciphersuite derives the master secret from the contribution of
 secrets from both sides of the conversation (such as in ciphersuites
 based on Diffie-Hellman), then crypto binding can detect an attacker
 in the conversation if a strong inner method is used.
-
-### PAC Binding to User Identity
-
-A PAC may be bound to a user identity.  A compliant implementation of
-TEAP MUST validate that an identity obtained in the PAC-Opaque field
-matches at minimum one of the identities provided in the TEAP Phase 2
-inner method.  This validation provides another binding to
-ensure that the intended peer (based on identity) has successfully
-completed the TEAP Phase 1 and proved identity in the Phase 2
-conversations.
 
 ## Protecting against Forged Cleartext EAP Packets
 
@@ -3399,27 +2950,6 @@ destination.  In this case, a more appropriate test might be whether
 the EAP server's certificate is signed by a certification authority
 (CA) controlling the intended domain and whether the authenticator
 can be authorized by a server in that domain.
-
-## Tunnel PAC Considerations
-
-Since the Tunnel PAC is stored by the peer, special care should be
-given to the overall security of the peer.  The Tunnel PAC MUST be
-securely stored by the peer to prevent theft or forgery of any of the
-Tunnel PAC components.  In particular, the peer MUST securely store
-the PAC-Key and protect it from disclosure or modification.
-Disclosure of the PAC-Key enables an attacker to establish the TEAP
-tunnel; however, disclosure of the PAC-Key does not reveal the peer
-or server identity or compromise any other peer's PAC credentials.
-Modification of the PAC-Key or PAC-Opaque components of the Tunnel
-PAC may also lead to denial of service as the tunnel establishment
-will fail.  The PAC-Opaque component is the effective TLS ticket
-extension used to establish the tunnel using the techniques of
-{{RFC5077}}.  Thus, the security considerations defined by {{RFC5077}}
-also apply to the PAC-Opaque.  The PAC-Info may contain information
-about the Tunnel PAC such as the identity of the PAC issuer and the
-Tunnel PAC lifetime for use in the management of the Tunnel PAC.  The
-PAC-Info should be securely stored by the peer to protect it from
-disclosure and modification.
 
 ## Security Claims
 
@@ -3600,8 +3130,8 @@ peer certificate can be sent confidentially (i.e., encrypted).
 {:numbered="false"}
 
 TEAPv1 meets this requirement by mandating support of TLS session
-resumption as defined in [](#resume-server-state) and TLS session resume using a
-PAC as defined in [](#resume-pac) .
+resumption as defined in [](#resume-server-state) and TLS session
+resumption using the methods defined in {{RFC9190}}
 
 ## A.10.  Requirement 4.2.2: Fragmentation
 {:numbered="false"}
@@ -3755,8 +3285,7 @@ change thus requires that a new EAP Type be assigned.
 is to simplify implementation and better support cryptographic
 algorithm agility.
 
-4. TEAP is in full conformance with TLS ticket extension {{RFC5077}}
-as described in [](#resume-pac).
+4. TEAP is in full conformance with TLS ticket extension {{RFC5077}}.
 
 5. Support is provided for passing optional Outer TLVs in the first
 two message exchanges, in addition to the Authority-ID TLV data
@@ -3776,7 +3305,7 @@ Channel-Binding TLVs, defined in [](#teap-tlv-format).
 {:numbered="false"}
 
 The following exchanges show a successful TEAP authentication with
-basic password authentication and optional PAC refreshment.  The
+basic password authentication.  The
 conversation will appear as follows:
 
        Authenticating Peer     Authenticator
@@ -3791,8 +3320,7 @@ conversation will appear as follows:
 
        EAP-Response/
        EAP-Type=TEAP, V=1
-       (TLS client_hello with
-        PAC-Opaque in SessionTicket extension)->
+       (TLS client_hello) ->
 
                                <- EAP-Request/
                                EAP-Type=TEAP, V=1
@@ -3818,13 +3346,11 @@ conversation will appear as follows:
 
                             <- Intermediate-Result-TLV (Success),
                                 Crypto-Binding TLV (Request),
-                                Result TLV (Success),
-                                (Optional PAC TLV)
+                                Result TLV (Success)
 
        Intermediate-Result-TLV (Success),
        Crypto-Binding TLV(Response),
-       Result TLV (Success),
-       (PAC-Acknowledgement TLV) ->
+       Result TLV (Success) ->
 
        TLS channel torn down
        (messages sent in cleartext)
@@ -3851,8 +3377,7 @@ wrong user credentials.  The conversation will appear as follows:
 
        EAP-Response/
        EAP-Type=TEAP, V=1
-       (TLS client_hello with
-        PAC-Opaque in SessionTicket extension)->
+       (TLS client_hello) ->
 
                                <- EAP-Request/
                                EAP-Type=TEAP, V=1
@@ -3907,11 +3432,10 @@ handshake, the conversation will appear as follows:
       EAP-Response/
       EAP-Type=TEAP, V=1
       (TLS client_hello with
-      PAC-Opaque in SessionTicket extension)->
+      SessionTicket extension)->
 
-      // Peer sends PAC-Opaque of Tunnel PAC along with a list of
-         ciphersuites supported.  If the server rejects the PAC-
-         Opaque, it falls through to the full TLS handshake.
+      // If the server rejects the session resumption,
+         it falls through to the full TLS handshake.
 
                               <- EAP-Request/
                               EAP-Type=TEAP, V=1
@@ -4261,8 +3785,7 @@ conversation will appear as follows:
 
       EAP-Response/
       EAP-Type=TEAP, V=1
-      (TLS client_hello without
-      PAC-Opaque in SessionTicket extension)->
+      (TLS client_hello) ->
                               <- EAP-Request/
                               EAP-Type=TEAP, V=1
                               (TLS Server Key Exchange
@@ -4509,8 +4032,7 @@ Action TLV.  The conversation will appear as follows:
 
        EAP-Response/
        EAP-Type=TEAP, V=1
-       (TLS client_hello with
-        PAC-Opaque in SessionTicket extension)->
+       (TLS client_hello) ->
 
                                <- EAP-Request/
                                EAP-Type=TEAP, V=1

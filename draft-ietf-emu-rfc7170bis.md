@@ -4209,10 +4209,10 @@ method Y, the conversation will occur as follows:
       // Compound MAC calculated using keys generated from
          EAP method X and the TLS tunnel.
 
-      // Next EAP conversation started (with EAP-Request/Identity) after successful completion
-         of previous method X.  The Intermediate-Result and Crypto-
-         Binding TLVs are sent in the next packet to minimize round
-         trips.
+      // Next EAP conversation started (with EAP-Request/Identity)
+         after successful completion of previous method X.  The
+         Intermediate-Result and Crypto-Binding TLVs are sent in
+         the next packet to minimize round trips.
 
       Intermediate Result TLV (Success),
       Crypto-Binding TLV (Response),

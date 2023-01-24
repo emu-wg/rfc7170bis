@@ -22,23 +22,6 @@ author:
   name: Alan DeKok
   email: aland@freeradius.org
 
-- ins: H. Zhou
-  name: Hao Zhou
-  email: hzhou@cisco.com
-
-- ins: J. Salowey
-  name: Joseph Salowey
-  email: joe@salowey.net
-
-- ins: N. Cam-Winget
-  name: Nancy Cam-Winget
-  org: Cisco
-  email: ncamwing@cisco.com
-
-- ins: S. Hanna
-  name: Stephen Hanna
-  email: steve.hanna@infineon.com
-
 normative:
   BCP14: RFC8174
   RFC3748:

@@ -35,6 +35,7 @@ normative:
   RFC6677:
   RFC7170:
   RFC9190:
+  I-D.ietf-emu-tls-eap-types:
 
 informative:
   IEEE.802-1X.2013:
@@ -72,7 +73,6 @@ informative:
   RFC4017:
   RFC4072:
   RFC4086:
-  RFC4282:
   RFC4648:
   RFC4851:
   RFC4945:
@@ -92,6 +92,7 @@ informative:
   RFC6961:
   RFC7029:
   RFC7030:
+  RFC7542:
   X.690:
     title: "SN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
     date: November 2008
@@ -175,6 +176,13 @@ conversations to establish the required authentication and
 authorization policies.  TEAP makes use of TLV objects to carry out
 the inner authentication, results, and other information, such as
 channel-binding information.
+
+As discussed in {{RFC9190}} Section 2.1.7 and
+{{I-D.ietf-emu-tls-eap-types}} Section 3.1, the outer EAP Identity
+SHOULD be an anonymous NAI Network Access Identifier (NAI)
+{{RFC7542}}.  Any inner identities (EAP or otherwise) SHOULD also
+follow the recommendations of {{I-D.ietf-emu-tls-eap-types}} Section
+3.1.
 
 {{RFC7170}} defined a Protected Access Credential (PAC) to mirror
 EAP-FAST {{RFC4851}}.  However, implementation experience and analysis
@@ -1144,6 +1152,12 @@ specification MUST support the following TLVs:
 TLVs are defined as described below.  The fields are transmitted from
 left to right.
 
+If a peer or server receives a TLV which is not of the correct format,
+the TLV MUST be discarded.  It is generally useful to log an error or
+debugging message which indicates which TLV had an issue, and what the
+problem is.  However, TLVs which are malformed are invalid, and cannot
+be used.
+
 ~~~~
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -2073,18 +2087,33 @@ Length
 Userlen
 
 > Length of Username field in octets
+>
+> The value of Userlen MUST NOT be zero.
 
 Username
 
 > Username in UTF-8 {{RFC3629}} format
+>
+> The content of Username SHOULD follow the guidelines set in
+> {{I-D.ietf-emu-tls-eap-types}} Section 3.1.
 
 Passlen
 
 > Length of Password field in octets
+>
+> The value of Passlen MUST NOT be zero.
+>
+> There are few reasons to have short passwords.  Passwords of less
+> than 8 octects in length can be trivial to discover via
+> dictionary attacks.
 
 Password
 
 > Password in UTF-8 {{RFC3629}} format
+>
+> Note that there is no requirement that passwords be humanly
+> readable.  Octets in a passwords may have values less than 0x20,
+> including 0x00.
 
 ### PKCS#7 TLV {#pkcs7-tlv}
 
@@ -2793,7 +2822,7 @@ numbers.
 
 The initial identity request response exchange is sent in cleartext
 outside the protection of TEAP.  Typically, the Network Access
-Identifier (NAI) {{RFC4282}} in the identity response is useful only
+Identifier (NAI) {{RFC7542}} in the identity response is useful only
 for the realm of information that is used to route the authentication
 requests to the right EAP server.  This means that the identity
 response may contain an anonymous identity and just contain realm

@@ -3093,6 +3093,11 @@ inconsistencies, and to address mistakes.  At a high level:
 * The definitions and derivation of IMSK, S-IMCK, etc. have been corrected and clarified.
 * The diagrams in Appendix C have been updated to match the TEAP state machine
 
+All uses of the PAC were removed.  It had not been implemented, and
+there were no plans by implementors to use it.
+
+Text was added on recommendations for inner and outer identities.
+
 # Appendix A Evaluation against Tunnel-Based EAP Method Requirements
 {:numbered="false"}
 

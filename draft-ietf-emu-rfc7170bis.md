@@ -2034,9 +2034,9 @@ MSK Compound MAC
 
 The Basic-Password-Auth-Req TLV is used by the authentication server
 to request a username and password from the peer.  It contains an
-optional user prompt message for the request.  The peer is expected
-to obtain the username and password and send them in a Basic-
-Password-Auth-Resp TLV.
+optional user prompt message for the request.  The peer is expected to
+obtain the username and password and send them in a Basic-Password-Auth-Resp TLV.
+
 
 The Basic-Password-Auth-Req TLV is defined as follows:
 
@@ -2522,8 +2522,8 @@ On the receiver of the Crypto-Binding TLV side:
 >
 > If the EMSK is available but no EMSK-based Compound MAC was sent
 > and its policy accepts MSK-based MAC, then the receiver validates
-> it using the MSK and, if successful, generates and returns an MSK-
-> based Compound MAC.
+> it using the MSK and, if successful, generates and returns an MSK-based
+> Compound MAC.
 >
 > If the EMSK is available but no EMSK Compound MAC was sent and its
 > policy does not accept MSK-based MAC, then the receiver handles

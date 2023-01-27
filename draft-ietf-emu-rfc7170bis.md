@@ -538,6 +538,12 @@ always imply a failure of the overall authentication.  If one
 authentication method fails, the server may attempt to authenticate
 the peer with a different method (EAP or password).
 
+If a particular authentication method succeeds, the server SHOULD NOT
+attempt a subsequent authentication method.  For example, if a user is
+authenticated via an inner method of EAP-TLS, there is no benefit to
+also requesting additional authentication via a different EAP method,
+or via a password.
+
 ### Inner Password Authentication {#inner-password}
 
 The authentication server initiates password
@@ -548,27 +554,48 @@ as defined in Section 4.2.15 that contains the username and password.
 If it does not wish to perform password authentication, then it
 responds with a NAK TLV indicating the rejection of the Basic-Password-Auth-Req TLV.
 
-The use of EAP-FAST-GTC as defined in RFC 5421 {{RFC5421}} is NOT
-RECOMMENDED with TEAPv1 because EAP-FAST-GTC is not compliant with
-EAP-GTC defined in {{RFC3748}}.  Implementations should instead make
-use of the password authentication TLVs defined in this
-specification.
+Multiple round trips of password authentication requests and responses
+MAY be used to support some "housecleaning" functions such as a
+password or pin change before a user is considered to be
+authenticated.  Multiple rounds MAY also be used to communicate a
+users password, and separately a one-time password.
 
-Upon completion of password authentication in
+The first Basic-Password-Auth-Req TLV received in a session MUST
+include a prompt, which the peer displays to the user.  Subsequent
+authentication rounds SHOULD include a prompt, but it is not always
+necessary.
+
+When the peer first receives a Basic-Password-Auth-Req TLV, it should
+allow the user to enter both a Username and a Password, which are then
+placed in the Basic-Password-Auth-Resp TLV.  If the peer receives
+subsequent Basic-Password-Auth-Req TLVs in the same authentication
+session, it MUST NOT prompt for a Username, and instead allow the user
+to enter only a password.  The peer MUST copy the Username used in the
+first Basic-Password-Auth-Resp TLV into all subsequent
+Basic-Password-Auth-Resp TLVs.
+
+Servers MUST track the Username across multiple password rounds, and
+reject authentication if the identity changes from one
+Basic-Password-Auth-Resp TLV to the next.  There is no reason for a
+user (or machine) to change identies in the middle of authentication.
+
+Upon reception of a Basic-Password-Auth-Resp TLV in
 the tunnel, the server MUST send an Intermediate-Result TLV
 indicating the result.  The peer MUST respond
 to the Intermediate-Result TLV indicating its result.  If the result
 indicates success, the Intermediate-Result TLV MUST be accompanied by
 a Crypto-Binding TLV.  The Crypto-Binding TLV is further discussed in
-[](#crypto-binding-tlv) and [](#computing-compound-mac).  The Intermediate-Result TLVs can be
-included with other TLVs which indicate a subsequent authentication,
-or with the Result TLV used in the protected termination
-exchange.
+[](#crypto-binding-tlv) and [](#computing-compound-mac).
 
-Multiple round trips of password
-authentication requests and responses MAY be used to support some
-"housecleaning" functions such as a password or pin change before a
-user is authenticated.
+The Intermediate-Result TLVs can be included with other TLVs which
+indicate a subsequent authentication, or with the Result TLV used in
+the protected termination exchange.
+
+The use of EAP-FAST-GTC as defined in RFC 5421 {{RFC5421}} is NOT
+RECOMMENDED with TEAPv1 because EAP-FAST-GTC is not compliant with
+EAP-GTC defined in {{RFC3748}}.  Implementations should instead make
+use of the password authentication TLVs defined in this
+specification.
 
 ### EAP-MSCHAPv2
 
@@ -2102,10 +2129,6 @@ Passlen
 > Length of Password field in octets
 >
 > The value of Passlen MUST NOT be zero.
->
-> There are few reasons to have short passwords.  Passwords of less
-> than 8 octects in length can be trivial to discover via
-> dictionary attacks.
 
 Password
 

@@ -604,7 +604,7 @@ variant defined in Section 3.2.3 of {{RFC5422}} MUST be used, instead of the der
 
 The difference between EAP-MSCHAPv2 and EAP-FAST-MSCHAPv2 is that the
 first and the second 16 octets of EAP-MSCHAPv2 MSK are swapped when it
-is used as the IMSK for TEAP.
+is used as the Inner Method Session Keys (IMSK) for TEAP.
 
 ### Protected Termination and Acknowledged Result Indication {#protected-termination}
 
@@ -1628,7 +1628,7 @@ Data
 The Vendor-Specific TLV is available to allow vendors to support
 their own extended attributes not suitable for general usage.  A
 Vendor-Specific TLV attribute can contain one or more TLVs, referred
-to as Vendor TLVs.  The TLV type of a Vendor-TLV is defined by the
+to as Vendor TLVs.  The TLV type of a particular Vendor TLV is defined by the
 vendor.  All the Vendor TLVs inside a single Vendor-Specific TLV
 belong to the same vendor.  There can be multiple Vendor-Specific
 TLVs from different vendors in the same message.  Error handling in
@@ -2322,9 +2322,9 @@ receives multiple EAP Payload TLVs, then it MUST terminate the
 connection with the Result TLV.  The order in which TLVs are encoded in a TEAP packet does not
 matter, however there is an order in which TLVs in a packet must be processed:
 
-1. Crypto-Binding-TLV
-2. Intermediate-Result-TLV
-3. Result-TLV or Request-Action TLV
+1. Crypto-Binding TLV
+2. Intermediate-Result TLV
+3. Result TLV or Request-Action TLV
 4. Identity-Type TLV
 5. EAP-Payload TLV[Identity-Request] or Basic-Password-Auth-Req TLV
 6. Other TLVs
@@ -2362,7 +2362,7 @@ Request  Response    Success   Failure   TLVs
 0+       0+          0         0         Vendor-Specific
 ~~~~
 
-Outer TLVs MUST be marked as optional.  Vendor-TLVs inside Vendor-
+Outer TLVs MUST be marked as optional.  Vendor TLVs inside of a Vendor-
 Specific TLV MUST be marked as optional when included in Outer TLVs.
 Outer TLVs MUST NOT be included in messages after the first two TEAP
 messages sent by peer and EAP-server respectively.  That is the first
@@ -2459,8 +2459,8 @@ length is 64 octets.  Optional data parameter is not used in the
 derivation.
 
 ~~~~
-    IMSK[j] = First 32 octets of TLS-PRF(secret, "TEAPbindkey@ietf.org",
-           0x00 \| 0x00 \| 0x40)
+IMSK[j] = First 32 octets of TLS-PRF(secret, "TEAPbindkey@ietf.org",
+       0x00 \| 0x00 \| 0x40)
 ~~~~
 
 > where "\|" denotes concatenation and the TLS-PRF is defined in
@@ -2484,7 +2484,7 @@ derivation.
 > If no inner EAP authentication method is run then no EMSK or MSK
 > will be generated (e.g. when basic password authentication
 > is used or when no inner method has been run and the crypto-binding TLV
-> for the Result-TLV needs to be generated).  In this case, IMSK\[j]
+> for the Result TLV needs to be generated).  In this case, IMSK\[j]
 > is set to zero (i.e., MSK = 32 octets of 0x00s).
 
 However, it is possible that the peer and server sides might not have
@@ -3405,11 +3405,11 @@ conversation will appear as follows:
        optional additional exchanges (new pin mode,
        password change, etc.) ...
 
-                            <- Intermediate-Result-TLV (Success),
+                            <- Intermediate-Result TLV (Success),
                                 Crypto-Binding TLV (Request),
                                 Result TLV (Success)
 
-       Intermediate-Result-TLV (Success),
+       Intermediate-Result TLV (Success),
        Crypto-Binding TLV(Response),
        Result TLV (Success) ->
 
@@ -3459,10 +3459,10 @@ wrong user credentials.  The conversation will appear as follows:
        Basic-Password-Auth-Resp TLV, Response with both
        username and password) ->
 
-                               <- Intermediate-Result-TLV (Failure),
+                               <- Intermediate-Result TLV (Failure),
                                   Result TLV (Failure)
 
-       Intermediate-Result-TLV (Failure),
+       Intermediate-Result TLV (Failure),
        Result TLV (Failure) ->
 
        TLS channel torn down
@@ -3517,7 +3517,7 @@ handshake, the conversation will appear as follows:
                               EAP-Type=TEAP, V=1
                               (TLS change_cipher_spec,
                                TLS finished,
-                               EAP-Payload-TLV[EAP-Request/
+                               EAP-Payload TLV[EAP-Request/
                                Identity])
 
       // TLS channel established
@@ -3526,26 +3526,26 @@ handshake, the conversation will appear as follows:
       // First EAP Payload TLV is piggybacked to the TLS Finished as
          Application Data and protected by the TLS tunnel.
 
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/Identity (MyID2)]->
 
       // identity protected by TLS.
 
-                               <- EAP-Payload-TLV
+                               <- EAP-Payload TLV
                                [EAP-Request/EAP-Type=X]
 
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/EAP-Type=X] ->
 
       // Method X exchanges followed by Protected Termination
 
-                           <- Intermediate-Result-TLV (Success),
+                           <- Intermediate-Result TLV (Success),
                                Crypto-Binding TLV (Request),
                                Result TLV (Success)
 
-      Intermediate-Result-TLV (Success),
+      Intermediate-Result TLV (Success),
       Crypto-Binding TLV (Response),
-      Result-TLV (Success) ->
+      Result TLV (Success) ->
 
       // TLS channel torn down
       (messages sent in cleartext)
@@ -3593,7 +3593,7 @@ conversation will appear as follows:
                               EAP-Type=TEAP, V=1
                               (TLS change_cipher_spec,
                                TLS finished,
-                               EAP-Payload-TLV[EAP-Request/
+                               EAP-Payload TLV[EAP-Request/
                                Identity])
 
       // TLS channel established
@@ -3619,7 +3619,7 @@ conversation will appear as follows:
                                  Result TLV (Success)
 
       Crypto-Binding TLV (Response),
-      Result-TLV (Success)) ->
+      Result TLV (Success)) ->
 
       //TLS channel torn down
       (messages sent in cleartext)
@@ -3684,7 +3684,7 @@ will appear as follows:
                               EAP-Type=TEAP, V=1
                               (TLS change_cipher_spec,
                                TLS finished,
-                              [EAP-Payload-TLV[
+                              [EAP-Payload TLV[
                               EAP-Request/Identity]])
 
       // TLS channel established
@@ -3693,26 +3693,26 @@ will appear as follows:
       // First EAP Payload TLV is piggybacked to the TLS Finished as
          Application Data and protected by the TLS tunnel.
 
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/Identity (MyID2)]->
 
       // identity protected by TLS.
 
-                               <- EAP-Payload-TLV
+                               <- EAP-Payload TLV
                                [EAP-Request/EAP-Type=X]
 
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/EAP-Type=X] ->
 
       // Method X exchanges followed by Protected Termination
 
-                           <- Intermediate-Result-TLV (Success),
+                           <- Intermediate-Result TLV (Success),
                                Crypto-Binding TLV (Request),
                                Result TLV (Success)
 
-      Intermediate-Result-TLV (Success),
+      Intermediate-Result TLV (Success),
       Crypto-Binding TLV (Response),
-      Result-TLV (Success) ->
+      Result TLV (Success) ->
 
       // TLS channel torn down
       (messages sent in cleartext)
@@ -3758,7 +3758,7 @@ method Y, the conversation will occur as follows:
                               (TLS change_cipher_spec,
                                TLS finished,
                                Identity-Type TLV,
-                              EAP-Payload-TLV[
+                              EAP-Payload TLV[
                               EAP-Request/Identity])
 
       // TLS channel established
@@ -3768,27 +3768,27 @@ method Y, the conversation will occur as follows:
          Application Data and protected by the TLS tunnel
 
       Identity_Type TLV
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/Identity] ->
 
-                              <- EAP-Payload-TLV
+                              <- EAP-Payload TLV
                             [EAP-Request/EAP-Type=X]
 
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/EAP-Type=X] ->
 
              // Optional additional X Method exchanges...
 
-                             <- EAP-Payload-TLV
+                             <- EAP-Payload TLV
                             [EAP-Request/EAP-Type=X]
 
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/EAP-Type=X]->
 
                               <- Intermediate Result TLV (Success),
                                Crypto-Binding TLV (Request),
                                Identity-Type TLV,
-                              EAP-Payload-TLV[
+                              EAP-Payload TLV[
                               EAP-Request/Identity])
 
       // Compound MAC calculated using keys generated from
@@ -3801,7 +3801,7 @@ method Y, the conversation will occur as follows:
 
       Intermediate Result TLV (Success),
       Crypto-Binding TLV (Response),
-      EAP-Payload-TLV [EAP-Response/Identity (MyID2)] ->
+      EAP-Payload TLV [EAP-Response/Identity (MyID2)] ->
 
              // Optional additional EAP method Y exchanges...
 
@@ -3811,13 +3811,13 @@ method Y, the conversation will occur as follows:
       EAP Payload TLV
       [EAP-Type=Y] ->
 
-                             <- Intermediate-Result-TLV (Success),
+                             <- Intermediate-Result TLV (Success),
                                Crypto-Binding TLV (Request),
                                Result TLV (Success)
 
-      Intermediate-Result-TLV (Success),
+      Intermediate-Result TLV (Success),
       Crypto-Binding TLV (Response),
-      Result-TLV (Success) ->
+      Result TLV (Success) ->
 
       // Compound MAC calculated using keys generated from EAP
          methods X and Y and the TLS tunnel.  Compound keys are
@@ -3861,7 +3861,7 @@ conversation will appear as follows:
                               EAP-Type=TEAP, V=1
                               (TLS change_cipher_spec
                                TLS finished)
-                               EAP-Payload-TLV[
+                               EAP-Payload TLV[
                                EAP-Request/Identity])
 
          // TLS channel established
@@ -3885,11 +3885,11 @@ conversation will appear as follows:
       EAP Payload TLV, EAP-Response,
       (EAP-MSCHAPV2, Success Response) ->
 
-                           <- Intermediate-Result-TLV (Success),
+                           <- Intermediate-Result TLV (Success),
                                Crypto-Binding TLV (Request),
                                   Result TLV (Success)
 
-         Intermediate-Result-TLV (Success),
+         Intermediate-Result TLV (Success),
          Result TLV (Failure)
          Error TLV with
          (Error Code = 2001) ->
@@ -3937,7 +3937,7 @@ Vendor-Specific TLV exchange, the conversation will occur as follows:
                               EAP-Type=TEAP, V=1
                               (TLS change_cipher_spec,
                                TLS finished,
-                              EAP-Payload-TLV[
+                              EAP-Payload TLV[
                               EAP-Request/Identity])
 
       // TLS channel established
@@ -3946,19 +3946,19 @@ Vendor-Specific TLV exchange, the conversation will occur as follows:
       // First EAP Payload TLV is piggybacked to the TLS Finished as
          Application Data and protected by the TLS tunnel.
 
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/Identity] ->
 
-                            <- EAP-Payload-TLV
+                            <- EAP-Payload TLV
                             [EAP-Request/EAP-Type=X]
 
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/EAP-Type=X] ->
 
-                             <- EAP-Payload-TLV
+                             <- EAP-Payload TLV
                             [EAP-Request/EAP-Type=X]
 
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/EAP-Type=X]->
 
                               <- Intermediate Result TLV (Success),
@@ -3984,7 +3984,7 @@ Vendor-Specific TLV exchange, the conversation will occur as follows:
       Vendor-Specific TLV ->
                              <- Result TLV (Success)
 
-      Result-TLV (Success) ->
+      Result TLV (Success) ->
 
       // TLS channel torn down (messages sent in cleartext)
 
@@ -4042,22 +4042,22 @@ inner method, the conversation will appear as follows:
        Request-Action TLV
        (Status=Failure, Action=Negotiate-EAP)->
 
-                            <- EAP-Payload-TLV
+                            <- EAP-Payload TLV
                                 [EAP-Request/Identity]
 
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/Identity] ->
 
-                            <- EAP-Payload-TLV
+                            <- EAP-Payload TLV
                             [EAP-Request/EAP-Type=X]
 
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/EAP-Type=X] ->
 
-                             <- EAP-Payload-TLV
+                             <- EAP-Payload TLV
                             [EAP-Request/EAP-Type=X]
 
-      EAP-Payload-TLV
+      EAP-Payload TLV
       [EAP-Response/EAP-Type=X]->
 
                               <- Intermediate Result TLV (Success),
@@ -4066,7 +4066,7 @@ inner method, the conversation will appear as follows:
 
       Intermediate Result TLV (Success),
       Crypto-Binding TLV (Response),
-      Result-TLV (Success)) ->
+      Result TLV (Success)) ->
 
       // TLS channel torn down
       (messages sent in cleartext)
@@ -4122,13 +4122,13 @@ Action TLV.  The conversation will appear as follows:
 
        Crypto-Binding TLV(Response),
        Request-Action TLV
-       (Status=Failure, Action=Process-TLV,
+       (Status=Failure, Action=Process TLV,
        TLV=Channel-Binding TLV)->
 
                                 <- Channel-Binding TLV (Response),
                                 Result TLV (Success),
 
-       Result-TLV (Success) ->
+       Result TLV (Success) ->
 
        TLS channel torn down
        (messages sent in cleartext)

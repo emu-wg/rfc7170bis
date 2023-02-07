@@ -2862,7 +2862,7 @@ Identity request/response exchanges sent after the TEAP tunnel is
 established are protected from modification and eavesdropping by
 attackers.
 
-Note that since TLS client certificates are sent in the clear, if
+Note that since TLS client certificates are sent in the clear with TLS 1.2 and earlier, if
 identity protection is required, then it is possible for the TLS
 authentication to be renegotiated after the first server
 authentication.  To accomplish this, the server will typically not
@@ -2881,7 +2881,15 @@ details.  It is possible to perform certificate authentication using
 an EAP authentication method (for example, EAP-TLS) within the TLS session in TEAP
 Phase 2 instead of using TLS handshake renegotiation.
 
-### Dictionary Attack Resistance
+When a client certificate is sent outside of the TLS tunnel, the peer MUST
+include Identity-Type as an outer TLV, in order to signal the type of
+identity which that client certificate is for.  Further, when a client
+certificate is sent outside of the TLS tunnel, the server MUST proceed
+with phase 2, either for authentication or provisioning.  If there is
+no Phase 2 data, then the EAP server MUST reject the session.  There
+is no reason to have TEAP devolve to EAP-TLS.
+
+## Dictionary Attack Resistance
 
 TEAP was designed with a focus on protected inner methods
 that typically rely on weak credentials, such as password-based

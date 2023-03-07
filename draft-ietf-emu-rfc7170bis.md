@@ -26,6 +26,7 @@ normative:
   BCP14: RFC8174
   RFC3748:
   RFC5077:
+  RFC5216:
   RFC5226:
   RFC5246:
   RFC5295:
@@ -214,7 +215,7 @@ The network architectural model for TEAP usage is shown below:
 The Peer and Authenticator are defined in Section 1.2 of {{RFC3748}}.
 The TEAP server is the "backend authentication server" defined in
 Section 1.2 of {{RFC3748}}.  The "Inner Method server" is usually part of the
-TEAP server, and handles the iapplication data (inner methods, EAP, passwords, etc.)
+TEAP server, and handles the application data (inner methods, EAP, passwords, etc.)
 inside of the TLS tunnel.
 
 The entities depicted above are logical entities and may or may not
@@ -374,7 +375,7 @@ certificates.  TLS renegotiation indications defined in RFC 5746
 Use of TLS-PSK is NOT RECOMMENDED.  TEAP has not been designed to work
 with TLS-PSK, and no use-cases, security analyses, or implementations
 have been done.  TLS-PSK may work (or not) with TEAP, depending on the
-status of a particular implementation, and it therefore not useful to
+status of a particular implementation, and it is therefore not useful to
 deploy it.
 
 The EAP server initiates the TEAP conversation with an EAP request
@@ -504,7 +505,7 @@ exchange and cryptographic binding of the inner EAP
 method(s) to the protected tunnel.  Inner EAP methods are executed serially
 in a sequence.  This version of TEAP does not support initiating
 multiple inner EAP methods simultaneously in parallel.  The inner EAP methods need
-not be distinct.  For example, EAP-TLS could be run twice as an inner
+not be distinct.  For example, EAP-TLS ({{RFC5216}} and {{RFC9190}}) could be run twice as an inner
 method, first using machine credentials followed by a second instance
 using user credentials.
 
@@ -691,13 +692,13 @@ the server certificate define the Server-Id.
 
 ## TEAP Session Identifier
 
-The EAP session identifier {{RFC5247}} is constructed using the tls-
-unique from the Phase 1 outer tunnel at the beginning of Phase 2 as
+The EAP session identifier {{RFC5247}} is constructed using the tls-unique
+from the Phase 1 outer tunnel at the beginning of Phase 2 as
 defined by Section 3.1 of {{RFC5929}}.  The Session-Id is defined as
 follows:
 
 ~~~~
-   Session-Id = teap_type \| tls-unique
+   Session-Id = teap_type | tls-unique
 ~~~~
 
 > where \| denotes concatenation, and teap_type is the EAP Type assigned to TEAP
@@ -783,13 +784,14 @@ process the contents of the response message.
 
 For the inner method, retransmission is not needed and SHOULD NOT be
 attempted, as the Outer TLS tunnel can be considered a reliable
-transport.  If there is a non-fatal error handling the inner method,
-instead of silently dropping the inner method exchange and
-not responding, the receiving side SHOULD use an Error TLV with error
-code Inner Method Error to indicate an error processing the current
-inner method.  The side receiving a non-fatal Error TLV MAY decide to start a
-new inner method instead or to send back a Result TLV to terminate the
-TEAP authentication session.
+transport.  If there is a non-fatal error while running the inner
+method, the receiving side SHOULD NOT silently drop the inner method
+exchange.  Instead, it SHOULD reply with an Error TLV containing the
+value Inner Method Error.  This response is a positive indication that
+there was an error processing the current inner method.  The side
+receiving a non-fatal Error TLV MAY decide to start a new inner method
+instead or to send back a Result TLV to terminate the TEAP
+authentication session.
 
 If a server receives a Result TLV of failure with a fatal Error TLV,
 it MUST send a cleartext EAP Failure.  If a peer receives a Result
@@ -812,7 +814,7 @@ anywhere near as long, a reasonable choice of maximum acceptable
 message length might be 64 KB.  This is still a fairly large message
 packet size so a TEAP implementation MUST provide its own support for
 fragmentation and reassembly.  Section 3.1 of {{RFC3748}} discusses
-determining the MTU usable by EAP, and [](#tlv-rules) discusses
+determining the MTU usable by EAP, and Section 4.3 of {{RFC3748}} discusses
 retransmissions in EAP.
 
 Since EAP is a lock-step protocol, fragmentation support can be added
@@ -854,30 +856,36 @@ contained within an EAP-Request, and the peer MUST include this
 Identifier value in the subsequent fragment contained within an EAP-
 Response.
 
-## Peer Services
+## Services Requested by the Peer
 
-Several TEAP services, including server unauthenticated provisioning,
-certificate provisioning, and channel binding,
-depend on the peer trusting the TEAP server.  Peers MUST authenticate
-the server before these peer services are used.  TEAP peer
-implementations MUST have a configuration where authentication fails
-if server authentication cannot be achieved.  In many cases, the
-server will want to authenticate the peer before providing these
-services as well.
+Several TEAP operations, including server unauthenticated
+provisioning, certificate provisioning, and channel binding, depend on
+the peer trusting the TEAP server. If the peer trusts the provided
+server certificate, then the server is authenticated.
+
+Typically, this authentication process involves the peer both
+validating the certificate to a trust anchor and confirming that the
+entity named by the certificate is the intended server.  Server
+authentication also occurs when the procedures in [](#phase1) are used
+to resume a session where the peer and server were previously mutually
+authenticated.  Alternatively, the server is deemed to be
+authenticated if an inner EAP method provides mutual authentication
+along with a Master Session Key (MSK) and/or Extended Master Session
+Key (EMSK).  The inner method MUST also provide for cryptographic
+binding via the Compound Message Authentication Code (MAC), as
+discussed in [](#crypto-binding-tlv).  This issue is further described in
+[](#unauth-provisioning).
 
 TEAP peers MUST track whether or not server authentication has taken
-place.  Server authentication results if the peer trusts the provided
-server certificate.  Typically, this involves both validating the
-certificate to a trust anchor and confirming the entity named by the
-certificate is the intended server.  Server authentication also
-results when the procedures in [](#phase1) are used to resume a
-session in which the peer and server were previously mutually
-authenticated.  Alternatively, peer services can be used if an inner
-EAP method providing mutual authentication and an Master Session Key
-(MSK) and/or Extended Master Session Key (EMSK) that is executed and
-cryptographic binding with the Compound Message Authentication Code
-(MAC) which is correctly validated ([](#crypto-binding-tlv)).  This is further described in
-[](#unauth-provisioning).
+place. When the server cannot be authenticated, the peer MUST NOT
+request any services from it.
+
+Peer implementations MUST be configurated so that by default, the
+current authentication session fails if the server cannot be
+authenticated.  However, it is possible to have a configuration flag
+which permits access to networks where the server cannot be
+authenticated.  Such configurations are NOT recommended, and further
+discussion is outside of the scope of this specification.
 
 An additional complication arises when an inner method authenticates
 multiple parties such as authenticating both the peer machine and the
@@ -888,7 +896,13 @@ the user and the EAP server, the machine may not have confidence that
 the EAP server is the authenticated party if the machine cannot trust
 the user not to disclose the shared secret to an attacker.  In these
 cases, the parties who participate in the authentication need to be
-considered when evaluating whether to use peer services.
+considered when evaluating whether the peer should request these
+services, or whether the server should provide them.
+
+The server MUST also authenticate the peer before providing these
+services.  The alternative is to send provisioning data to
+unauthenticated and potentially malicious peers, which can have
+negative impacts on security.
 
 ### Certificate Provisioning within the Tunnel {#cert-provisioning}
 
@@ -908,9 +922,9 @@ including information specific to the current authenticated TLS
 session within the signed certification request, the peer generating
 the request SHOULD obtain the tls-unique value from the TLS subsystem
 as defined in "Channel Bindings for TLS" {{RFC5929}}.  The TEAP peer
-operations between obtaining the tls_unique value through generation
+operations between obtaining the tls-unique value through generation
 of the Certification Signing Request (CSR) that contains the current
-tls_unique value and the subsequent verification of this value by the
+tls-unique value and the subsequent verification of this value by the
 TEAP server are the "phases of the application protocol during which
 application-layer authentication occurs" that are protected by the
 synchronization interoperability mechanism described in the

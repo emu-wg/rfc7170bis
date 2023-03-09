@@ -243,19 +243,19 @@ the layer above it.  The following diagram clarifies the relationship
 between protocols:
 
 ~~~~
- +---------------------------------------------------------------+
- |         Inner method       |     Other TLV information        |
- |---------------------------------------------------------------|
- |                 TLV Encapsulation (TLVs)                      |
- |---------------------------------------------------------------|
- |                TLS         |     Optional Outer TLVs          |
- |---------------------------------------------------------------|
- |                         TEAP                                  |
- |---------------------------------------------------------------|
- |                         EAP                                   |
- |---------------------------------------------------------------|
- |    Carrier Protocol (EAP over LAN, RADIUS, Diameter, etc.)    |
- +---------------------------------------------------------------+
+ +------------------------------------------+
+ | Inner EAP Method | Other TLV information |
+ |------------------------------------------|
+ |         TLV Encapsulation (TLVs)         |
+ |------------------------------------------+---------------------+
+ |                      TLS                 | Optional Outer TLVs |
+ |----------------------------------------------------------------|
+ |                            TEAP                                |
+ |----------------------------------------------------------------|
+ |                            EAP                                 |
+ |----------------------------------------------------------------|
+ |     Carrier Protocol (EAP over LAN, RADIUS, Diameter, etc.)    |
+ +----------------------------------------------------------------+
 ~~~~
 {: title="Protocol-Layering Model"}
 
@@ -498,8 +498,8 @@ inner method.
 ### Inner EAP Authentication {#inner-eap}
 
 EAP {{RFC3748}} prohibits use of multiple authentication methods within
-a single EAP conversation in order to limit vulnerabilities to man-
-in-the-middle attacks.  TEAP addresses man-in-the-middle attacks
+a single EAP conversation in order to limit vulnerabilities to man-in-the-middle
+attacks.  TEAP addresses man-in-the-middle attacks
 through support for cryptographic protection of the inner EAP
 exchange and cryptographic binding of the inner EAP
 method(s) to the protected tunnel.  Inner EAP methods are executed serially
@@ -522,10 +522,8 @@ server MUST NOT finish the EAP conversation with an EAP Success or EAP
 Failure packet, the Intermediate-Result TLV is used instead.
 
 Upon completion of each EAP authentication in the tunnel, the server MUST send
-an Intermediate-Result TLV indicating the result of that authentication.  The peer MUST
-respond to the Intermediate-Result TLV indicating its result.  If the
-result indicates success, the servers Intermediate-Result TLV MUST be
-accompanied by a Crypto-Binding TLV.  The Crypto-Binding TLV is
+an Intermediate-Result TLV indicating the result of that authentication.  When the result indicates, success it MUST be accompanied by a Crypto-Binding TLV. The peer MUST respond to the Intermediate-Result TLV indicating its own result and similarly on success MUST accompany the TLV with it's own Crypto-Binding TLV.
+The Crypto-Binding TLV is
 further discussed in [](#crypto-binding-tlv) and
 [](#computing-compound-mac).  The Intermediate-Result TLVs can be
 included with other TLVs which indicate a subsequent authentication,
@@ -578,7 +576,7 @@ Basic-Password-Auth-Resp TLVs.
 Servers MUST track the Username across multiple password rounds, and
 reject authentication if the identity changes from one
 Basic-Password-Auth-Resp TLV to the next.  There is no reason for a
-user (or machine) to change identies in the middle of authentication.
+user (or machine) to change identities in the middle of authentication.
 
 Upon reception of a Basic-Password-Auth-Resp TLV in
 the tunnel, the server MUST send an Intermediate-Result TLV
@@ -801,60 +799,8 @@ response, and it MUST send a cleartext EAP Failure.
 
 ## Fragmentation {#fragmentation}
 
-A single TLS record may be up to 16384 octets in length, but a TLS
-message may span multiple TLS records, and a TLS certificate message
-may, in principle, be as long as 16 MB.  This is larger than the
-maximum size for a message on most media types; therefore, it is
-desirable to support fragmentation.  Note that in order to protect
-against reassembly lockup and denial-of-service attacks, it may be
-desirable for an implementation to set a maximum size for one such
-group of TLS messages.  Since a typical certificate chain is rarely
-longer than a few thousand octets, and no other field is likely to be
-anywhere near as long, a reasonable choice of maximum acceptable
-message length might be 64 KB.  This is still a fairly large message
-packet size so a TEAP implementation MUST provide its own support for
-fragmentation and reassembly.  Section 3.1 of {{RFC3748}} discusses
-determining the MTU usable by EAP, and Section 4.3 of {{RFC3748}} discusses
-retransmissions in EAP.
-
-Since EAP is a lock-step protocol, fragmentation support can be added
-in a simple manner.  In EAP, fragments that are lost or damaged in
-transit will be retransmitted, and since sequencing information is
-provided by the Identifier field in EAP, there is no need for a
-fragment offset field.
-
-TEAP fragmentation support is provided through the addition of flag
-bits within the EAP-Response and EAP-Request packets, as well as a
-Message Length field of four octets.  Flags include the Length
-included (L), More fragments (M), and TEAP Start (S) bits.  The L
-flag is set to indicate the presence of the four-octet Message Length
-field and MUST be set for the first fragment of a fragmented TLS
-message or set of messages.  It MUST NOT be present for any other
-message.  The M flag is set on all but the last fragment.  The S flag
-is set only within the TEAP start message sent from the EAP server to
-the peer.  The Message Length field is four octets and provides the
-total length of the message that may be fragmented over the data
-fields of multiple packets; this simplifies buffer allocation.
-
-When a TEAP peer receives an EAP-Request packet with the M bit set,
-it MUST respond with an EAP-Response with EAP Type of TEAP and no
-data.  This serves as a fragment ACK.  The EAP server MUST wait until
-it receives the EAP-Response before sending another fragment.  In
-order to prevent errors in processing of fragments, the EAP server
-MUST increment the Identifier field for each fragment contained
-within an EAP-Request, and the peer MUST include this Identifier
-value in the fragment ACK contained within the EAP-Response.
-Retransmitted fragments will contain the same Identifier value.
-
-Similarly, when the TEAP server receives an EAP-Response with the M
-bit set, it responds with an EAP-Request with EAP Type of TEAP and no
-data.  This serves as a fragment ACK.  The EAP peer MUST wait until
-it receives the EAP-Request before sending another fragment.  In
-order to prevent errors in the processing of fragments, the EAP
-server MUST increment the Identifier value for each fragment ACK
-contained within an EAP-Request, and the peer MUST include this
-Identifier value in the subsequent fragment contained within an EAP-
-Response.
+Fragmentation of EAP packets is dicussed in {{RFC5216}} Section 2.1.5.
+There is no special handling of fragments for TEAP.
 
 ## Services Requested by the Peer
 
@@ -4027,7 +3973,7 @@ inner method, the conversation will appear as follows:
 
       // Identity sent in the clear.  May be a hint to help route
          the authentication request to EAP server, instead of the
-         full user identity.
+         full user identity. TLS client certificate is also sent.
 
                               <- EAP-Request/
                               EAP-Type=TEAP, V=1

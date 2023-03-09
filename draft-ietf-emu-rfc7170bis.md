@@ -1255,19 +1255,20 @@ EAP peer select the right type of identity, for example, user or
 machine.  TEAPv1 implementations MUST support this TLV.  Only one
 Identity-Type TLV SHOULD be present in the TEAP request or response
 packet.  The Identity-Type TLV request MUST come with an EAP-Payload
-TLV or Basic-Password-Auth-Req TLV.  If the EAP peer does have an
+TLV, Basic-Password-Auth-Req TLV, or a vendor-specific authentication method.  If the EAP peer has an
 identity corresponding to the identity type requested, then the peer
-SHOULD respond with an Identity-Type TLV with the requested type.  If
-the Identity-Type field does not contain one of the known values or
+SHOULD respond with an Identity-Type TLV with the requested type, along with TLVs which perform the requested inner method.  If
+the Identity-Type field does not contain one of the known values, or
 if the EAP peer does not have an identity corresponding to the
 identity type requested, then the peer SHOULD respond with an
-Identity-Type TLV with the one of available identity types.  If the
-server receives an identity type in the response that does not match
-the requested type, then the peer does not possess the requested
-credential type, and the server SHOULD proceed with authentication
-for the credential type proposed by the peer, proceed with requesting
-another credential type, or simply apply the network policy based on
-the configured policy, e.g., sending Result TLV with Failure.
+Identity-Type TLV with the one of identity types which it has available.
+
+If server receives an identity type in the response that does not
+match the type that it requested, then this is an indication to the
+server that the peer does not possess the requested credential type.
+Depending on local policies, the server can either proceed with
+authentication for the credential type proposed by the peer, or it can
+send Result TLV with Failure.
 
 The Identity-Type TLV is defined as follows:
 

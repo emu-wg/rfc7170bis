@@ -34,9 +34,11 @@ normative:
   RFC5746:
   RFC5929:
   RFC6677:
+  RFC7030:
   RFC7170:
   RFC9190:
   I-D.ietf-emu-tls-eap-types:
+  I-D.ietf-lamps-rfc7030-csrattrs:
 
 informative:
   IEEE.802-1X.2013:
@@ -92,7 +94,6 @@ informative:
   RFC6960:
   RFC6961:
   RFC7029:
-  RFC7030:
   RFC7542:
   X.690:
     title: "SN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
@@ -1204,6 +1205,8 @@ A 14-bit field, denoting the TLV type.  Allocated types include:
 > 16 PKCS#10 TLV ([](#pkcs10-tlv))
 >
 > 17 Trusted-Server-Root TLV ([](#trusted-server-root-tlv))
+>
+> 18 CSR Attributes TLV ([](#csr-attributes-tlv))
 
 Length
 
@@ -2271,6 +2274,53 @@ Cred TLVs
 > with the credential format.  The peer may leave this field empty
 > when using this TLV to request server trust roots.
 
+### CSR Attributes TLV
+
+The CSR Attributes TLV provides information from the server to the
+peer on how certificate signing requests should be formed.  The
+purpose of CSR attributes is described in Section 4.5 of {{!RFC7030}}.
+Servers MAY send CSR attributes directly after the TLS session has
+been established.  A server MAY also send in the same message a
+Request Action frame for a PKCS#10 TLV.  This is an indication to the
+peer that the server would like the peer to renew its certificate
+using the parameters provided in this TLV.  Servers shall construct
+the CSR attributes as specified in {{!RFC7030}} Section 4.5.2 with the
+exception that the DER encoding SHALL NOT be encoded in base64.  Servers
+and peers SHALL follow the guidance provided in
+{{!I-D.ietf-lamps-rfc7030-csrattrs}}. Peers MAY ignore the contents
+of the TLV if they are unable to do so, but then servers may not
+process PKCS#10 certificate requests for this or any other reason.
+
+The CSR Attributes TLV is defined as follows:
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|M|R|         TLV Type          |            Length             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                DER Encoded CSR Attributes                     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+~~~~
+
+M
+
+> 0 - Optional TLV
+
+R
+
+> Reserved, set to zero (0)
+
+TLV Type
+
+> 18 - CSR Attributes
+
+Length
+
+> \>=2 octets
+
+
+
 ## TLV Rules {#tlv-rules}
 
 To save round trips, multiple TLVs can be sent in a single TEAP
@@ -2357,10 +2407,13 @@ Request  Response    Success   Failure   TLVs
 0-1      0           0-1       0         PKCS#7
 0        0-1         0         0         PKCS#10
 0-1      0-1         0-1       0         Trusted-Server-Root
+0-1	 0	     0	       0	 CSR Attributes TLV
 ~~~~
 
 NOTE: Vendor TLVs (included in Vendor-Specific TLVs) sent with a
-Result TLV MUST be marked as optional.
+Result TLV MUST be marked as optional.  Also, the CSR attribute
+is never transmitted by the peer, and so is treated as a request
+in this table.
 
 # Cryptographic Calculations {#cryptographic-calculations}
 
@@ -2646,14 +2699,15 @@ Value,Description,Reference
 8,Request-Action TLV,[THIS-DOCUMENT]
 9,EAP-Payload TLV,[THIS-DOCUMENT]
 10,Intermediate-Result TLV,[THIS-DOCUMENT]
-11,PAC TLV,(DEPRECATED) [RFC7170] 
+11,PAC TLV,(DEPRECATED) [RFC7170]
 12,Crypto-Binding TLV,[THIS-DOCUMENT]
 13,Basic-Password-Auth-Req TLV,[THIS-DOCUMENT]
 14,Basic-Password-Auth-Resp TLV,[THIS-DOCUMENT]
 15,PKCS#7 TLV,[THIS-DOCUMENT]
 16,PKCS#10 TLV,[THIS-DOCUMENT]
 17,Trusted-Server-Root TLV,[THIS-DOCUMENT]
-18-16383,Unassigned,
+18,CSR Attributes TLV,[THIS-DOCUMENT]
+19-16383,Unassigned,
 ~~~~
 
 IANA is instructed to update the "TEAP PAC TLV (value 11) PAC

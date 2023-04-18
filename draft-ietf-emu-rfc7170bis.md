@@ -36,6 +36,7 @@ normative:
   RFC6677:
   RFC7030:
   RFC7170:
+  RFC8446
   RFC9190:
   I-D.ietf-emu-tls-eap-types:
   I-D.ietf-lamps-rfc7030-csrattrs:
@@ -125,7 +126,7 @@ EAP method that establishes a secure tunnel and executes other EAP
 methods under the protection of that secure tunnel.  A tunnel-based
 EAP method can be used in any lower-layer protocol that supports EAP
 authentication.  There are several existing tunnel-based EAP methods
-that use Transport Layer Security (TLS) {{RFC5246}} to establish the
+that use Transport Layer Security (TLS) {{RFC8446}} to establish the
 secure tunnel.  EAP methods supporting this include Protected EAP
 (PEAP) [PEAP], EAP Tunneled Transport Layer Security (EAP-TTLS)
 {{RFC5281}}, and EAP Flexible Authentication via Secure Tunneling (EAP-
@@ -171,7 +172,7 @@ Inner method
 
 TEAP authentication occurs in two phases after the initial EAP
 Identity request/response exchange.  In the first phase, TEAP employs
-the TLS {{RFC5246}} handshake to provide an authenticated key exchange
+the TLS {{RFC8446}} handshake to provide an authenticated key exchange
 and to establish a protected tunnel.  Once the tunnel is established,
 the second phase begins with the peer and server engaging in further
 conversations to establish the required authentication and
@@ -343,20 +344,14 @@ described in [](#phase-2-errors).
 
 ## TEAP Authentication Phase 1: Tunnel Establishment
 
-TEAP relies on the TLS handshake {{RFC5246}} to establish an
+TEAP relies on the TLS handshake {{RFC8446}} to establish an
 authenticated and protected tunnel.  The TLS version offered by the
 peer and server MUST be TLS version 1.2 {{RFC5246}} or later.  This
 version of the TEAP implementation MUST support the following TLS
 ciphersuites:
 
-> TLS_RSA_WITH_AES_128_CBC_SHA {{RFC5246}}
->
-> TLS_DHE_RSA_WITH_AES_128_CBC_SHA {{RFC5246}}
-
-This version of the TEAP implementation SHOULD support the following
-TLS ciphersuite:
-
-> TLS_RSA_WITH_AES_256_CBC_SHA {{RFC5246}}
+> TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+> TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
 
 Other ciphersuites MAY be supported.  It is REQUIRED that anonymous
 ciphersuites such as TLS_DH_anon_WITH_AES_128_CBC_SHA {{RFC5246}} only
@@ -752,7 +747,7 @@ MAY contain a TEAP response with a zero-length message, in which case
 the server MUST terminate the conversation with an EAP Failure
 packet.  It is up to the TEAP server whether or not to allow
 restarts, and, if allowed, how many times the conversation can be
-restarted.  Per TLS {{RFC5246}}, TLS restart is only allowed for non-
+restarted.  Per TLS {{RFC8446}}, TLS restart is only allowed for non-
 fatal alerts.  A TEAP server implementing restart capability SHOULD
 impose a limit on the number of restarts, so as to protect against
 denial-of-service attacks.  If the TEAP server does not allow

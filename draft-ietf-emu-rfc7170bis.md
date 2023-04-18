@@ -1201,7 +1201,7 @@ A 14-bit field, denoting the TLV type.  Allocated types include:
 >
 > 17 Trusted-Server-Root TLV ([](#trusted-server-root-tlv))
 >
-> 18 CSR Attributes TLV ([](#csr-attributes-tlv))
+> 18 CSR-Attributes TLV ([](#csr-attributes-tlv))
 
 Length
 
@@ -2269,24 +2269,25 @@ Cred TLVs
 > with the credential format.  The peer may leave this field empty
 > when using this TLV to request server trust roots.
 
-### CSR Attributes TLV
+### CSR-Attributes TLV
 
-The CSR Attributes TLV provides information from the server to the
+The CSR-Attributes TLV provides information from the server to the
 peer on how certificate signing requests should be formed.  The
-purpose of CSR attributes is described in Section 4.5 of {{!RFC7030}}.
-Servers MAY send CSR attributes directly after the TLS session has
+purpose of CSR attributes is described in Section 4.5 of {{RFC7030}}.
+Servers MAY send the CSR-Attributes TLV directly after the TLS session has
 been established.  A server MAY also send in the same message a
 Request Action frame for a PKCS#10 TLV.  This is an indication to the
 peer that the server would like the peer to renew its certificate
 using the parameters provided in this TLV.  Servers shall construct
-the CSR attributes as specified in {{!RFC7030}} Section 4.5.2 with the
-exception that the DER encoding SHALL NOT be encoded in base64.  Servers
-and peers SHALL follow the guidance provided in
-{{!I-D.ietf-lamps-rfc7030-csrattrs}}. Peers MAY ignore the contents
+the contents of the CSR-Attributes TLV as specified in {{RFC7030}} Section 4.5.2 with the
+exception that the DER encoding MUST NOT be encoded in base64.  The base64 encoding in used in {{RFC7030}} because the transport protocol used there requires textual encoding.  In contrast, TEAP attributes can transport arbitrary binary data.
+
+Servers and peers MUST follow the guidance provided in
+{{!I-D.ietf-lamps-rfc7030-csrattrs}} when creating the CSR-Attributes TLV. Peers MAY ignore the contents
 of the TLV if they are unable to do so, but then servers may not
 process PKCS#10 certificate requests for this or any other reason.
 
-The CSR Attributes TLV is defined as follows:
+The CSR-Attributes TLV is defined as follows:
 
 ~~~~
  0                   1                   2                   3
@@ -2308,7 +2309,7 @@ R
 
 TLV Type
 
-> 18 - CSR Attributes
+> 18 - CSR-Attributes
 
 Length
 
@@ -2402,11 +2403,11 @@ Request  Response    Success   Failure   TLVs
 0-1      0           0-1       0         PKCS#7
 0        0-1         0         0         PKCS#10
 0-1      0-1         0-1       0         Trusted-Server-Root
-0-1	 0	     0	       0	 CSR Attributes TLV
+0-1	 0	     0	       0	 CSR-Attributes TLV
 ~~~~
 
 NOTE: Vendor TLVs (included in Vendor-Specific TLVs) sent with a
-Result TLV MUST be marked as optional.  Also, the CSR attribute
+Result TLV MUST be marked as optional.  Also, the CSR-Attributes TLV
 is never transmitted by the peer, and so is treated as a request
 in this table.
 
@@ -2701,7 +2702,7 @@ Value,Description,Reference
 15,PKCS#7 TLV,[THIS-DOCUMENT]
 16,PKCS#10 TLV,[THIS-DOCUMENT]
 17,Trusted-Server-Root TLV,[THIS-DOCUMENT]
-18,CSR Attributes TLV,[THIS-DOCUMENT]
+18,CSR-Attributes TLV,[THIS-DOCUMENT]
 19-16383,Unassigned,
 ~~~~
 

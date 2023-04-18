@@ -1202,6 +1202,8 @@ A 14-bit field, denoting the TLV type.  Allocated types include:
 > 17 Trusted-Server-Root TLV ([](#trusted-server-root-tlv))
 >
 > 18 CSR-Attributes TLV ([](#csr-attributes-tlv))
+>
+> 19 Identity-Hint TLV ([](#identity-hint-tlv))
 
 Length
 
@@ -2315,7 +2317,49 @@ Length
 
 > \>=2 octets
 
+### Identity-Hint TLV
 
+The Identity-Hint TLV is an optional TLV which can sent by the peer to the server at the beginning of the Phase 2 TEAP conversation.  The purpose of the TLV is to provide a "hint" as to the identity or identies which the peer will be using during subsequent Phase 2 authentications.
+
+The purpose of this TLV is to solve the "bootstrapping" problem for the server.  In order to perform authentication, the server must choose an inner authentication method.  However, the server has no knowledge of what methods are supported by the peer.  Without an identity hint, the server needs to propose a method, and then have the peer return a response indicating that the requested method is not available.  This negotiation increases the number of round trips required for TEAP to conclude, with no additional benefit.
+
+When the Identity-Hint is use, the peer can signal which identies it has available, which enables the server to choose an inner authentication method which is appropriate for that identity.
+
+The peer SHOULD send an Identity-Hint TLV for each inner authentication method which is available to it.  For example, if the peer can do both Machine and User authentication, it can send two Identity-Hint TLVs, with values "host/name.example.com" (for a machine with hostname "name.example.com"), and "user@example.com" (for a person with identity "user@example.com").
+
+The contents of the Identity-Hint TLV SHOULD be in the format of an NAI {{RFC7542}}, but we note that as given in the example above, Machine identities might not follow that format.  As these identities are never used for AAA routing as discussed in {{RFC7542}} Section 3, the format and definition of these identities is entirely site local.  Robust implementations MUST support arbitrary data in the content of this TLV, including binary octets.
+
+As the Identity-Hint TLV is a "hint", server implementations are free to ignore the hints given, and do whatever is required by site-local policies.
+
+The Identity-Hint TLV is used only as a guide to selecting which inner authentication methods to use.  This TLV has no other meaning, and it MUST NOT be used for any other purpose.  Specifically. server implementations MUST NOT compare the identities given this TLV to later identies given as part of the inner authentication methods.  There is no issue with the hint(s) failing to match any subsequent identity which is used.
+
+The Identity-Hint TLV is defined as follows:
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|M|R|         TLV Type          |            Length             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       Identity Hint                           |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+~~~~
+
+M
+
+> 0 - Optional TLV
+
+R
+
+> Reserved, set to zero (0)
+
+TLV Type
+
+> 19 - Identity-Hint
+
+Length
+
+> \>=2 octets
 
 ## TLV Rules {#tlv-rules}
 
@@ -2404,6 +2448,7 @@ Request  Response    Success   Failure   TLVs
 0        0-1         0         0         PKCS#10
 0-1      0-1         0-1       0         Trusted-Server-Root
 0-1	 0	     0	       0	 CSR-Attributes TLV
+0	 0+	     0	       0	 Identity-Hint TLV
 ~~~~
 
 NOTE: Vendor TLVs (included in Vendor-Specific TLVs) sent with a
@@ -2703,7 +2748,8 @@ Value,Description,Reference
 16,PKCS#10 TLV,[THIS-DOCUMENT]
 17,Trusted-Server-Root TLV,[THIS-DOCUMENT]
 18,CSR-Attributes TLV,[THIS-DOCUMENT]
-19-16383,Unassigned,
+19,Identity-Hint TLV,[THIS-DOCUMENT]
+20-16383,Unassigned,
 ~~~~
 
 IANA is instructed to update the "TEAP PAC TLV (value 11) PAC

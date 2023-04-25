@@ -36,7 +36,7 @@ normative:
   RFC6677:
   RFC7030:
   RFC7170:
-  RFC8446
+  RFC8446:
   RFC9190:
   I-D.ietf-emu-tls-eap-types:
   I-D.ietf-lamps-rfc7030-csrattrs:

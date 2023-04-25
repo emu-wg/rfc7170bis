@@ -2449,8 +2449,8 @@ Request  Response    Success   Failure   TLVs
 0-1      0           0-1       0         PKCS#7
 0        0-1         0         0         PKCS#10
 0-1      0-1         0-1       0         Trusted-Server-Root
-0-1	 0	     0	       0	 CSR-Attributes TLV
-0	 0+	     0	       0	 Identity-Hint TLV
+0-1      0           0         0         CSR-Attributes TLV
+0        0+          0         0         Identity-Hint TLV
 ~~~~
 
 NOTE: Vendor TLVs (included in Vendor-Specific TLVs) sent with a

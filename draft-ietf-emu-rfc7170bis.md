@@ -1651,11 +1651,13 @@ Vendor TLVs
 
 ### Request-Action TLV {#request-action-tlv}
 
-The Request-Action TLV MAY be sent by both the peer and the server in
-response to a successful or failed Result TLV.  It allows the peer or
-server to request the other side to negotiate additional inner methods
-or process TLVs specified in the response packet.  The receiving side
-MUST process this TLV.  The processing for the TLV is as follows:
+The Request-Action TLV MAY be sent at any time.  The Request-Action
+TLV allows the peer or server to request that other side negotiates
+additional inner methods or process TLVs which are passed inside of
+the Request-Action TLV.
+
+The receiving side MUST process this TLV.  The processing for the TLV
+is as follows:
 
 > The receiving entity MAY choose to process any of the TLVs that
 > are included in the message.

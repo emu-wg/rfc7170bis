@@ -2541,7 +2541,21 @@ IMSK[j] = First 32 octets of TLS-PRF(secret, "TEAPbindkey@ietf.org",
 > will be generated (e.g. when basic password authentication
 > is used or when no inner method has been run and the crypto-binding TLV
 > for the Result TLV needs to be generated).  In this case, IMSK\[j]
-> is set to zero (i.e., MSK = 32 octets of 0x00s).
+> is set to all zeroes (i.e., MSK = 32 octets of 0x00s).
+
+Note that using a MSK of all zeroes opens up TEAP to man-in-the-middle
+attacks, as discussed below in {#separation-p1-p2}.  It is therefore
+NOT RECOMMENDED to use inner methods which fail to generate an EMSK or
+MSK.  These methods should only be used in conjuction with another
+inner method which does provide for EMSK or MSK generation.  It is
+also RECOMMENDED that TEAP peers order authentication such that
+methods which generate EMSKs are performed before methods which do not
+generate EMSKs.
+
+For example, Phase 2 could perform both Machine authentication using
+EAP-TLS, followed by User authentication via the Basic Password
+Authentication TLVs.  In that case, the use of EAP-TLS would allow an
+attacker to be detected before the User password was sent.
 
 However, it is possible that the peer and server sides might not have
 the same capability to export EMSK.  In order to maintain maximum
@@ -2844,14 +2858,13 @@ for the portion of the conversation between the gateway and the EAP
 server.  In addition, separation of the TEAP server and Inner servers
 allows for crypto-binding based on the inner method MSK to be
 thwarted as described in {{RFC7029}}.  Implementation and deployment
-SHOULD adopt various mitigation strategies described in {{RFC7029}}.
-If the inner method is deriving EMSK, then this threat is mitigated
-as TEAP utilizes the mutual crypto-binding based on EMSK as described
-in {{RFC7029}}.
+SHOULD adopt various mitigation strategies described in {{RFC7029}} Section 3.2.
+If the inner method derives an EMSK, then this threat is mitigated as
+TEAP uses the Crypto-Binding TLV tie the inner EMSK to the TLS session via the TLS-PRF, as described above in [](#cryptographic-calculations).
 
 On the other hand, if the inner method is not deriving EMSK as with
 password authentication or unauthenticated provisioning, then this
-thread still exists.
+threat still exists.  For example, the EAP method defined in {{RFC3748}} Section 5 such as MD5-Challenge, One-Time Password (OTP), and Generic Token Card (GTC) do not derive an EMSK, and are vulnerable to man-in-the-middle attacks.  The construction of the OTP and GTC methods makes this attack less relevant, as the information being sent is a one-time token.  However, MD5-Challenge has no such safety, and TEAP implementations SHOULD NOT permit the use of MD5-Challenge or other inner methods which fail to perform crypto-binding of the inner method to the TLS session.
 
 ## Mitigation of Known Vulnerabilities and Protocol Deficiencies
 

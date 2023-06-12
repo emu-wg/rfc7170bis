@@ -2378,7 +2378,7 @@ matter, however there is an order in which TLVs in a packet must be processed:
 2. Intermediate-Result TLV
 3. Result TLV or Request-Action TLV
 4. Identity-Type TLV
-5. EAP-Payload TLV[Identity-Request] or Basic-Password-Auth-Req TLV
+5. EAP-Payload TLV\[Identity-Request] or Basic-Password-Auth-Req TLV
 6. Other TLVs
 
 That is, cryptographic binding is checked before any result is used,
@@ -2603,12 +2603,12 @@ The derivation of S-IMCK is as follows:
 where TLS-PRF is the PRF described above negotiated as
 part of TLS handshake {{RFC5246}}.  The value j refers to a
 corresponding inner method 1 through n.  The special value of
-S-IMCK[0] is used to bootstrap the calculations, and can be done as
+S-IMCK\[0] is used to bootstrap the calculations, and can be done as
 soon as the TLS connection is established, and before any inner
 methods are run.
 
 In practice, the requirement to use either MSK or EMSK means that an
-implement MUST track two independent derivations of IMCK[j], one which
+implement MUST track two independent derivations of IMCK\[j], one which
 depends on the MSK, and another which depends on EMSK.  That is, we
 have both values derived from MSK:
 
@@ -2717,8 +2717,8 @@ for each of MSK\[j] and EMSK\[j].  The final derivation using
 S-IMCK\[n] must choose only one of these keys.
 
 If the Crypto-Binding TLV contains an EMSK compound MAC, then the
-derivation is taken from the S_IMCK_EMSK[n].  Otherwise it is taken
-from the S_IMCK_MSK[n].
+derivation is taken from the S_IMCK_EMSK\[n].  Otherwise it is taken
+from the S_IMCK_MSK\[n].
 
 # IANA Considerations
 

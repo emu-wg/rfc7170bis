@@ -2746,6 +2746,8 @@ This section provides guidance to the Internet Assigned Numbers
 Authority (IANA) regarding registration of values related to the TEAP
 protocol, in accordance with BCP 26 {{RFC5226}}.
 
+## Tunnel Extensible Authentication Protocol (TEAP) Parameters
+
 IANA is instructed to update the references in the "Tunnel Extensible
 Authentication Protocol (TEAP) Parameters" registry as follows.
 
@@ -2780,6 +2782,15 @@ Codes" registries with a NOTE:
 
 ~~~~
 This registry was deprecated by [THIS-DOCUMENT]
+~~~~
+
+## TLS Exporter Labels
+
+IANA is instructed to update the "TLS Exporter Labels" registry to change the Reference field for Value "EXPORTER: teap session key seed" as follows:
+
+~~~~
+Value,DTLS-OK,Recommended,Reference
+EXPORTER: teap session key seed,N,Y,[THIS-DOCUMENT]
 ~~~~
 
 # Security Considerations

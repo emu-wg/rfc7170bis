@@ -38,6 +38,7 @@ normative:
   RFC7170:
   RFC8446:
   RFC9190:
+  RFC9427:
   I-D.ietf-emu-tls-eap-types:
   I-D.ietf-lamps-rfc7030-csrattrs:
 
@@ -142,6 +143,11 @@ This document describes the Tunnel Extensible Authentication Protocol
 (TEAP) version 1, based on EAP-FAST {{RFC4851}} with some minor changes
 to meet the requirements outlined in {{RFC6678}} for a standard tunnel-
 based EAP method.
+
+This specification describes TEAPv1, and defines cryptographic
+derivations for TLS 1.2 and earlier.  When TLS 1.3 is used, the
+definitions of cryptographic derivations in {{RFC9427}} MUST be used
+instead of the ones given here.
 
 ## Specification Requirements
 

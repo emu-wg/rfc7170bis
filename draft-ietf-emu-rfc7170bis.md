@@ -4231,4 +4231,115 @@ Action TLV.  The conversation will appear as follows:
 
                                <- EAP-Success
 
+## C.11.
+{:numbered="false"}
+
+The following exchanges show the peer sending a PKCS#10 TLV, and
+server replying with a PKCS7 TLV. The conversation will appear as
+follows:
+
+~~~~
+,----.                                             ,-------.
+|Peer|                                             |AuthSrv|
+`-+--'                                             `---+---'
+  |               EAP-Request / Identity               |
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - -
+  |                                                    |
+  |           EAP-Response / Identity (MYID1)          |
+  |  - - - - - - - - - - - - - - - - - - - - - - - - - >
+  |                                                    |
+  |             EAP-Request/EAP-Type=TEAP,             |
+  |              V=1(TEAP Start,                       |
+  |              S bit set,                            |
+  |              Authority-ID)                         |
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - -
+  |                                                    |
+  |             EAP-Response/EAP-Type=TEAP,            |
+  |              V=1(TLS client_hello)                 |
+  |  - - - - - - - - - - - - - - - - - - - - - - - - - >
+  |                                                    |
+  |             EAP-Request/ EAP-Type=TEAP,            |
+  |              V=1(TLS server_hello,                 |
+  |             (TLS change_cipher_spec,               |
+  |              TLS finished)                         |
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - -
+  |                                                    |
+  |        EAP-Response/EAP-Type=TEAP,                 |
+  |         V=1(TLS change_cipher_spec,                |
+  |        TLS finished) TLS channel established       |
+  |  - - - - - - - - - - - - - - - - - - - - - - - - - >
+  |                                                    |
+  |               Send Request Action TLV              |
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - -
+  |                                                    |
+  |                   Send PKCS10 TLV                  |
+  |  - - - - - - - - - - - - - - - - - - - - - - - - - >
+  |                                                    |
+  | Sign the CSR and send PKCS7 TLV Intermediate-Result|
+  | TLV request(Success),                              |
+  |  Crypto-Binding TLV(Request),                      |
+  |  Result TLV(Success)                               |
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - -
+  |                                                    |
+  |     Intermediate-Result TLV response(Success),     |
+  |      Crypto-Binding TLV(Response),                 |
+  |      Result TLV(Success)                           |
+  |  - - - - - - - - - - - - - - - - - - - - - - - - - >
+  |                                                    |
+  |                     EAP Success                    |
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - -
+~~~~
+
+
+## C.12.
+{:numbered="false"}
+
+The following exchanges shows a failure scenario. The conversation
+will appear as follows:
+
+~~~~
+,----.                                                  ,-------.
+|Peer|                                                  |AuthSrv|
+`-+--'                                                  `---+---'
+  |                  EAP-Request / Identity                 |
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  |                                                         |
+  |             EAP-Response / Identity (MYID1)             |
+  |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
+  |                                                         |
+  |          EAP-Request/EAP-Type=TEAP, V=1                 |
+  |          (TEAP Start, S bit set, Authority-ID)          |
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  |                                                         |
+  |    EAP-Response/EAP-Type=TEAP, V=1(TLS client_hello)    |
+  |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
+  |                                                         |
+  | EAP-Request/ EAP-Type=TEAP, V=1                         |
+  | (TLS server_hello,(TLS change_cipher_spec, TLS finished)|
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  |                                                         |
+  |             EAP-Response/EAP-Type=TEAP, V=1             |
+  |             (TLS change_cipher_spec,                    |
+  |             TLS finished)                               |
+  |             TLS channel established                     |
+  |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
+  |                                                         |
+  |                    Request Action TLV                   |
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  |                                                         |
+  |                      Bad PKCS10 TLV                     |
+  |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
+  |                                                         |
+  |        Intermediate-Result TLV request(Failure),        |
+  |        Result TLV(Failure)                              |
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  |                                                         |
+  |        Intermediate-Result TLV response(Failure),       |
+  |        Result TLV(Failure)                              |
+  |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
+  |                                                         |
+  |                       EAP Failure                       |
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+~~~~
+
 --- back

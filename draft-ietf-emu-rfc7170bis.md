@@ -490,7 +490,7 @@ binding) through the use of the Request-Action TLV as defined in
 
 The completion of each inner method is signalled by an
 Intermediate-Result TLV.  Where the Intermediate-Result TLV indicates
-failure, an Error TLV SHOULD also be included.  The
+failure, an Error TLV SHOULD also be included, using the most descriptive error code possible.  The
 Intermediate-Result TLV may be accompanied by another TLV indicating
 that the server wishes to perform a subsequent authentication.  When
 the authentication sequence completes, the server MUST send a Result
@@ -772,7 +772,7 @@ sending a TEAP response with a zero-length message.
 
 Any time the peer or the server finds a fatal error outside of the
 TLS layer during Phase 2 TLV processing, it MUST send a Result TLV of
-failure and an Error TLV with the appropriate error code.  For errors
+failure and an Error TLV using the most descriptive error code possible.  For errors
 involving the processing of the sequence of exchanges, such as a
 violation of TLV rules (e.g., multiple EAP-Payload TLVs), the error
 code is Unexpected TLVs Exchanged.  For errors involving a tunnel
@@ -786,8 +786,8 @@ For the inner method, retransmission is not needed and SHOULD NOT be
 attempted, as the Outer TLS tunnel can be considered a reliable
 transport.  If there is a non-fatal error while running the inner
 method, the receiving side SHOULD NOT silently drop the inner method
-exchange.  Instead, it SHOULD reply with an Error TLV containing the
-value Inner Method Error.  This response is a positive indication that
+exchange.  Instead, it SHOULD reply with an Error TLV containing using the most descriptive error code possible.
+If there is no error code which matches the particular issue, then the value Inner Method Error (1001) SHOULD be used. This response is a positive indication that
 there was an error processing the current inner method.  The side
 receiving a non-fatal Error TLV MAY decide to start a new inner method
 instead or to send back a Result TLV to terminate the TEAP
@@ -859,7 +859,7 @@ performing the Simple PKI Request/Response from {{RFC5272}} using
 PKCS#10 and PKCS#7 TLVs, respectively.  A peer sends the Simple PKI
 Request using a PKCS#10 CertificateRequest {{RFC2986}} encoded into the
 body of a PKCS#10 TLV (see [](#pkcs10-tlv)).  The TEAP server issues a
-Simple PKI Response using a PKCS#7 {{RFC2315}} degenerate "Certificates
+Simple PKI Response using a PKCS#7 {{RFC2315}} degenerate (i.e. unsigned) "Certificates
 Only" message encoded into the body of a PKCS#7 TLV (see
 [](#pkcs7-tlv)), only after an authentication method has run and
 provided an identity proof on the peer prior to a certificate is
@@ -900,6 +900,54 @@ The Simple PKI Request/Response generation and processing rules of
 conditions.  In the event of an error, the TEAP server SHOULD respond
 with an Error TLV using the most descriptive error code possible; it
 MAY ignore the PKCS#10 request that generated the error.
+
+### Certificate Content and Uses
+
+It is not enough to verify that the CSR provided by the peer to the
+authenticator is from an authenticated user.  The CSR itself should
+also be examined by the authenticator or Certification Authority (CA)
+before any certificate is issued.
+
+The format of a CSR is complex, and contain a substantial amount of
+information.  That information could be incorrect, such as a user
+claiming a wrong physical address, email address, etc.  Alternatively,
+the supplied information could contain private data which should not
+be sent over a TLS 1.2 connection where that data would be exposed.
+
+It is RECOMMENDED that systems provisioning these certificates
+validate that the CSR both contains the expected data, and also that
+is does not contain unexpected data.  For example, a CA could refuse
+to issue the certificate if the CSR contained unknown fields, or a
+known field contained an unexpected value.
+
+We note that there is no requirement for a CA to sign any and all CSRs
+which are presented to it.  The CA can refuse a particular CSR for any
+reasons, including local site policy.
+
+Once an EAP peer receives the signed certificate, that certificate
+could potentially be used for in TLS contexts other than TEAP.  For
+example, the certificate could be used with EAP-TLS, or even with
+HTTPS.
+
+It is NOT RECOMMENDED to use certificates provisioned via TEAP with
+any other protocol which uses TLS.  One method of enforcing this
+restriction is to have different CAs (or different intermediate CAs)
+which issue certificates for different uses.  For example, TLS-based
+EAP methods could share one CA, and HTTPS servers could use a
+different CA.  The different protocols could therefore be configured
+to validate client certificates only from their perferred CA.
+
+Another method of limiting the uses of a certificate is to provision
+it with an appropriate value for the Extended Key Usage field
+{{?RFC7299}}.  For example, the id-kp-eapOverLAN {{?RFC4334}} value
+could be used to indicate that this certificate is intended for use
+only with EAP.
+
+It is difficult to give more detailed recommendations than the above.
+Each CA or organization may have its own local policy as to what is
+permitted or forbidden in a certificate.  All we can do in this
+document is to highlight the issues, and make the reader aware that
+they have to be addressed.
 
 ### Server Unauthenticated Provisioning Mode {#unauth-provisioning}
 
@@ -1542,6 +1590,8 @@ Error-Code
 >> 1030  Inner method's channel binding failed
 >>
 >> 1031  User account credentials incorrect \[USAGE NOT RECOMMENDED]
+>>
+>> 1032  Inner method not supported
 >>
 >> 2001  Tunnel Compromise Error
 >>
@@ -2746,10 +2796,13 @@ This section provides guidance to the Internet Assigned Numbers
 Authority (IANA) regarding registration of values related to the TEAP
 protocol, in accordance with BCP 26 {{RFC5226}}.
 
-## Tunnel Extensible Authentication Protocol (TEAP) Parameters
+Except as noted below, IANA is instructed to update the "Tunnel
+Extensible Authentication Protocol (TEAP) Parameters" registry to
+change the Reference field in all tables from {{RFC7170}} to \[THIS-DOCUMENT].
 
-IANA is instructed to update the references in the "Tunnel Extensible
-Authentication Protocol (TEAP) Parameters" registry as follows.
+## TEAP TLV Types
+
+IANA is instructed to update the references in the "TEAP TLV Types" registry as follows.
 
 ~~~~
 Value,Description,Reference
@@ -2782,6 +2835,15 @@ Codes" registries with a NOTE:
 
 ~~~~
 This registry was deprecated by [THIS-DOCUMENT]
+~~~~
+
+## TEAP Error TLV (value 5) Error Codes
+
+IANA is instructed to update the "TEAP Error TLV (value 5) Error Codes" registry to add the following entry:
+
+~~~~
+Value,Description,Reference
+1032,Inner method not supported,[THIS-DOCUMENT]
 ~~~~
 
 ## TLS Exporter Labels
@@ -2973,9 +3035,14 @@ When a client certificate is sent outside of the TLS tunnel, the peer MUST
 include Identity-Type as an outer TLV, in order to signal the type of
 identity which that client certificate is for.  Further, when a client
 certificate is sent outside of the TLS tunnel, the server MUST proceed
-with phase 2, either for authentication or provisioning.  If there is
+with Phase 2.  If there is
 no Phase 2 data, then the EAP server MUST reject the session.  There
 is no reason to have TEAP devolve to EAP-TLS.
+
+Note that the Phase 2 data could simply be a Result TLV with value
+Success, along with a Crypto-Binding TLV and Intermediate-Result TLV.
+This Phase 2 data serves as a protected success indication as
+discussed in {{RFC9190}} Section 2.1.1
 
 ## Dictionary Attack Resistance
 
@@ -4302,21 +4369,21 @@ will appear as follows:
 |Peer|                                                  |AuthSrv|
 `-+--'                                                  `---+---'
   |                  EAP-Request / Identity                 |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   |                                                         |
   |             EAP-Response / Identity (MYID1)             |
   |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
   |                                                         |
   |          EAP-Request/EAP-Type=TEAP, V=1                 |
   |          (TEAP Start, S bit set, Authority-ID)          |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   |                                                         |
   |    EAP-Response/EAP-Type=TEAP, V=1(TLS client_hello)    |
   |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
   |                                                         |
   | EAP-Request/ EAP-Type=TEAP, V=1                         |
   | (TLS server_hello,(TLS change_cipher_spec, TLS finished)|
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   |                                                         |
   |             EAP-Response/EAP-Type=TEAP, V=1             |
   |             (TLS change_cipher_spec,                    |
@@ -4325,21 +4392,74 @@ will appear as follows:
   |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
   |                                                         |
   |                    Request Action TLV                   |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   |                                                         |
   |                      Bad PKCS10 TLV                     |
   |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
   |                                                         |
   |        Intermediate-Result TLV request(Failure),        |
   |        Result TLV(Failure)                              |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   |                                                         |
   |        Intermediate-Result TLV response(Failure),       |
   |        Result TLV(Failure)                              |
   |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
   |                                                         |
   |                       EAP Failure                       |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ~~~~
+
+## C.13.
+{:numbered="false"}
+
+The following exchanges shows a scenario where the client certificate
+is sent in Phase 1, and no additional authentication or provisioning
+is performed in Phase 2. The conversation will appear as follows:
+
+~~~~
+,----.                                    ,-------.
+|Peer|                                    |AuthSrv|
+`-+--'                                    `---+---'
+  |           EAP-Request / Identity          |
+  | <- - - - - - - - - - - - - - - - - - - - - 
+  |                                           |
+  |      EAP-Response / Identity (MYID1)      |
+  |  - - - - - - - - - - - - - - - - - - - - ->
+  |                                           |
+  |         EAP-Request/EAP-Type=TEAP,        |
+  |          V=1(TEAP Start,                  |
+  |          S bit set,                       |
+  |          Authority-ID)                    |
+  | <- - - - - - - - - - - - - - - - - - - - - 
+  |                                           |
+  |        EAP-Response/EAP-Type=TEAP,        |
+  |         V=1(TLS client_hello)             |
+  |  - - - - - - - - - - - - - - - - - - - - ->
+  |                                           |
+  |        EAP-Request/ EAP-Type=TEAP,        |
+  |         V=1(TLS server_hello,             |
+  |        (TLS change_cipher_spec,           |
+  |         TLS finished)                     |
+  | <- - - - - - - - - - - - - - - - - - - - - 
+  |                                           |
+  |   EAP-Response/EAP-Type=TEAP,             |
+  |    V=1(TLS change_cipher_spec,            |
+  |   TLS finished) TLS channel established   |
+  |  - - - - - - - - - - - - - - - - - - - - ->
+  |                                           |
+  |       Intermediate-Result                 |
+  |       TLV request(Success),               |
+  |        Crypto-Binding TLV(Request),       |
+  |        Result TLV(Success)                |
+  | <- - - - - - - - - - - - - - - - - - - - - 
+  |                                           |
+  | Intermediate-Result TLV response(Success),|
+  |  Crypto-Binding TLV(Response),            |
+  |  Result TLV(Success)                      |
+  |  - - - - - - - - - - - - - - - - - - - - ->
+  |                                           |
+  |                EAP Success                |
+  | <- - - - - - - - - - - - - - - - - - - - - 
+
 
 --- back

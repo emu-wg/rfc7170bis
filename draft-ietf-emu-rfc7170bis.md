@@ -1,7 +1,7 @@
 ---
 title: Tunnel Extensible Authentication Protocol (TEAP) Version 1
 abbrev: TEAP
-docname: draft-ietf-emu-rfc7170bis-latest
+docname: draft-ietf-emu-rfc7170bis-08
 
 stand_alone: true
 ipr: trust200902
@@ -197,7 +197,8 @@ follow the recommendations of {{I-D.ietf-emu-tls-eap-types}} Section
 EAP-FAST {{RFC4851}}.  However, implementation experience and analysis
 determined that the PAC was not necessary.  Instead, TEAP performs
 session resumption using the NewSessionTicket message as defined in
-{{RFC9190}} Section 2.1.2 and Section 2.1.3.
+{{RFC9190}} Section 2.1.2 and Section 2.1.3.  As such, the PAC has
+been removed from this document.
 
 The TEAP conversation is used to establish or resume an existing
 session to typically establish network connectivity between a peer
@@ -414,28 +415,44 @@ allows support for protection of the peer's identity when using TLS
 client authentication.  An example of the exchanges using TLS
 renegotiation to protect privacy is shown in Appendix C.
 
-The following sections describe resuming a TLS session based on
-server-side or client-side state.
+## Resumption
+
+For resumption, {{RFC9190}} Section 5.7 discusses EAP-TLS resumption
+for all versions of TLS, and is incorporated herein by reference.
+{{RFC9427}} Section 4 is also incorporated by reference, as it
+provides generic discussion of resumption for TLS-based EAP methods
+when TLS 1.3 is used.
+
+This document only describes TEAP issues when resumption is used for
+TLS versions of 1.2 and earlier.  It also describes resumption issues
+which are specific to TEAP for TLS 1.3.
+
+If the server agrees to resume the session, Phase 2 is bypassed
+entirely.  If the server does not agree to resume the session, then
+the server rejects the resumption, and continues with a full
+handshake.  After the full TLS handshake has completed, both EAP
+server and peer MUST proceed with Phase 2.
+
+The following sections describe how a TEAP session can be resumed
+based on server-side or client-side state.
 
 ### TLS Session Resume Using Server State {#resume-server-state}
 
 TEAP session resumption is achieved in the same manner TLS achieves
-session resume.  To support session resumption, the server and peer
-minimally cache the Session ID, master secret, and ciphersuite.  The
+session resumption.  To support session resumption, the server and peer
+cache the Session ID, master secret, and ciphersuite.  The
 peer attempts to resume a session by including a valid Session ID
 from a previous TLS handshake in its ClientHello message.  If the
 server finds a match for the Session ID and is willing to establish a
 new connection using the specified session state, the server will
 respond with the same Session ID and proceed with the TEAP Phase 1
-tunnel establishment based on a TLS abbreviated handshake.  After a
-successful conclusion of the TEAP Phase 1 conversation, the
-conversation then continues on to Phase 2.
+tunnel establishment based on a TLS abbreviated handshake.
 
-### TLS Session Resumption
+### TLS Session Resumption Using Client State
 
-TEAP supports the resumption of sessions based on server state being
-stored on the client side using the TLS SessionTicket extension
-techniques described in {{RFC5077}} and {{RFC9190}}.
+TEAP supports the resumption of sessions based on state being stored
+on the client side using the TLS SessionTicket extension techniques
+described in {{RFC5077}} and {{RFC9190}}.
 
 ## TEAP Authentication Phase 2: Tunneled Authentication
 
@@ -4460,6 +4477,6 @@ is performed in Phase 2. The conversation will appear as follows:
   |                                           |
   |                EAP Success                |
   | <- - - - - - - - - - - - - - - - - - - - - 
-
+~~~~
 
 --- back

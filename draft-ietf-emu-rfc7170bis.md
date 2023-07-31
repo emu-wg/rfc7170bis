@@ -452,7 +452,7 @@ exchange described in [](#protected-termination).
 
 The TLV exchange includes the execution of zero or more inner
 methods within the protected tunnel as described in [](#inner-eap)
-and [](inner-password).  A server MAY proceed directly to the
+and [](#inner-password).  A server MAY proceed directly to the
 protected termination exchange, without performing any inner
 authentication if it does not wish to request further authentication
 from the peer.  A server MAY request one or more authentications

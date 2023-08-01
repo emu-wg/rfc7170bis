@@ -349,7 +349,7 @@ or Result TLV is examined.  If the Crypto-Binding TLV fails to be
 validated for any reason, then it is a fatal error and is handled as
 described in [](#phase-2-errors).
 
-## TEAP Authentication Phase 1: Tunnel Establishment
+## TEAP Authentication Phase 1: Tunnel Establishment {#phase1}
 
 TEAP relies on the TLS handshake {{RFC8446}} to establish an
 authenticated and protected tunnel.  The TLS version offered by the
@@ -2541,7 +2541,7 @@ version and ciphersuite in use for a particular session.  The
 implementation can then use this information to determine which PRF
 and MAC algorithm to use.
 
-## TEAP Authentication Phase 1: Key Derivations {#phase1}
+## TEAP Authentication Phase 1: Key Derivations {#key-derivations}
 
 With TEAPv1, the TLS master secret is generated as specified in TLS.
 If session resumption is used, then the master secret is obtained as described in

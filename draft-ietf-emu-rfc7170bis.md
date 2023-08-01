@@ -573,7 +573,7 @@ If it does not wish to perform password authentication, then it
 responds with a NAK TLV indicating the rejection of the Basic-Password-Auth-Req TLV.
 
 Multiple round trips of password authentication requests and responses
-MAY be used to support some "housecleaning" functions such as a
+MAY be used to support some "housekeeping" functions such as a
 password or pin change before a user is considered to be
 authenticated.  Multiple rounds MAY also be used to communicate a
 users password, and separately a one-time password.

@@ -1,7 +1,7 @@
 ---
 title: Tunnel Extensible Authentication Protocol (TEAP) Version 1
 abbrev: TEAP
-docname: draft-ietf-emu-rfc7170bis-08
+docname: draft-ietf-emu-rfc7170bis-latest
 
 stand_alone: true
 ipr: trust200902
@@ -273,22 +273,31 @@ The TLV layer is a payload with TLV objects as defined in
 between an EAP peer and an EAP server.  All conversations in the TEAP
 protected tunnel are encapsulated in a TLV layer.
 
-TEAP packets may include TLVs both inside and outside the TLS tunnel.
-The term "Outer TLVs" is used to refer to optional TLVs outside the
-TLS tunnel, which are only allowed in the first two messages in the
-TEAP protocol.  That is the first EAP-server-to-peer message and
-first peer-to-EAP-server message.  If the message is fragmented, the
-whole set of messages is counted as one message.  The term "Inner
-TLVs" is used to refer to TLVs sent within the TLS tunnel.  In TEAP
-Phase 1, Outer TLVs are used to help establish the TLS tunnel, but no
-Inner TLVs are used.  In Phase 2 of the TEAP conversation, TLS
-records may encapsulate zero or more Inner TLVs, but no Outer TLVs.
-
 Methods for encapsulating EAP within carrier protocols are already
 defined.  For example, IEEE 802.1X [IEEE.802-1X.2013] may be used to
 transport EAP between the peer and the authenticator; RADIUS
 {{RFC3579}} or Diameter {{RFC4072}} may be used to transport EAP between
 the authenticator and the EAP server.
+
+## Outer TLVs versus inner TLVs
+
+TEAP packets may include TLVs both inside and outside the TLS tunnel
+defined as follows:
+
+Outer TLVs
+
+> This term is used to refer to optional TLVs outside the
+TLS tunnel, which are only allowed in the first two messages in the
+TEAP protocol.  That is the first EAP-server-to-peer message and
+first peer-to-EAP-server message.  If the message is fragmented, the
+whole set of fragments is counted as one message.
+
+Inner TLVs
+
+> This term is used to refer to TLVs sent within the TLS tunnel.  In TEAP
+Phase 1, Outer TLVs are used to help establish the TLS tunnel, but no
+Inner TLVs are used.  In Phase 2 of the TEAP conversation, TLS
+records may encapsulate zero or more Inner TLVs, but no Outer TLVs.
 
 # TEAP Protocol
 
@@ -429,14 +438,14 @@ which are specific to TEAP for TLS 1.3.
 
 If the server agrees to resume the session, Phase 2 is bypassed
 entirely.  If the server does not agree to resume the session, then
-the server rejects the resumption, and continues with a full
-handshake.  After the full TLS handshake has completed, both EAP
-server and peer MUST proceed with Phase 2.
+the server rejects the resumption as per {{RFC9190}} Section 5.7.  It
+then continues with a full handshake.  After the full TLS handshake
+has completed, both EAP server and peer MUST proceed with Phase 2.
 
 The following sections describe how a TEAP session can be resumed
 based on server-side or client-side state.
 
-### TLS Session Resume Using Server State {#resume-server-state}
+### TLS Session Resumption Using Server State {#resume-server-state}
 
 TEAP session resumption is achieved in the same manner TLS achieves
 session resumption.  To support session resumption, the server and peer
@@ -868,6 +877,31 @@ The server MUST also authenticate the peer before providing these
 services.  The alternative is to send provisioning data to
 unauthenticated and potentially malicious peers, which can have
 negative impacts on security.
+
+When a device is provisioned via TEAP, any subsequent authorization
+MUST be done on the authenticated credentials.  That is, there may be
+no credentials (or anonymous credentials) passed in Phase 1, but there
+will be credentials passed or provisioned in Phase 2.  If later
+authorizations are done on the Phase 1 identity, then a device could
+obtain the wrong authorization.  If instead authorization is done on
+the authenticated credentials, then the device will obtain the correct
+kind of network access.
+
+The correct authorization must also be applied to any resumption, as
+noted in {{RFC9190}} Section 5.7.  However, as it is possible in TEAP
+for the credentials to change, the new credentials MUST be associated
+with the session ticket.  If this association cannot be done, then the
+server MUST invalidate any session tickets for the current session.
+This invalidation will force a full re-authentication on any
+subsequent connection, at which point the correct authorization will
+be associated with any session ticket.
+
+Note that the act of re-provisioning a device is essentially
+indistinguishable from any initial provisioning.  The device
+authentications, and obtains new credentials via the standard
+provisioning mechanisms.  The only caveat is that the device SHOULD
+NOT discard the old credentials unless either they are known to have
+expired, or the new credentials have been verified to work.
 
 ### Certificate Provisioning within the Tunnel {#cert-provisioning}
 
@@ -3053,8 +3087,7 @@ include Identity-Type as an outer TLV, in order to signal the type of
 identity which that client certificate is for.  Further, when a client
 certificate is sent outside of the TLS tunnel, the server MUST proceed
 with Phase 2.  If there is
-no Phase 2 data, then the EAP server MUST reject the session.  There
-is no reason to have TEAP devolve to EAP-TLS.
+no Phase 2 data, then the EAP server MUST reject the session.
 
 Note that the Phase 2 data could simply be a Result TLV with value
 Success, along with a Crypto-Binding TLV and Intermediate-Result TLV.

@@ -279,7 +279,7 @@ transport EAP between the peer and the authenticator; RADIUS
 {{RFC3579}} or Diameter {{RFC4072}} may be used to transport EAP between
 the authenticator and the EAP server.
 
-## Outer TLVs versus inner TLVs
+## Outer TLVs versus Inner TLVs
 
 TEAP packets may include TLVs both inside and outside the TLS tunnel
 defined as follows:
@@ -297,7 +297,7 @@ Inner TLVs
 > This term is used to refer to TLVs sent within the TLS tunnel.  In TEAP
 Phase 1, Outer TLVs are used to help establish the TLS tunnel, but no
 Inner TLVs are used.  In Phase 2 of the TEAP conversation, TLS
-records may encapsulate zero or more Inner TLVs, but no Outer TLVs.
+records may encapsulate zero or more Inner TLVs, but no Outer TLVs are used.
 
 # TEAP Protocol
 

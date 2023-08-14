@@ -358,7 +358,7 @@ or Result TLV is examined.  If the Crypto-Binding TLV fails to be
 validated for any reason, then it is a fatal error and is handled as
 described in [](#phase-2-errors).
 
-## TEAP Authentication Phase 1: Tunnel Establishment
+## TEAP Authentication Phase 1: Tunnel Establishment {#phase1}
 
 TEAP relies on the TLS handshake {{RFC8446}} to establish an
 authenticated and protected tunnel.  The TLS version offered by the
@@ -366,8 +366,8 @@ peer and server MUST be TLS version 1.2 {{RFC5246}} or later.  This
 version of the TEAP implementation MUST support the following TLS
 ciphersuites:
 
-> TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-> TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+* TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+* TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
 
 Other ciphersuites MAY be supported.  It is REQUIRED that anonymous
 ciphersuites such as TLS_DH_anon_WITH_AES_128_CBC_SHA {{RFC5246}} only
@@ -582,7 +582,7 @@ If it does not wish to perform password authentication, then it
 responds with a NAK TLV indicating the rejection of the Basic-Password-Auth-Req TLV.
 
 Multiple round trips of password authentication requests and responses
-MAY be used to support some "housecleaning" functions such as a
+MAY be used to support some "housekeeping" functions such as a
 password or pin change before a user is considered to be
 authenticated.  Multiple rounds MAY also be used to communicate a
 users password, and separately a one-time password.
@@ -1213,27 +1213,17 @@ TLV exchanges as well as the processing of mandatory/optional
 settings on the TLV.  Implementations conforming to this
 specification MUST support the following TLVs:
 
-> Authority-ID TLV
->
-> Identity-Type TLV
->
-> Result TLV
->
-> NAK TLV
->
-> Error TLV
->
-> Request-Action TLV
->
-> EAP-Payload TLV
->
-> Intermediate-Result TLV
->
-> Crypto-Binding TLV
->
-> Basic-Password-Auth-Req TLV
->
-> Basic-Password-Auth-Resp TLV
+* Authority-ID TLV
+* Identity-Type TLV
+* Result TLV
+* NAK TLV
+* Error TLV
+* Request-Action TLV
+* EAP-Payload TLV
+* Intermediate-Result TLV
+* Crypto-Binding TLV
+* Basic-Password-Auth-Req TLV
+* Basic-Password-Auth-Resp TLV
 
 ### General TLV Format
 
@@ -1980,14 +1970,11 @@ to [](#computing-compound-mac).
 
 The Crypto-Binding TLV is valid only if the following checks pass:
 
-o  The Crypto-Binding TLV version is supported.
-
-o  The MAC verifies correctly.
-
-o  The received version in the Crypto-Binding TLV matches the version
+* The Crypto-Binding TLV version is supported.
+* The MAC verifies correctly.
+* The received version in the Crypto-Binding TLV matches the version
    sent by the receiver during the EAP version negotiation.
-
-o  The subtype is set to the correct value.
+* The subtype is set to the correct value.
 
 If any of the above checks fails, then the TLV is invalid.  An
 invalid Crypto-Binding TLV is a fatal error and is handled as
@@ -2575,7 +2562,7 @@ version and ciphersuite in use for a particular session.  The
 implementation can then use this information to determine which PRF
 and MAC algorithm to use.
 
-## TEAP Authentication Phase 1: Key Derivations {#phase1}
+## TEAP Authentication Phase 1: Key Derivations {#key-derivations}
 
 With TEAPv1, the TLS master secret is generated as specified in TLS.
 If session resumption is used, then the master secret is obtained as described in
@@ -2968,13 +2955,10 @@ vulnerabilities if there is not a proper trust relationship and
 protection for the protocol between the two servers.  Some
 vulnerabilities include:
 
-o  Loss of identity protection
-
-o  Offline dictionary attacks
-
-o  Lack of policy enforcement
-
-o  Man-in-the-middle attacks (as described in {{RFC7029}})
+* Loss of identity protection
+* Offline dictionary attacks
+* Lack of policy enforcement
+* Man-in-the-middle attacks (as described in {{RFC7029}})
 
 There may be cases where a trust relationship exists between the
 Phase 1 and Phase 2 servers, such as on a campus or between two
@@ -3002,27 +2986,17 @@ TEAP addresses the known deficiencies and weaknesses in some EAP
 authentication methods.  By employing a shared secret between the peer and server to
 establish a secured tunnel, TEAP enables:
 
-o  Per-packet confidentiality and integrity protection
-
-o  User identity protection
-
-o  Better support for notification messages
-
-o  Protected inner method negotiation, including EAP method
-
-o  Sequencing of inner methods, including EAP methods
-
-o  Strong mutually derived MSKs
-
-o  Acknowledged success/failure indication
-
-o  Faster re-authentications through session resumption
-
-o  Mitigation of offline dictionary attacks
-
-o  Mitigation of man-in-the-middle attacks
-
-o  Mitigation of some denial-of-service attacks
+* Per-packet confidentiality and integrity protection
+* User identity protection
+* Better support for notification messages
+* Protected inner method negotiation, including EAP method
+* Sequencing of inner methods, including EAP methods
+* Strong mutually derived MSKs
+* Acknowledged success/failure indication
+* Faster re-authentications through session resumption
+* Mitigation of offline dictionary attacks
+* Mitigation of man-in-the-middle attacks
+* Mitigation of some denial-of-service attacks
 
 It should be noted that in TEAP, as in many other authentication
 protocols, a denial-of-service attack can be mounted by adversaries

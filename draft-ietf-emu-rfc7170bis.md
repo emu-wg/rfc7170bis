@@ -1,7 +1,7 @@
 ---
 title: Tunnel Extensible Authentication Protocol (TEAP) Version 1
 abbrev: TEAP
-docname: draft-ietf-emu-rfc7170bis-latest
+docname: draft-ietf-emu-rfc7170bis-11
 
 stand_alone: true
 ipr: trust200902
@@ -10,6 +10,7 @@ wg: EMU working group
 kw: Internet-Draft
 cat: std
 submissionType: IETF
+obsoletes: 7170
 
 pi:    # can use array (if all yes) or hash here
   toc: yes
@@ -24,10 +25,11 @@ author:
 
 normative:
   BCP14: RFC8174
+  RFC2985:
+  RFC2986:
   RFC3748:
   RFC5077:
   RFC5216:
-  RFC5226:
   RFC5246:
   RFC5295:
   RFC5705:
@@ -35,11 +37,9 @@ normative:
   RFC5929:
   RFC6677:
   RFC7030:
-  RFC7170:
   RFC8446:
   RFC9190:
   RFC9427:
-  I-D.ietf-emu-tls-eap-types:
   I-D.ietf-lamps-rfc7030-csrattrs:
 
 informative:
@@ -70,8 +70,6 @@ informative:
     author:
       name: Microsoft Corporation
   RFC2315:
-  RFC2985:
-  RFC2986:
   RFC3579:
   RFC3629:
   RFC3766:
@@ -82,6 +80,7 @@ informative:
   RFC4851:
   RFC4945:
   RFC4962:
+  RFC5226:
   RFC5247:
   RFC5272:
   RFC5280:
@@ -96,6 +95,7 @@ informative:
   RFC6960:
   RFC6961:
   RFC7029:
+  RFC7170:
   RFC7542:
   X.690:
     title: "SN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
@@ -136,11 +136,8 @@ informational, and the industry calls for a Standards Track tunnel-
 based EAP method.  {{RFC6678}} outlines the list of requirements for a
 standard tunnel-based EAP method.
 
-Since its introduction, EAP-FAST {{RFC4851}} has been widely adopted in
-a variety of devices and platforms.  It has been adopted by the EMU
-working group as the basis for the standard tunnel-based EAP method.
 This document describes the Tunnel Extensible Authentication Protocol
-(TEAP) version 1, based on EAP-FAST {{RFC4851}} with some minor changes
+(TEAP) version 1, which is based on EAP-FAST {{RFC4851}}.  The changes from EAP-FAST to TEAP are largely minor, in order
 to meet the requirements outlined in {{RFC6678}} for a standard tunnel-
 based EAP method.
 
@@ -187,10 +184,10 @@ the inner authentication, results, and other information, such as
 channel-binding information.
 
 As discussed in {{RFC9190}} Section 2.1.7 and
-{{I-D.ietf-emu-tls-eap-types}} Section 3.1, the outer EAP Identity
+{{RFC9427}} Section 3.1, the outer EAP Identity
 SHOULD be an anonymous NAI Network Access Identifier (NAI)
 {{RFC7542}}.  Any inner identities (EAP or otherwise) SHOULD also
-follow the recommendations of {{I-D.ietf-emu-tls-eap-types}} Section
+follow the recommendations of {{RFC9427}} Section
 3.1.
 
 {{RFC7170}} defined a Protected Access Credential (PAC) to mirror
@@ -203,7 +200,7 @@ been removed from this document.
 The TEAP conversation is used to establish or resume an existing
 session to typically establish network connectivity between a peer
 and the network.  Upon successful execution of TEAP, the EAP peer and
-EAP server both derive strong session key material that can then be
+EAP server both derive strong session key material (Master Session Key {{RFC3748}}) that can then be
 communicated to the network access server (NAS) for use in
 establishing a link-layer security association.
 
@@ -346,7 +343,7 @@ and another mutually acceptable EAP method will need to be negotiated
 if authentication is to proceed.
 
 The TEAP version is not protected by TLS and hence can be modified in
-transit.  In order to detect a modification of the TEAP version, the
+transit.  In order to detect a bid-down attack on the TEAP version, the
 peers MUST exchange the TEAP version number received during version
 negotiation using the Crypto-Binding TLV described in [](#crypto-binding-tlv).
 The receiver of the Crypto-Binding TLV MUST verify that the version
@@ -442,6 +439,16 @@ the server rejects the resumption as per {{RFC9190}} Section 5.7.  It
 then continues with a full handshake.  After the full TLS handshake
 has completed, both EAP server and peer MUST proceed with Phase 2.
 
+All TEAP implementations SHOULD support resumption.  Using resumption
+can significanly improve the scalability and stability of
+authentication systems.
+
+In contrast, TEAP implementations SHOULD NOT perform resumption for
+inner methods.  If the user or machine needs to be authenticated, it
+should use a full authentication method.  If the user or machine needs
+to do resumption, it can perform a full authentication once, and then
+rely on the outer TLS session for resumption.
+
 The following sections describe how a TEAP session can be resumed
 based on server-side or client-side state.
 
@@ -475,6 +482,16 @@ requests and responses encapsulated in TLV objects defined in
 [](#teap-tlv-format).  Phase 2 MUST always end with a Crypto-Binding TLV
 exchange described in [](#crypto-binding-tlv) and a protected termination
 exchange described in [](#protected-termination).
+
+If the peer is not authenticated in Phase 1, the TEAP peer SHOULD send
+one or more Identity-Hint TLVs ([](#identity-hint-tlv) as soon as the
+TLS connection has been established.  This information lets the TEAP
+server choose an authentication type which is appropriate for that
+identity.  When the TEAP peer does not provide an Identity-Hint TLV,
+the TEAP server does not know which inner method is supported by the
+peer.  It must necessarily choose an inner method, and propose it to
+the peer, which may reject that inner method.  The result will be that
+the peer fails to authenticate, and fails to obtain network access.
 
 The TLV exchange includes the execution of zero or more inner
 methods within the protected tunnel as described in [](#inner-eap)
@@ -565,8 +582,8 @@ always imply a failure of the overall authentication.  If one
 authentication method fails, the server may attempt to authenticate
 the peer with a different method (EAP or password).
 
-If a particular authentication method succeeds, the server SHOULD NOT
-attempt a subsequent authentication method.  For example, if a user is
+If a particular authentication method succeeds, the server MUST NOT
+attempt a subsequent authentication method for the same Identity-Type.  For example, if a user is
 authenticated via an inner method of EAP-TLS, there is no benefit to
 also requesting additional authentication via a different EAP method,
 or via a password.
@@ -581,11 +598,13 @@ as defined in Section 4.2.15 that contains the username and password.
 If it does not wish to perform password authentication, then it
 responds with a NAK TLV indicating the rejection of the Basic-Password-Auth-Req TLV.
 
+The basic password authenticaton defined here is similar in functionality to that used by {{RFC5281}} with inner password authentication.  
+
 Multiple round trips of password authentication requests and responses
 MAY be used to support some "housekeeping" functions such as a
 password or pin change before a user is considered to be
 authenticated.  Multiple rounds MAY also be used to communicate a
-users password, and separately a one-time password.
+users password, and separately a one-time password such as TOTP {{?RFC6238}}.
 
 The first Basic-Password-Auth-Req TLV received in a session MUST
 include a prompt, which the peer displays to the user.  Subsequent
@@ -718,7 +737,7 @@ the server certificate define the Server-Id.
 
 ## TEAP Session Identifier
 
-The EAP session identifier {{RFC5247}} is constructed using the tls-unique
+For TLS 1.2 and earlier, the EAP session identifier {{RFC5247}} is constructed using the tls-unique
 from the Phase 1 outer tunnel at the beginning of Phase 2 as
 defined by Section 3.1 of {{RFC5929}}.  The Session-Id is defined as
 follows:
@@ -731,6 +750,8 @@ follows:
 >
 > tls-unique = tls-unique from the Phase 1 outer tunnel at the
 > beginning of Phase 2 as defined by Section 3.1 of {{RFC5929}}
+
+The Session-Id derivation for TLS 1.3 is given in {{RFC9427}} Section 2.1
 
 ## Error Handling
 
@@ -771,7 +792,7 @@ or the TLS layer, the server SHOULD send a TEAP request encapsulating
 a TLS record containing the appropriate TLS alert message rather than
 immediately terminating the conversation so as to allow the peer to
 inform the user of the cause of the failure and possibly allow for a
-restart of the conversation.  The peer MUST send a TEAP response to
+restart of the conversation.  The TEAP peer MUST send a TEAP response to
 an alert message.  The EAP-Response packet sent by the peer may
 encapsulate a TLS ClientHello handshake message, in which case the
 TEAP server MAY allow the TEAP conversation to be restarted, or it
@@ -852,7 +873,7 @@ discussed in [](#crypto-binding-tlv).  This issue is further described in
 
 TEAP peers MUST track whether or not server authentication has taken
 place. When the server cannot be authenticated, the peer MUST NOT
-request any services from it.
+request any services such as certificate provisioning ({#cert-provisioning}) from it.
 
 Peer implementations MUST be configurated so that by default, the
 current authentication session fails if the server cannot be
@@ -2178,7 +2199,7 @@ Username
 > Username in UTF-8 {{RFC3629}} format
 >
 > The content of Username SHOULD follow the guidelines set in
-> {{I-D.ietf-emu-tls-eap-types}} Section 3.1.
+> {{RFC9427}} Section 3.1.
 
 Passlen
 
@@ -2413,7 +2434,7 @@ Length
 
 > \>=2 octets
 
-### Identity-Hint TLV
+### Identity-Hint TLV  {#identity-hint-tlv}
 
 The Identity-Hint TLV is an optional TLV which can sent by the peer to the server at the beginning of the Phase 2 TEAP conversation.  The purpose of the TLV is to provide a "hint" as to the identity or identies which the peer will be using during subsequent Phase 2 authentications.
 
@@ -2932,7 +2953,7 @@ As is true for any negotiated EAP protocol, NAK packets used to
 suggest an alternate EAP authentication method are sent unprotected and,
 as such, are subject to spoofing.  During unprotected EAP method
 negotiation, NAK packets may be interjected as active attacks to
-negotiate down to a weaker form of authentication, such as EAP-MD5
+bid-down to a weaker form of authentication, such as EAP-MD5
 (which only provides one-way authentication and does not derive a
 key).  Both the peer and server should have a method selection policy
 that prevents them from negotiating down to weaker methods.  Inner
@@ -2958,7 +2979,7 @@ vulnerabilities include:
 * Loss of identity protection
 * Offline dictionary attacks
 * Lack of policy enforcement
-* Man-in-the-middle attacks (as described in {{RFC7029}})
+* on-path active attacks (as described in {{RFC7029}})
 
 There may be cases where a trust relationship exists between the
 Phase 1 and Phase 2 servers, such as on a campus or between two

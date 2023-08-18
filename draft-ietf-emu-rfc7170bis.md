@@ -1,7 +1,7 @@
 ---
 title: Tunnel Extensible Authentication Protocol (TEAP) Version 1
 abbrev: TEAP
-docname: draft-ietf-emu-rfc7170bis-11
+docname: draft-ietf-emu-rfc7170bis-latest
 
 stand_alone: true
 ipr: trust200902
@@ -22,6 +22,15 @@ author:
 - ins: A. DeKok (Ed)
   name: Alan DeKok
   email: aland@freeradius.org
+
+contributor:
+  - name: Han Zhou
+  - name: Joseph Salowey
+    email: joe@salowey.net
+  - name: Nancy Cam-Winget
+    email: ncamwing@cisco.com
+  - name: Steve Hanna
+    email: steve.hanna@infineon.com
 
 normative:
   BCP14: RFC8174
@@ -183,10 +192,16 @@ authorization policies.  TEAP makes use of TLV objects to carry out
 the inner authentication, results, and other information, such as
 channel-binding information.
 
-As discussed in {{RFC9190}} Section 2.1.7 and
-{{RFC9427}} Section 3.1, the outer EAP Identity
-SHOULD be an anonymous NAI Network Access Identifier (NAI)
-{{RFC7542}}.  Any inner identities (EAP or otherwise) SHOULD also
+As discussed in {{RFC9190}} Section 2.1.7 and {{RFC9427}} Section 3.1,
+the outer EAP Identity SHOULD be an anonymous NAI Network Access
+Identifier (NAI) {{RFC7542}}.  While {{RFC3748}} Section 5.1 places no
+limits on the contents of the Identity field, {{RFC7542}} Section 2.6
+states that Identities which do not follow the NAI format cannot be
+transported in an Authentication, Authorization, and Accounting (AAA)
+proxy network.  As such, Identities in non-NAI form are likely to not
+work outside of limited and local networks.
+
+Any inner identities (EAP or otherwise) SHOULD also
 follow the recommendations of {{RFC9427}} Section
 3.1.
 
@@ -439,15 +454,13 @@ the server rejects the resumption as per {{RFC9190}} Section 5.7.  It
 then continues with a full handshake.  After the full TLS handshake
 has completed, both EAP server and peer MUST proceed with Phase 2.
 
-All TEAP implementations SHOULD support resumption.  Using resumption
+All TEAP implementations MUST support resumption.  Using resumption
 can significanly improve the scalability and stability of
-authentication systems.
-
-In contrast, TEAP implementations SHOULD NOT perform resumption for
-inner methods.  If the user or machine needs to be authenticated, it
-should use a full authentication method.  If the user or machine needs
-to do resumption, it can perform a full authentication once, and then
-rely on the outer TLS session for resumption.
+authentication systems.  For example, some environments such as
+universities may have users re-authenticating multiple times a day, if
+not hourly.  Failure to implement resumption would increase the load
+on the user database by orders of magnitude, leading to unnecessary
+cost.
 
 The following sections describe how a TEAP session can be resumed
 based on server-side or client-side state.
@@ -598,13 +611,18 @@ as defined in Section 4.2.15 that contains the username and password.
 If it does not wish to perform password authentication, then it
 responds with a NAK TLV indicating the rejection of the Basic-Password-Auth-Req TLV.
 
-The basic password authenticaton defined here is similar in functionality to that used by {{RFC5281}} with inner password authentication.  
+The basic password authenticaton defined here is similar in functionality to that used by EAP-TTLS ({{RFC5281}}) with inner password authentication.  It shares a similar security and risk analyis.
 
 Multiple round trips of password authentication requests and responses
 MAY be used to support some "housekeeping" functions such as a
 password or pin change before a user is considered to be
 authenticated.  Multiple rounds MAY also be used to communicate a
 users password, and separately a one-time password such as TOTP {{?RFC6238}}.
+
+Implementations MUST limit the number of rounds trips for password
+authentication.  It is reasonable to use one or two round trips.
+Further round trips are likely to be problematic, and SHOULD be
+avoided.
 
 The first Basic-Password-Auth-Req TLV received in a session MUST
 include a prompt, which the peer displays to the user.  Subsequent
@@ -651,6 +669,48 @@ variant defined in Section 3.2.3 of {{RFC5422}} MUST be used, instead of the der
 The difference between EAP-MSCHAPv2 and EAP-FAST-MSCHAPv2 is that the
 first and the second 16 octets of EAP-MSCHAPv2 MSK are swapped when it
 is used as the Inner Method Session Keys (IMSK) for TEAP.
+
+### Limitations on inner methods
+
+Tunneled EAP methods such as (PEAP) [PEAP], EAP-TTLS {{RFC5281}}, and
+EAP- FAST {{RFC4851}} MUST NOT be used for inner EAP authentication.
+There is no reason to have multiple layers of TLS to protect a
+password exchange.
+
+EAP-GTC MUST NOT be used for inner EAP authentication.  It offers no
+benefit over the basic password authentication defined in
+[](#inner-password).
+
+Implementations SHOULD limit the permitted inner EAP methods to a
+small set such as EAP-TLS, EAP-MSCHAPv2, and perhaps EAP-pwd.  There
+are few reasons for allowing all possible EAP methods to be used in
+Phase 2.
+
+Implementations MUST NOT permit resumption for the inner EAP methods
+such as EAP-TLS.  If the user or machine needs to be authenticated, it
+should use a full authentication method.  If the user or machine needs
+to do resumption, it can perform a full authentication once, and then
+rely on the outer TLS session for resumption.
+
+EAP-TLS is permitted in Phase 2 for two use-cases.  The first is when
+TLS 1.2 is used, as the client certificate is not protected as with
+TLS 1.3.  It is therefore RECOMMENDED that when TLS 1.3 is used, the
+client certificate is sent in Phase 1, instead of doing EAP-TLS in
+Phase 2.
+
+The second use-case for EAP-TLS in Phase 2 is where both the user and
+machine use client certificates for authentication.  Since TLS only
+permits one client certificate to be presented, only one certificate
+can be used in Phase 1.  The second certificate is then presented via
+EAP-TLS in Phase 2.
+
+For basic password authentication, it is RECOMMENDED that this method
+be only used for the exchange of one-time passwords.  The existence of
+password-based EAP methods such as EAP-pwd ({{RFC5931}} and
+{{?RFC8146}}) makes most clear-text password exchanges unnecessary.
+The updates to EAP-pwd in {{?RFC814}} permit it to be used with
+databases which store passwords in "salted" form, which greatly
+increases security.
 
 ### Protected Termination and Acknowledged Result Indication {#protected-termination}
 
@@ -3277,28 +3337,9 @@ document are based on his work.
 
 We wish to thank the many reviewers and commenters in the EMU WG,
 including Eliot Lear, Jouni Malinen, Joe Salowey, Heikki Vatiainen,
-and Bruno Pereria Vidal.
-
-# Contributors
-~~~~
-      Hao Zhou
-      (Original Co-author of RFC 7170)
-
-      Joseph Salowey
-      Venafi
-      joe@salowey.net
-      (Original Co-author of RFC 7170)
-
-      Nancy Cam-Winget
-      Cisco
-      email: ncamwing@cisco.com
-      (Original Co-author of RFC 7170)
-
-      Stephen Hanna
-      email: steve.hanna@infineon.com
-      (Original Co-author of RFC 7170)
-~~~~
-
+Bruno Pereria Vidal, and Michael Richardson.  Many corner cases and
+edge conditions were caught and corrected as a result of their
+feedback.
 
 # Changes from RFC 7170
 

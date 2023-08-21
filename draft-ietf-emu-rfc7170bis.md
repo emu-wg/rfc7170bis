@@ -447,30 +447,54 @@ allows support for protection of the peer's identity when using TLS
 client authentication.  An example of the exchanges using TLS
 renegotiation to protect privacy is shown in Appendix C.
 
+## Server Certificate Requirements
+
+Server Certificates MAY be constructed with a SubjectDN containing a single element, "CN=" containing the FQDN of the server.
+It is also permissible for the server to have an empty subjectDN as recommended by
+{!{I-D.ietf-uta-rfc6125bis}}.
+
+Server Certificates MUST include a subjectAltName extension, with the dnsName attribute containing an FQDN string.
+
+The KeyUsage extension MAY be included, but are not required.
+
+The ExtendedKeyUsage extensions defined in {{RFC5280}} MAY also be included, but their use is discouraged.  Systems SHOULD use a a private Certification Authority (CA) for EAP in preference to public CAs.
+
 ## Server Certificate Validation
 
-As part of the TLS negotiation, the server presents a certificate to
-the peer.  Unless server unauthenticated provisioning is used, the EAP
-peer MUST validate the server certicate.  This validation is done in
-the same manner as is done for EAP-TLS, which is discussed in
-{{RFC9190}} Section 5.3 and in {{RFC5216}} Section 5.3.  Further
-guidance on server certificate validation can be found in
+As part of the TLS negotiation, the server usually presents a
+certificate to the peer.  In most cases the certificate needs to be
+validated, but there are a number of situations where the EAP peer
+need not do certificate validation:
+
+* when the peer has the Server's End Entity (EE) certificate pinned or loaded directly into it's Trusted Anchor store {{?RFC4949}};
+
+* when the peer is requesting server unauthenticated provisioning;
+
+* when the peer is certain that it will be using an authenticated inner method.
+
+In some cases such as onboarding (or "bootstrapping"), the certificate
+validation may be delayed.  However, once the onboarding has taken
+place, the validation steps described below MUST still be performed.
+
+In all other cases, the EAP peer MUST validate the server certicate.  This
+validation is done in the same manner as is done for EAP-TLS, which is
+discussed in {{RFC9190}} Section 5.3 and in {{RFC5216}} Section 5.3.
+Further guidance on server certificate validation can be found in
 {{!I-D.ietf-uta-rfc6125bis}}.
 
-Where the EAP peer has an NAI, EAP peers MUST perform the DNS-ID
-validation as per {{!I-D.ietf-uta-rfc6125bis}} Section 6, by using the
-"realm" portion of the NAI to construct the list of reference
-identifiers as defined in {{!I-D.ietf-uta-rfc6125bis}} Section 6.2.1.
-The "source domain" field referred to in that section MUST also be
-taken from the realm portion of the NAI.
+Where the EAP peer has an NAI, EAP peers MUST use the realm to perform
+the DNS-ID validation as per {{!I-D.ietf-uta-rfc6125bis}} Section 6,
+The realm is used both to construct the list of reference identifiers
+as defined in {{!I-D.ietf-uta-rfc6125bis}} Section 6.2.1, and as the
+"source domain" field of that same section.
 
 When performing server certificate validation, implementations MUST
-also provide support for the rules in {{RFC5280}} for validating
-certificates against a known trust anchor.  In addition,
-implementations MUST support matching the realm portion of the peer's
-NAI against a SubjectAltName of type dNSName within the server
-certificate.  However, in certain deployments, this comparison might
-not be appropriate or enabled.
+also support the rules in {{RFC5280}} for validating certificates
+against a known trust anchor.  In addition, implementations MUST
+support matching the realm portion of the peer's NAI against a
+SubjectAltName of type dnsName within the server certificate.
+However, in certain deployments, this comparison might not be
+appropriate or enabled.
 
 In most situations, the EAP peer will have no network access during
 the authentication process.  It will therefore no way of correlating

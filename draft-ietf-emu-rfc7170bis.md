@@ -11,6 +11,7 @@ kw: Internet-Draft
 cat: std
 submissionType: IETF
 obsoletes: 7170
+updates: 9427
 
 pi:    # can use array (if all yes) or hash here
   toc: yes
@@ -756,7 +757,9 @@ Implementations MUST NOT permit resumption for the inner EAP methods
 such as EAP-TLS.  If the user or machine needs to be authenticated, it
 should use a full authentication method.  If the user or machine needs
 to do resumption, it can perform a full authentication once, and then
-rely on the outer TLS session for resumption.
+rely on the outer TLS session for resumption.  This restriction
+applies also to all TLS-based EAP methods which can tunnel other EAP
+methods.  As a result, this document updates {{RFC9427}}.
 
 EAP-TLS is permitted in Phase 2 for two use-cases.  The first is when
 TLS 1.2 is used, as the client certificate is not protected as with
@@ -1210,7 +1213,7 @@ an attacker eaves-dropping on the connection.
 
 Note that server unauthenticated provisioning can only use anonymous
 cipher suites in TLS 1.2 and earlier.  These cipher suites have been
-deprecated in TLS 1.3 ({{RFC8446}} Section C.2).  For TLS 1.3, the
+deprecated in TLS 1.3 ({{RFC8446}} Section C.5).  For TLS 1.3, the
 server MUST provide a certificate, and the peer performs server
 unauthenticated provisioning by not validating the certificate chain
 or any of its contents.
@@ -2118,6 +2121,15 @@ TLVs
 > This field is of indeterminate length and contains zero or more of
 > the TLVs associated with the Intermediate Result TLV.  The TLVs in
 > this field MUST NOT have the mandatory bit set.
+
+### PAC TLV
+
+{{RFC7170}} defined a Protected Access Credential (PAC) to mirror
+EAP-FAST {{RFC4851}}.  However, implementation experience and analysis
+determined that the PAC was not necessary.  Instead, TEAP performs
+session resumption using the NewSessionTicket message as defined in
+{{RFC9190}} Section 2.1.2 and Section 2.1.3.  As such, the PAC TLV
+been removed from this document.
 
 ### Crypto-Binding TLV {#crypto-binding-tlv}
 
@@ -3207,7 +3219,7 @@ Issues related to confidentiality of a client certificate are
 discussed above in [](#client-certs-phase1)
 
 Note that the Phase 2 data could simply be a Result TLV with value
-Success, along with a Crypto-Binding TLV and Intermediate-Result TLV.
+Success, along with a Crypto-Binding TLV.
 This Phase 2 data serves as a protected success indication as
 discussed in {{RFC9190}} Section 2.1.1
 
@@ -3338,7 +3350,7 @@ Channel binding:         Yes
 
 Notes
 
-1. BCP 86 {{RFC3766}} offers advice on appropriate key sizes.  The
+Note 1. BCP 86 {{RFC3766}} offers advice on appropriate key sizes.  The
 National Institute for Standards and Technology (NIST) also
 offers advice on appropriate key sizes in [NIST-SP-800-57].
 {{RFC3766}}, [](#cryptographic-calculations) advises use of the following required RSA or
@@ -3360,7 +3372,7 @@ to provide 112-bit equivalent key strength:
       250                      14596                        482
 ~~~~
 
-2. TEAP protects against offline dictionary attacks when secure inner
+Note 2. TEAP protects against offline dictionary attacks when secure inner
 methods are used.  TEAP protects against online dictionary attacks by
 limiting the number of failed authentications for a particular
 identity.
@@ -3441,17 +3453,13 @@ ciphersuite negotiation.
 ## A.4.  Requirement 4.2.1.1.2: Tunnel Data Protection Algorithms
 {:numbered="false"}
 
-TEAPv1 meets this requirement by mandating
-TLS_RSA_WITH_AES_128_CBC_SHA as a mandatory-to-implement ciphersuite
+TEAPv1 meets this requirement by mandating ciphersuites
 as defined in [](#phase1).
 
 ## A.5.  Requirement 4.2.1.1.3: Tunnel Authentication and Key Establishment
 {:numbered="false"}
 
-TEAPv1 meets this requirement by mandating
-TLS_RSA_WITH_AES_128_CBC_SHA as a mandatory-to-implement ciphersuite
-that provides certificate-based authentication of the server and is
-approved by NIST.  The mandatory-to-implement ciphersuites only
+TEAPv1 meets this requirement by mandating ciphersuites which only
 include ciphersuites that use strong cryptographic algorithms.  They
 do not include ciphersuites providing mutually anonymous
 authentication or static Diffie-Hellman ciphersuites as defined in
@@ -4425,7 +4433,7 @@ Action TLV.  The conversation will appear as follows:
 
                                <- EAP-Success
 
-## C.11.
+## C.11. PKCS Exchange
 {:numbered="false"}
 
 The following exchanges show the peer sending a PKCS#10 TLV, and
@@ -4485,7 +4493,7 @@ follows:
 ~~~~
 
 
-## C.12.
+## C.12. Failure Scenario
 {:numbered="false"}
 
 The following exchanges shows a failure scenario. The conversation
@@ -4536,7 +4544,7 @@ will appear as follows:
   | <- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ~~~~
 
-## C.13.
+## C.13. Client certificate in Phase 1
 {:numbered="false"}
 
 The following exchanges shows a scenario where the client certificate

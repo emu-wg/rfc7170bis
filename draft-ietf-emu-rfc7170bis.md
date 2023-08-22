@@ -108,6 +108,7 @@ informative:
   RFC7029:
   RFC7170:
   RFC7542:
+  RFC9325:
   X.690:
     title: "SN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
     date: November 2008
@@ -392,7 +393,11 @@ ciphersuites:
 * TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
 * TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
 
-Other ciphersuites MAY be supported.  It is REQUIRED that anonymous
+Other ciphersuites MAY be supported.  Implementations MUST implement
+the recommended cipher suites in {{RFC9325}} Section 4.2 for TLS 1.2,
+and in {{RFC9325}} Section 4.2 for TLS 1.3.
+
+It is REQUIRED that anonymous
 ciphersuites such as TLS_DH_anon_WITH_AES_128_CBC_SHA {{RFC5246}} only
 be used in the case when the inner method provides
 mutual authentication, key generation, and resistance to man-in-the-middle

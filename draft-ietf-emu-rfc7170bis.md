@@ -388,20 +388,20 @@ TEAP relies on the TLS handshake {{RFC8446}} to establish an
 authenticated and protected tunnel.  The TLS version offered by the
 peer and server MUST be TLS version 1.2 {{RFC5246}} or later.  This
 version of the TEAP implementation MUST support the following TLS
-ciphersuites:
+cipher suites:
 
 * TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
 * TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
 
-Other ciphersuites MAY be supported.  Implementations MUST implement
+Other cipher suites MAY be supported.  Implementations MUST implement
 the recommended cipher suites in {{RFC9325}} Section 4.2 for TLS 1.2,
 and in {{RFC9325}} Section 4.2 for TLS 1.3.
 
 It is REQUIRED that anonymous
-ciphersuites such as TLS_DH_anon_WITH_AES_128_CBC_SHA {{RFC5246}} only
+cipher suites such as TLS_DH_anon_WITH_AES_128_CBC_SHA {{RFC5246}} only
 be used in the case when the inner method provides
 mutual authentication, key generation, and resistance to man-in-the-middle
-and dictionary attacks.  TLS ciphersuites that do not provide
+and dictionary attacks.  TLS cipher suites that do not provide
 confidentiality MUST NOT be used.  During the TEAP Phase 1
 conversation, the TEAP endpoints MAY negotiate TLS compression.
 During TLS tunnel establishment, TLS extensions MAY be used.  For
@@ -436,7 +436,7 @@ full TLS handshake is performed, then the first payload of TEAP Phase
 reduce the number of round trips.
 
 TEAP implementations MUST support mutual peer authentication during
-tunnel establishment using the TLS ciphersuites specified in this
+tunnel establishment using the TLS cipher suites specified in this
 section.  The TEAP peer does not need to authenticate as part of the
 TLS exchange but can alternatively be authenticated through
 additional exchanges carried out in Phase 2.
@@ -447,7 +447,7 @@ wish to provide identity privacy for the peer identity need to
 carefully consider what information is disclosed outside the tunnel
 prior to Phase 2.  TEAP implementations SHOULD support the immediate
 renegotiation of a TLS session to initiate a new handshake message
-exchange under the protection of the current ciphersuite.  This
+exchange under the protection of the current cipher suite.  This
 allows support for protection of the peer's identity when using TLS
 client authentication.  An example of the exchanges using TLS
 renegotiation to protect privacy is shown in Appendix C.
@@ -567,7 +567,7 @@ based on server-side or client-side state.
 
 TEAP session resumption is achieved in the same manner TLS achieves
 session resumption.  To support session resumption, the server and peer
-cache the Session ID, master secret, and ciphersuite.  The
+cache the Session ID, master secret, and cipher suite.  The
 peer attempts to resume a session by including a valid Session ID
 from a previous TLS handshake in its ClientHello message.  If the
 server finds a match for the Session ID and is willing to establish a
@@ -1141,7 +1141,7 @@ The tls-unique value is base-64-encoded as specified in [](#message-formats) of
 {{RFC4648}}, and the resulting string is placed in the certification
 request challengePassword field ({{RFC2985}}, Section 5.4.1).  The
 challengePassword field is limited to 255 octets (Section 7.4.9 of
-{{RFC5246}} indicates that no existing ciphersuite would result in an
+{{RFC5246}} indicates that no existing cipher suite would result in an
 issue with this limitation).  If tls-unique information is not
 embedded within the certification request, the challengePassword
 field MUST be empty to indicate that the peer did not include the
@@ -1214,9 +1214,9 @@ an EAP method in Phase 2 that supports mutual authentication and key
 derivation that is resistant to attacks such as man-in-the-middle and
 dictionary attacks.  This provisioning mode enables the bootstrapping
 of peers when the peer lacks the ability to authenticate the server
-during Phase 1.  This includes both cases in which the ciphersuite
+during Phase 1.  This includes both cases in which the cipher suite
 negotiated does not provide authentication and in which the
-ciphersuite negotiated provides the authentication but the peer is
+cipher suite negotiated provides the authentication but the peer is
 unable to validate the identity of the server for some reason.
 
 Upon successful completion of the EAP authentication method in Phase 2, the peer and
@@ -1225,9 +1225,9 @@ the outer tunnel and ensure that a man-in-the-middle attack has not
 been attempted.
 
 Support for the Server Unauthenticated Provisioning Mode is optional.
-The ciphersuite TLS_DH_anon_WITH_AES_128_CBC_SHA is RECOMMENDED when
+The cipher suite TLS_DH_anon_WITH_AES_128_CBC_SHA is RECOMMENDED when
 using Server Unauthenticated Provisioning Mode, but other anonymous
-ciphersuites MAY be supported as long as the TLS pre-master secret is
+cipher suites MAY be supported as long as the TLS pre-master secret is
 generated from contribution from both peers.  Phase 2 EAP authentication methods
 used in Server Unauthenticated Provisioning Mode MUST provide mutual
 authentication, provide key generation, and be resistant to
@@ -2779,8 +2779,8 @@ in this table.
 For key derivation and crypto-binding, TEAP uses the Pseudorandom
 Function (PRF) and MAC algorithms negotiated in the underlying TLS
 session.  Since these algorithms depend on the TLS version and
-ciphersuite, TEAP implementations need a mechanism to determine the
-version and ciphersuite in use for a particular session.  The
+cipher suite, TEAP implementations need a mechanism to determine the
+version and cipher suite in use for a particular session.  The
 implementation can then use this information to determine which PRF
 and MAC algorithm to use.
 
@@ -3302,14 +3302,14 @@ the EAP authentication method described in [](#cryptographic-calculations).
 TEAP crypto binding does not guarantee man-in-the-middle protection
 if the client allows a connection to an untrusted server, such as in
 the case where the client does not properly validate the server's
-certificate.  If the TLS ciphersuite derives the master secret solely
+certificate.  If the TLS cipher suite derives the master secret solely
 from the contribution of secret data from one side of the
-conversation (such as ciphersuites based on RSA key transport), then
+conversation (such as cipher suites based on RSA key transport), then
 an attacker who can convince the client to connect and engage in
 authentication can impersonate the client to another server even if a
 strong inner method is executed within the tunnel.  If the TLS
-ciphersuite derives the master secret from the contribution of
-secrets from both sides of the conversation (such as in ciphersuites
+cipher suite derives the master secret from the contribution of
+secrets from both sides of the conversation (such as in cipher suites
 based on Diffie-Hellman), then crypto binding can detect an attacker
 in the conversation if a strong inner method is used.
 
@@ -3357,7 +3357,7 @@ This section provides the needed security claim requirement for EAP
 Auth. mechanism:         Certificate-based, shared-secret-based, and
                          various tunneled authentication mechanisms.
 
-Ciphersuite negotiation: Yes
+Cipher Suite negotiation: Yes
 
 Mutual authentication:   Yes
 
@@ -3485,25 +3485,25 @@ algorithm negotiation.
 TEAPv1 meets this requirement by mandating TLS version 1.2 support as
 defined in [](#phase1).
 
-## A.3.  Requirement 4.2.1.1.1: Ciphersuite Negotiation
+## A.3.  Requirement 4.2.1.1.1: Cipher Suite Negotiation
 {:numbered="false"}
 
 TEAPv1 meets this requirement by using TLS to provide protected
-ciphersuite negotiation.
+cipher suite negotiation.
 
 ## A.4.  Requirement 4.2.1.1.2: Tunnel Data Protection Algorithms
 {:numbered="false"}
 
-TEAPv1 meets this requirement by mandating ciphersuites
+TEAPv1 meets this requirement by mandating cipher suites
 as defined in [](#phase1).
 
 ## A.5.  Requirement 4.2.1.1.3: Tunnel Authentication and Key Establishment
 {:numbered="false"}
 
-TEAPv1 meets this requirement by mandating ciphersuites which only
-include ciphersuites that use strong cryptographic algorithms.  They
-do not include ciphersuites providing mutually anonymous
-authentication or static Diffie-Hellman ciphersuites as defined in
+TEAPv1 meets this requirement by mandating cipher suites which only
+include cipher suites that use strong cryptographic algorithms.  They
+do not include cipher suites providing mutually anonymous
+authentication or static Diffie-Hellman cipher suites as defined in
 [](#phase1).
 
 ## A.6.  Requirement 4.2.1.2: Tunnel Replay Protection
@@ -3809,7 +3809,7 @@ wrong user credentials.  The conversation will appear as follows:
 
                                <- EAP-Failure
 
-## C.3.  Full TLS Handshake Using Certificate-Based Ciphersuite
+## C.3.  Full TLS Handshake Using Certificate-Based Cipher Suite
 {:numbered="false"}
 
 In the case within TEAP Phase 1 where an abbreviated TLS handshake is

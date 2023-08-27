@@ -2840,7 +2840,7 @@ IMSK[j] = First 32 octets of TLS-PRF(secret, "TEAPbindkey@ietf.org",
 >
 > PRF(secret, label, seed) = P_\<hash>(secret, label \| seed).
 >
-> The secret is the EMSK or MSK from the j'th inner method, the label is
+> Where the EMSK is available, the secret is the EMSK from the j'th inner method, the label is
 > "TEAPbindkey@ietf.org" consisting of the ASCII value for the
 > label "TEAPbindkey@ietf.org" (without quotes),  the seed
 > consists of the "\\0" null delimiter (0x00) and 2-octet unsigned
@@ -2849,15 +2849,15 @@ IMSK[j] = First 32 octets of TLS-PRF(secret, "TEAPbindkey@ietf.org",
 >
 > If an inner method does not support export of an Extended Master
 > Session Key (EMSK), then the IMSK is derived from the MSK of the inner method.  The
-> EMSK or MSK is truncated at 32 octets if it is longer than 32 octets or
+> MSK is truncated at 32 octets if it is longer than 32 octets or
 > padded to a length of 32 octets with zeros if it is less than 32
-> octets.
+> octets. In this case, IMSK\[j] is the adjusted MSK.
 >
 > If no inner EAP authentication method is run then no EMSK or MSK
 > will be generated (e.g. when basic password authentication
 > is used or when no inner method has been run and the crypto-binding TLV
 > for the Result TLV needs to be generated).  In this case, IMSK\[j]
-> is set to all zeroes (i.e., MSK = 32 octets of 0x00s).
+> is set to all zeroes (i.e., IMSK\[j] = MSK = 32 octets of 0x00s).
 
 Note that using a MSK of all zeroes opens up TEAP to man-in-the-middle
 attacks, as discussed below in {#separation-p1-p2}.  It is therefore
@@ -2999,7 +2999,7 @@ that message MUST be included.
 
 If no inner EAP authentication method is run then no EMSK or MSK
 will be generated.  If an IMSK needs to be generated then the MSK
-and therefore the IMSK is set to 0 (e.g., MSK = 32 octets of 0x00s).
+and therefore the IMSK is set to all zeroes (i.e., IMSK = MSK = 32 octets of 0x00s).
 
 ## EAP Master Session Key Generation
 

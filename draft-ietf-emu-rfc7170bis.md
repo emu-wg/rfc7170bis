@@ -666,7 +666,7 @@ not be distinct.  For example, EAP-TLS ({{RFC5216}} and {{RFC9190}}) could be ru
 method, first using machine credentials followed by a second instance
 using user credentials.
 
-When EAP is used as an inner mthod, the EAP messages are carried within EAP-Payload TLVs defined in
+When EAP is used as an inner method, the EAP messages are carried within EAP-Payload TLVs defined in
 [](#eap-payload-tlv).  Note that in this use-case, TEAP is simply a
 carrier for EAP, much as RADIUS is a carrier for EAP.  The full EAP
 state machine is run as normal, and is carried over the EAP-Payload
@@ -709,7 +709,7 @@ as defined in Section 4.2.15 that contains the username and password.
 If it does not wish to perform password authentication, then it
 responds with a NAK TLV indicating the rejection of the Basic-Password-Auth-Req TLV.
 
-The basic password authentication defined here is similar in functionality to that used by EAP-TTLS ({{RFC5281}}) with inner password authentication.  It shares a similar security and risk analyis.
+The basic password authentication defined here is similar in functionality to that used by EAP-TTLS ({{RFC5281}}) with inner password authentication.  It shares a similar security and risk analysis.
 
 Multiple round trips of password authentication requests and responses
 MAY be used to support some "housekeeping" functions such as a
@@ -1192,7 +1192,7 @@ restriction is to have different CAs (or different intermediate CAs)
 which issue certificates for different uses.  For example, TLS-based
 EAP methods could share one CA, and HTTPS servers could use a
 different CA.  The different protocols could therefore be configured
-to validate client certificates only from their perferred CA.
+to validate client certificates only from their preferred CA.
 
 Another method of limiting the uses of a certificate is to provision
 it with an appropriate value for the Extended Key Usage field
@@ -1383,7 +1383,7 @@ TLS Data
 > When the TLS Data field is present, it consists of an encapsulated
 > TLS packet in TLS record format.  A TEAP packet with Flags and
 > Version fields, but with zero length TLS Data field, is used to
-> indicate TEAP acknowledgement for either a fragmented message, a
+> indicate TEAP acknowledgment for either a fragmented message, a
 > TLS Alert message, or a TLS Finished message.
 
 Outer TLVs
@@ -2522,7 +2522,7 @@ Trusted-Server-Root TLV facilitates the request and delivery of a
 trusted server root certificate.  The Trusted-Server-Root TLV can be
 exchanged in regular TEAP authentication mode or provisioning mode.
 The Trusted-Server-Root TLV is always marked as optional and cannot
-be responded to with a Negative Acknowledgement (NAK) TLV.  The
+be responded to with a Negative Acknowledgment (NAK) TLV.  The
 Trusted-Server-Root TLV MUST only be sent as an Inner TLV (inside the
 protection of the tunnel).
 
@@ -3411,11 +3411,11 @@ methods are used.  TEAP protects against online dictionary attacks by
 limiting the number of failed authentications for a particular
 identity.
 
-# Acknowledgements
+# Acknowledgments
 
 Nearly all of the text in this document was taken directly from
 {{RFC7170}}. We are grateful to the original authors and reviewers for
-that document.  The acknowledgements given here are only for the
+that document.  The acknowledgments given here are only for the
 changes which resulted in this document.
 
 Alexander Clouter provided substantial and detailed technical feedback

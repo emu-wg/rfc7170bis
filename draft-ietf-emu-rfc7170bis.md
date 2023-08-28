@@ -2817,7 +2817,7 @@ the IMCK MUST be recalculated after each successful inner method.
 
 The first step in these calculations is the generation of the base
 compound key, IMCK\[j] from the session_key_seed, and any session keys
-derived from the successful execution of jth inner
+derived from the successful execution of j'th inner
 methods. The inner method(s) MUST
 provide Inner Method Session Keys (IMSKs), IMSK\[1]..IMSK\[n], corresponding
 to inner method 1 through n.  When a particular authentication method
@@ -2826,38 +2826,40 @@ is used as described below.
 
 If an inner method supports export of an Extended Master Session Key
 (EMSK), then the IMSK SHOULD be derived from the EMSK as defined in
-{{RFC5295}}.  The usage label used is "TEAPbindkey@ietf.org", and the
-length is 64 octets.  Optional data parameter is not used in the
-derivation.
+{{RFC5295}}.  The optional data parameter is not used in the derivation.
 
 ~~~~
-IMSK[j] = First 32 octets of TLS-PRF(secret, "TEAPbindkey@ietf.org",
-       0x00 \| 0x00 \| 0x40)
+   IMSK[j] = First 32 octets of TLS-PRF(
+          EMSK[j],
+          "TEAPbindkey@ietf.org",
+          0x00 | 0x00 | 0x40)
 ~~~~
 
 > where "\|" denotes concatenation and the TLS-PRF is defined in
-> [RFC5246] as
+> [RFC5246] as:
 >
-> PRF(secret, label, seed) = P_\<hash>(secret, label \| seed).
+> ~~~~
+>    PRF(secret, label, seed) = P_<hash>(secret, label | seed)
+> ~~~~
 >
-> Where the EMSK is available, the secret is the EMSK from the j'th inner method, the label is
+> The secret is the EMSK from the j'th inner method, the usage label used is
 > "TEAPbindkey@ietf.org" consisting of the ASCII value for the
-> label "TEAPbindkey@ietf.org" (without quotes),  the seed
+> label "TEAPbindkey@ietf.org" (without quotes), the seed
 > consists of the "\\0" null delimiter (0x00) and 2-octet unsigned
-> integer length in network byte order (0x00 \| 0x40) specified
+> integer length of 64 octets in network byte order (0x00 | 0x40) specified
 > in [RFC5295].
->
-> If an inner method does not support export of an Extended Master
-> Session Key (EMSK), then the IMSK is derived from the MSK of the inner method.  The
-> MSK is truncated at 32 octets if it is longer than 32 octets or
-> padded to a length of 32 octets with zeros if it is less than 32
-> octets. In this case, IMSK\[j] is the adjusted MSK.
->
-> If no inner EAP authentication method is run then no EMSK or MSK
-> will be generated (e.g. when basic password authentication
-> is used or when no inner method has been run and the crypto-binding TLV
-> for the Result TLV needs to be generated).  In this case, IMSK\[j]
-> is set to all zeroes (i.e., IMSK\[j] = MSK = 32 octets of 0x00s).
+
+If an inner method does not support export of an Extended Master
+Session Key (EMSK), then the IMSK is derived from the MSK of the inner method.  The
+MSK is truncated at 32 octets if it is longer than 32 octets or
+padded to a length of 32 octets with zeros if it is less than 32
+octets. In this case, IMSK\[j] is the adjusted MSK.
+
+If no inner EAP or vendor-specific authentication method is run then no EMSK or MSK
+will be generated (e.g. when basic password authentication
+is used or when no inner method has been run and the crypto-binding TLV
+for the Result TLV needs to be generated).  In this case, IMSK\[j]
+is set to all zeroes (i.e., IMSK\[j] = MSK = 32 octets of 0x00s).
 
 Note that using a MSK of all zeroes opens up TEAP to man-in-the-middle
 attacks, as discussed below in {#separation-p1-p2}.  It is therefore

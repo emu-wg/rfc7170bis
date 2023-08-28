@@ -368,7 +368,7 @@ The receiver of the Crypto-Binding TLV MUST verify that the version
 received in the Crypto-Binding TLV matches the version sent by the
 receiver in the TEAP version negotiation.
 
-Intermediate results are signalled via the Intermediate-Result TLV.
+Intermediate results are signaled via the Intermediate-Result TLV.
 However, the Crypto-Binding TLV MUST be validated before any
 Intermediate-Result TLV or Result TLV is examined.  If the
 Crypto-Binding TLV fails to be validated for any reason, then it is a
@@ -480,7 +480,7 @@ In some cases such as onboarding (or "bootstrapping"), the certificate
 validation may be delayed.  However, once the onboarding has taken
 place, the validation steps described below MUST still be performed.
 
-In all other cases, the EAP peer MUST validate the server certicate.  This
+In all other cases, the EAP peer MUST validate the server certificate.  This
 validation is done in the same manner as is done for EAP-TLS, which is
 discussed in {{RFC9190}} Section 5.3 and in {{RFC5216}} Section 5.3.
 Further guidance on server certificate validation can be found in
@@ -552,7 +552,7 @@ then continues with a full handshake.  After the full TLS handshake
 has completed, both EAP server and peer MUST proceed with Phase 2.
 
 All TEAP implementations MUST support resumption.  Using resumption
-can significanly improve the scalability and stability of
+can significantly improve the scalability and stability of
 authentication systems.  For example, some environments such as
 universities may have users re-authenticating multiple times a day, if
 not hourly.  Failure to implement resumption would increase the load
@@ -641,7 +641,7 @@ the peer may request the server take additional action (e.g., channel
 binding) through the use of the Request-Action TLV as defined in
 [](#request-action-tlv).
 
-The completion of each inner method is signalled by an
+The completion of each inner method is signaled by an
 Intermediate-Result TLV.  Where the Intermediate-Result TLV indicates
 failure, an Error TLV SHOULD also be included, using the most descriptive error code possible.  The
 Intermediate-Result TLV may be accompanied by another TLV indicating
@@ -707,7 +707,7 @@ as defined in Section 4.2.15 that contains the username and password.
 If it does not wish to perform password authentication, then it
 responds with a NAK TLV indicating the rejection of the Basic-Password-Auth-Req TLV.
 
-The basic password authenticaton defined here is similar in functionality to that used by EAP-TTLS ({{RFC5281}}) with inner password authentication.  It shares a similar security and risk analyis.
+The basic password authentication defined here is similar in functionality to that used by EAP-TTLS ({{RFC5281}}) with inner password authentication.  It shares a similar security and risk analyis.
 
 Multiple round trips of password authentication requests and responses
 MAY be used to support some "housekeeping" functions such as a
@@ -975,7 +975,7 @@ packet, no matter what the client says.
 
 If the TEAP peer detects an error at any point in the TLS layer, the
 TEAP peer SHOULD send a TEAP response encapsulating a TLS record
-containing the appropriate TLS alert message, and which contains a zero-length message.  The server then MUST terminate the converation with an EAP failure, as discused in the previous paragraph.
+containing the appropriate TLS alert message, and which contains a zero-length message.  The server then MUST terminate the conversation with an EAP failure, as discussed in the previous paragraph.
 
 While {{RFC8446}} allows for the TLS conversation to be restarted, it is not clear when that would use useful (or used) for TEAP.  Fatal TLS errors will cause the TLS conversation to fail.  Non-fatal TLS errors can likely be ignored entirely.  As a result, TEAP implementations MUST NOT permit TLS restarts.
 
@@ -1031,7 +1031,7 @@ Non-Fatal Error due to inner method
 
 ## Fragmentation {#fragmentation}
 
-Fragmentation of EAP packets is dicussed in {{RFC5216}} Section 2.1.5.
+Fragmentation of EAP packets is discussed in {{RFC5216}} Section 2.1.5.
 There is no special handling of fragments for TEAP.
 
 ## Services Requested by the Peer
@@ -1058,7 +1058,7 @@ TEAP peers MUST track whether or not server authentication has taken
 place. When the server cannot be authenticated, the peer MUST NOT
 request any services such as certificate provisioning ({#cert-provisioning}) from it.
 
-Peer implementations MUST be configurated so that by default, the
+Peer implementations MUST be configured so that by default, the
 current authentication session fails if the server cannot be
 authenticated.  However, it is possible to have a configuration flag
 which permits access to networks where the server cannot be
@@ -2634,11 +2634,11 @@ Length
 
 ### Identity-Hint TLV  {#identity-hint-tlv}
 
-The Identity-Hint TLV is an optional TLV which can sent by the peer to the server at the beginning of the Phase 2 TEAP conversation.  The purpose of the TLV is to provide a "hint" as to the identity or identies which the peer will be using by subsequent inner methods.
+The Identity-Hint TLV is an optional TLV which can sent by the peer to the server at the beginning of the Phase 2 TEAP conversation.  The purpose of the TLV is to provide a "hint" as to the identity or identities which the peer will be using by subsequent inner methods.
 
 The purpose of this TLV is to solve the "bootstrapping" problem for the server.  In order to perform authentication, the server must choose an inner method.  However, the server has no knowledge of what methods are supported by the peer.  Without an identity hint, the server needs to propose a method, and then have the peer return a response indicating that the requested method is not available.  This negotiation increases the number of round trips required for TEAP to conclude, with no additional benefit.
 
-When the Identity-Hint is use, the peer can signal which identies it has available, which enables the server to choose an inner method which is appropriate for that identity.
+When the Identity-Hint is use, the peer can signal which identities it has available, which enables the server to choose an inner method which is appropriate for that identity.
 
 The peer SHOULD send an Identity-Hint TLV for each Identity-Type which is available to it.  For example, if the peer can do both Machine and User authentication, it can send two Identity-Hint TLVs, with values "host/name.example.com" (for a machine with hostname "name.example.com"), and "user@example.com" (for a person with identity "user@example.com").
 
@@ -2646,7 +2646,7 @@ The contents of the Identity-Hint TLV SHOULD be in the format of an NAI {{RFC754
 
 As the Identity-Hint TLV is a "hint", server implementations are free to ignore the hints given, and do whatever is required by site-local policies.
 
-The Identity-Hint TLV is used only as a guide to selecting which inner methods to use.  This TLV has no other meaning, and it MUST NOT be used for any other purpose.  Specifically. server implementations MUST NOT compare the identities given this TLV to later identies given as part of the inner methods.  There is no issue with the hint(s) failing to match any subsequent identity which is used.
+The Identity-Hint TLV is used only as a guide to selecting which inner methods to use.  This TLV has no other meaning, and it MUST NOT be used for any other purpose.  Specifically. server implementations MUST NOT compare the identities given this TLV to later identities given as part of the inner methods.  There is no issue with the hint(s) failing to match any subsequent identity which is used.
 
 The Identity-Hint TLV is defined as follows:
 
@@ -2860,7 +2860,7 @@ is set to all zeroes (i.e., IMSK\[j] = MSK = 32 octets of 0x00s).
 Note that using a MSK of all zeroes opens up TEAP to man-in-the-middle
 attacks, as discussed below in {#separation-p1-p2}.  It is therefore
 NOT RECOMMENDED to use inner methods which fail to generate an EMSK or
-MSK.  These methods should only be used in conjuction with another
+MSK.  These methods should only be used in conjunction with another
 inner method which does provide for EMSK or MSK generation.  It is
 also RECOMMENDED that TEAP peers order authentication such that
 methods which generate EMSKs are performed before methods which do not
@@ -3186,7 +3186,7 @@ TEAP uses the Crypto-Binding TLV tie the inner EMSK to the TLS session via the T
 
 On the other hand, if the inner method is not deriving EMSK as with
 password authentication or unauthenticated provisioning, then this
-threat still exists.  Implemnations therefore need to limit the use of
+threat still exists.  Implementations therefore need to limit the use of
 inner methods as discussed above in [](#inner-method-limitations)
 
 ## Mitigation of Known Vulnerabilities and Protocol Deficiencies

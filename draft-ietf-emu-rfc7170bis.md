@@ -142,16 +142,16 @@ authentication.  There are several existing tunnel-based EAP methods
 that use Transport Layer Security (TLS) {{RFC8446}} to establish the
 secure tunnel.  EAP methods supporting this include Protected EAP
 (PEAP) [PEAP], EAP Tunneled Transport Layer Security (EAP-TTLS)
-{{RFC5281}}, and EAP Flexible Authentication via Secure Tunneling (EAP-
-FAST) {{RFC4851}}.  However, they all are either vendor-specific or
-informational, and the industry calls for a Standards Track tunnel-
-based EAP method.  {{RFC6678}} outlines the list of requirements for a
+{{RFC5281}}, and EAP Flexible Authentication via Secure Tunneling
+(EAP-FAST) {{RFC4851}}.  However, they all are either vendor-specific or
+informational, and the industry calls for a Standards Track
+tunnel-based EAP method.  {{RFC6678}} outlines the list of requirements for a
 standard tunnel-based EAP method.
 
 This document describes the Tunnel Extensible Authentication Protocol
 (TEAP) version 1, which is based on EAP-FAST {{RFC4851}}.  The changes from EAP-FAST to TEAP are largely minor, in order
-to meet the requirements outlined in {{RFC6678}} for a standard tunnel-
-based EAP method.
+to meet the requirements outlined in {{RFC6678}} for a standard
+tunnel-based EAP method.
 
 This specification describes TEAPv1, and defines cryptographic
 derivations for TLS 1.2 and earlier.  When TLS 1.3 is used, the
@@ -1273,11 +1273,11 @@ authenticator.
 
 TEAP supports EAP channel binding using the Channel-Binding TLV
 defined in [](#channel-binding-tlv).  If the TEAP server wants to request the
-channel-binding information from the peer, it sends an empty Channel-
-Binding TLV to indicate the request.  The peer responds to the
+channel-binding information from the peer, it sends an empty
+Channel-Binding TLV to indicate the request.  The peer responds to the
 request by sending a Channel-Binding TLV containing a channel-binding
-message as defined in {{RFC6677}}.  The server validates the channel-
-binding message and sends back a Channel-Binding TLV with a result
+message as defined in {{RFC6677}}.  The server validates the
+channel-binding message and sends back a Channel-Binding TLV with a result
 code.  If the server didn't initiate the channel-binding request and
 the peer still wants to send the channel-binding information to the
 server, it can do that by using the Request-Action TLV along with the
@@ -1391,8 +1391,8 @@ Outer TLVs
 
 > The Outer TLVs consist of the optional data used to help establish
 > the TLS tunnel in TLV format.  They are only allowed in the first
-> two messages in the TEAP protocol.  That is the first EAP-server-
-> to-peer message and first peer-to-EAP-server message.  The start
+> two messages in the TEAP protocol.  That is the first
+EAP-server-to-peer message and first peer-to-EAP-server message.  The start
 > of the Outer TLVs can be derived from the EAP Length field and
 > Outer TLV Length field.
 
@@ -1853,8 +1853,8 @@ Error-Code
 
 ### Channel-Binding TLV {#channel-binding-tlv}
 
-The Channel-Binding TLV provides a mechanism for carrying channel-
-binding data from the peer to the EAP server and a channel-binding
+The Channel-Binding TLV provides a mechanism for carrying
+channel-binding data from the peer to the EAP server and a channel-binding
 response from the EAP server to the peer as described in {{RFC6677}}.
 TEAPv1 implementations MAY support this TLV, which cannot be
 responded to with a NAK TLV.  If the Channel-Binding data field does
@@ -2424,8 +2424,8 @@ in binary DER encoding [X.690] in a degenerate Certificates Only
 PKCS#7 SignedData Content as defined in {{RFC5652}}.
 
 When used in response to a Trusted-Server-Root TLV request from the
-peer, the EAP server MUST send the PKCS#7 TLV inside a Trusted-
-Server-Root TLV.  When used in response to a PKCS#10 certificate
+peer, the EAP server MUST send the PKCS#7 TLV inside a
+Trusted-Server-Root TLV.  When used in response to a PKCS#10 certificate
 enrollment request from the peer, the EAP server MUST send the PKCS#7
 TLV without a Trusted-Server-Root TLV.  The PKCS#7 TLV is always
 marked as optional, which cannot be responded to with a NAK TLV.
@@ -2539,8 +2539,8 @@ The Trusted-Server-Root TLV allows the peer to send a request to the
 EAP server for a list of trusted roots.  The server may respond with
 one or more root certificates in PKCS#7 {{RFC2315}} format.
 
-If the EAP server sets the credential format to PKCS#7-Server-
-Certificate-Root, then the Trusted-Server-Root TLV should contain the
+If the EAP server sets the credential format to
+PKCS#7-Server-Certificate-Root, then the Trusted-Server-Root TLV should contain the
 root of the certificate chain of the certificate issued to the EAP
 server packaged in a PKCS#7 TLV.  If the server certificate is a
 self-signed certificate, then the root is the self-signed
@@ -2730,8 +2730,8 @@ Request  Response    Success   Failure   TLVs
 0+       0+          0         0         Vendor-Specific
 ~~~~
 
-Outer TLVs MUST be marked as optional.  Vendor TLVs inside of a Vendor-
-Specific TLV MUST be marked as optional when included in Outer TLVs.
+Outer TLVs MUST be marked as optional.  Vendor TLVs inside of a
+Vendor-Specific TLV MUST be marked as optional when included in Outer TLVs.
 Outer TLVs MUST NOT be included in messages after the first two TEAP
 messages sent by peer and EAP-server respectively.  That is the first
 EAP-server-to-peer message and first peer-to-EAP-server message.  If
@@ -3558,8 +3558,8 @@ inside the tunnel as defined in [](#teap-tlv-format).
 {:numbered="false"}
 
 TEAPv1 meets this requirement by allowing multiple TLVs to be sent in
-a single EAP request or response packet, while maintaining the half-
-duplex operation typical of EAP.
+a single EAP request or response packet, while maintaining the half-duplex
+operation typical of EAP.
 
 ## A.14.  Requirement 4.3.3: Indicating Criticality of Attributes
 {:numbered="false"}
@@ -3617,9 +3617,9 @@ Request extension {{RFC6066}} during tunnel establishment.
 ## A.22.  Requirement 4.5.2: Internationalization
 {:numbered="false"}
 
-TEAPv1 meets this requirement by supporting UTF-8 format in Basic-
-Password-Auth-Req TLV as defined in [](#bp-auth-req-tlv) and Basic-
-Password-Auth-Resp TLV as defined in Section 4.2.15.
+TEAPv1 meets this requirement by supporting UTF-8 format in
+Basic-Password-Auth-Req TLV as defined in [](#bp-auth-req-tlv) and
+Basic-Password-Auth-Resp TLV as defined in Section 4.2.15.
 
 ## A.23.  Requirement 4.5.3: Metadata
 {:numbered="false"}
@@ -3631,8 +3631,8 @@ for a user or a machine.
 ## A.24.  Requirement 4.5.4: Password Change
 {:numbered="false"}
 
-TEAPv1 meets this requirement by supporting multiple Basic-Password-
-Auth-Req TLV and Basic-Password-Auth-Resp TLV exchanges within a
+TEAPv1 meets this requirement by supporting multiple
+Basic-Password-Auth-Req TLV and Basic-Password-Auth-Resp TLV exchanges within a
 single EAP authentication, which allows "housekeeping"" functions
 such as password change.
 
@@ -4418,8 +4418,8 @@ inner method, the conversation will appear as follows:
 {:numbered="false"}
 
 The following exchanges show a successful TEAP authentication with
-basic password authentication and channel binding using a Request-
-Action TLV.  The conversation will appear as follows:
+basic password authentication and channel binding using a
+Request-Action TLV.  The conversation will appear as follows:
 
        Authenticating Peer     Authenticator
        -------------------     -------------

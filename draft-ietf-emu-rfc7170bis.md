@@ -181,7 +181,9 @@ Inner method
 > An authentication method which is sent as application data inside
 > of a TLS exchange which is carried over TEAP.  The inner method
 > can be an EAP authentication method, a username / password
-> authentication, or a vendor-specific authentication method.
+> authentication, or a vendor-specific authentication method.  Where the
+> TLS connection is authenticated, the inner method could also be
+> a PKCS exchange.
 
 # Protocol Overview
 
@@ -4469,8 +4471,10 @@ Request-Action TLV.  The conversation will appear as follows:
 {:numbered="false"}
 
 The following exchanges show the peer sending a PKCS#10 TLV, and
-server replying with a PKCS7 TLV. The conversation will appear as
-follows:
+server replying with a PKCS7 TLV. The exchange below assumes that the
+EAP peer is authenticated in Phase 1, either via bi-directional
+certificate exchange, or some other TLS method such as a proof of
+knowledge (POL).  The conversation will appear as follows:
 
 ~~~~
 ,----.                                             ,-------.

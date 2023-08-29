@@ -4618,13 +4618,10 @@ is performed in Phase 2. The conversation will appear as follows:
   |   TLS finished) TLS channel established   |
   |  - - - - - - - - - - - - - - - - - - - - ->
   |                                           |
-  |       Intermediate-Result                 |
-  |       TLV request(Success),               |
   |        Crypto-Binding TLV(Request),       |
   |        Result TLV(Success)                |
   | <- - - - - - - - - - - - - - - - - - - - -
   |                                           |
-  | Intermediate-Result TLV response(Success),|
   |  Crypto-Binding TLV(Response),            |
   |  Result TLV(Success)                      |
   |  - - - - - - - - - - - - - - - - - - - - ->

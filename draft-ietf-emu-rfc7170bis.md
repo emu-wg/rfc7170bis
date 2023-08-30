@@ -4474,7 +4474,7 @@ The following exchanges show the peer sending a PKCS#10 TLV, and
 server replying with a PKCS7 TLV. The exchange below assumes that the
 EAP peer is authenticated in Phase 1, either via bi-directional
 certificate exchange, or some other TLS method such as a proof of
-knowledge (POL).  The conversation will appear as follows:
+knowledge (TLS-POK).  The conversation will appear as follows:
 
 ~~~~
 ,----.                                             ,-------.
@@ -4498,12 +4498,14 @@ knowledge (POL).  The conversation will appear as follows:
   |                                                    |
   |             EAP-Request/ EAP-Type=TEAP,            |
   |              V=1(TLS server_hello,                 |
-  |             (TLS change_cipher_spec,               |
+  |              TLS certificate,                      |
+  |              TLS certificate_request,              |
   |              TLS finished)                         |
   | <- - - - - - - - - - - - - - - - - - - - - - - - - -
   |                                                    |
   |        EAP-Response/EAP-Type=TEAP,                 |
   |         V=1(TLS change_cipher_spec,                |
+  |             TLS certificate,                       |
   |        TLS finished) TLS channel established       |
   |  - - - - - - - - - - - - - - - - - - - - - - - - - >
   |                                                    |
@@ -4609,12 +4611,15 @@ is performed in Phase 2. The conversation will appear as follows:
   |                                           |
   |        EAP-Request/ EAP-Type=TEAP,        |
   |         V=1(TLS server_hello,             |
-  |        (TLS change_cipher_spec,           |
+  |         TLS certificate,                  |
+  |         TLS certificate_request,          |
+  |         TLS change_cipher_spec,           |
   |         TLS finished)                     |
   | <- - - - - - - - - - - - - - - - - - - - -
   |                                           |
   |   EAP-Response/EAP-Type=TEAP,             |
-  |    V=1(TLS change_cipher_spec,            |
+  |    V=1(TLS certificate,                   |
+  |        TLS change_cipher_spec,            |
   |   TLS finished) TLS channel established   |
   |  - - - - - - - - - - - - - - - - - - - - ->
   |                                           |

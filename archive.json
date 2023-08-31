@@ -1,0 +1,1399 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2023-08-31T00:42:54.248190+00:00",
+  "repo": "emu-wg/rfc7170bis",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOInRT-s5agtxd",
+      "title": "Small potatoes: we need a modest IANA considerations section",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/1",
+      "state": "CLOSED",
+      "author": "elear",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "\r\nThe TLV registry and the various registrations should now be pointed to **this** document as the authority rather than RFC 7170, and we should retain the registration policy statement for TLVs here.  Frankly, specification required is just a little thin.  We probably should provide a template.  We should also leave a tombstone to indicate how the registries were formed.\r\n\r\n",
+      "createdAt": "2023-01-04T08:17:04Z",
+      "updatedAt": "2023-02-01T20:34:51Z",
+      "closedAt": "2023-02-01T20:34:51Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "The latest rev updates this.",
+          "createdAt": "2023-02-01T20:34:51Z",
+          "updatedAt": "2023-02-01T20:34:51Z"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "I_kwDOInRT-s5agvBk",
+      "title": "use \"Obsoletes: RFC 7170\"",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/2",
+      "state": "CLOSED",
+      "author": "elear",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Since this document is a complete specification, it obsoletes RFC 7170 (if approved).",
+      "createdAt": "2023-01-04T08:19:59Z",
+      "updatedAt": "2023-01-07T13:15:43Z",
+      "closedAt": "2023-01-07T13:15:43Z",
+      "comments": [
+        {
+          "author": "jimdigriz",
+          "authorAssociation": "NONE",
+          "body": "Fixed by 225cd8a0ce908febf12f1e4c16ab2eae3db3ce5f",
+          "createdAt": "2023-01-07T10:06:40Z",
+          "updatedAt": "2023-01-07T10:06:40Z"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOInRT-s5agv-Y",
+      "title": "Tracking issue: don't lose sight of already verified errata",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/3",
+      "state": "CLOSED",
+      "author": "elear",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "See https://www.rfc-editor.org/errata_search.php?rfc=7170&rec_status=1&presentation=table.",
+      "createdAt": "2023-01-04T08:22:29Z",
+      "updatedAt": "2023-02-01T20:36:30Z",
+      "closedAt": "2023-02-01T20:36:30Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I've checked the latest rev, and it has the fixes suggested in the errata.",
+          "createdAt": "2023-02-01T20:36:30Z",
+          "updatedAt": "2023-02-01T20:36:30Z"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOInRT-s5ahVVD",
+      "title": "Do we want to keep PAC?",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/4",
+      "state": "CLOSED",
+      "author": "elear",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "We have discussed not adding a lot into TEAP, but it might be good to consider removing some stuff. PAC tops the list of things I'd like to see removed.  This is relevant to Erratum 5844 in that the example given contains a PAC/PAC-Acknowledgment.",
+      "createdAt": "2023-01-04T10:08:52Z",
+      "updatedAt": "2023-01-26T15:29:05Z",
+      "closedAt": "2023-01-26T15:29:05Z",
+      "comments": [
+        {
+          "author": "jimdigriz",
+          "authorAssociation": "NONE",
+          "body": "For RFC7170*bis* we need to describe existing implementations and not what we could do.\r\n\r\nThere is scope to (safely) removing parts of the PAC under TLS 1.3 which is being hammered out in https://datatracker.ietf.org/doc/html/draft-ietf-emu-tls-eap-types-09#section-2.2.\r\n\r\nIn particularly `A-ID` though needs to be kept (and communicated somehow) which could (ie. I would do this) be used to steer the TEAP packets to a particular server in a cluster for handling resumption; as it helps with backend keying material management.",
+          "createdAt": "2023-01-04T10:57:21Z",
+          "updatedAt": "2023-01-04T10:57:21Z"
+        },
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "The consensus was to remove the PAC, so we can close this issue.",
+          "createdAt": "2023-01-26T15:29:05Z",
+          "updatedAt": "2023-01-26T15:29:05Z"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "I_kwDOInRT-s5a4-Zs",
+      "title": "Errata 5128 not complete",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/5",
+      "state": "CLOSED",
+      "author": "jsalowey",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "TLS PRF does not define a length so I think the output length needs to be described outside the function.   See https://github.com/emu-wg/teap-errata/pull/4/files  for changes to 5.2 and 5.3.\r\n\r\nThis applies to TLS 1.2.  TLS EAP Types document (https://datatracker.ietf.org/doc/draft-ietf-emu-tls-eap-types/)  defines TLS exporter use for TLS 1.3 instead of the TLS PRF.  ",
+      "createdAt": "2023-01-09T03:53:34Z",
+      "updatedAt": "2023-01-26T15:28:50Z",
+      "closedAt": "2023-01-26T15:28:49Z",
+      "comments": []
+    },
+    {
+      "number": 6,
+      "id": "I_kwDOInRT-s5a-mdG",
+      "title": "PAC TLV format",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/6",
+      "state": "CLOSED",
+      "author": "alandekok",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 4.2.12 - PAC TLV Format\r\n\r\nIt is not clear whether a PAC-Type sub-attribute should be in a PAC TLV or a PAC-Info TLV inside a PAC TLV...or why you would pick one over the other.\r\n\r\nPAC-Info is described only for the use case of a server sending it and as it includes a MUST for containing at least A-ID, A-ID-Info and PAC-Type which means a peer cannot send it as there is no good reason for the peer to send A-ID and it may not have the A-ID-Info anyway.\r\n\r\nI think it would help the reader to see an explicit statement of:\r\n\r\n* peer requesting PAC: PAC TLV[PAC-Type]\r\n* server provisioning PAC: PAC TLV[PAC-Key, PAC-Info[A-ID, A-ID-Info, PAC-Type], PAC-Opaque {or via NewSessionTicket}]\r\n\r\nImplementors should provide feedback here.",
+      "createdAt": "2023-01-09T21:34:34Z",
+      "updatedAt": "2023-01-26T15:28:39Z",
+      "closedAt": "2023-01-26T15:28:39Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "The consensus was to remove the PAC, so this issue is no longer relevant.",
+          "createdAt": "2023-01-26T15:28:39Z",
+          "updatedAt": "2023-01-26T15:28:39Z"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "id": "I_kwDOInRT-s5a-moJ",
+      "title": "PAC-Acknowledgement TLV",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/7",
+      "state": "CLOSED",
+      "author": "alandekok",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 4.2.12.5 - PAC-Acknowledgement TLV\r\n\r\nUnclear how this should be used, it looks like the peer could be expected to send:\r\n\r\nPAC TLV[PAC-Acknowledgement]\r\n\r\nAfter reading section 3.8.1 and getting confused, I am wondering now if this is actually:\r\n\r\nPAC TLV[PAC-Info{carbon copy of server sent TLV}, PAC-Acknowledgement]\r\n\r\nThis would let the client acknowledge PACs out of order. Though this does not help the server side provisioning PACs out of order.",
+      "createdAt": "2023-01-09T21:35:08Z",
+      "updatedAt": "2023-01-26T15:28:31Z",
+      "closedAt": "2023-01-26T15:28:30Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "The consensus was to remove the PAC, so this issue is no longer relevant.",
+          "createdAt": "2023-01-26T15:28:30Z",
+          "updatedAt": "2023-01-26T15:28:30Z"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "id": "I_kwDOInRT-s5a-nue",
+      "title": "PKCS#7 TLV",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/8",
+      "state": "CLOSED",
+      "author": "alandekok",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 4.2.15 - \r\n\r\n\"...in a degenerate Certificates Only PKCS#7 SignedData Content as defined in [RFC5652].\" - I searched for 'degen' in RFC5652 and am no closer to understanding what the format should be. \r\n\r\nAm I right to infer is EncapsulatedContentInfo is omitted and \"signed\" is 'id-data'? Is this all that is to it?\r\n\r\nThe problem for me is it is not obvious that \"SignedData Content\" (RFC7170) maps to \"signed\" (RFC5652).\r\n\r\nAlso that \"degenerate\" (RFC7170) means \"do not include signatures in TLV\"? This makes no sense to me with my limited view of certificate chaining.\r\n\r\nGuessing as Eliot seems to have implemented this, he can help explain to people like me what to do? :)",
+      "createdAt": "2023-01-09T21:38:22Z",
+      "updatedAt": "2023-08-22T14:52:15Z",
+      "closedAt": "2023-08-22T14:52:15Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "this has been addressed.",
+          "createdAt": "2023-08-22T14:52:15Z",
+          "updatedAt": "2023-08-22T14:52:15Z"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "id": "I_kwDOInRT-s5bFQyB",
+      "title": "PAC provisioning and interaction with NewSessionTicket",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/9",
+      "state": "CLOSED",
+      "author": "alandekok",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 3.8.1 'PAC Provisioning' reads:\r\n    The peer MUST successfully authenticate the EAP server and validate the\r\n    Crypto-Binding TLV as defined in Section 4.2.13 before issuing the request.\r\n\r\nThe example in Appendix C.1 is correct when considering the section 3.8.1 requirement and would also comply with section 3.2.3 if the text in 3.2.3 is updated to consider the following:\r\n\r\n1) A server must not issue a session ticket with NewSessionTicket Handshake Message before the section 3.8.1 requirement is met. In other words, the message flow in Figure 2 of Session ticket RFC is seems to never be applicable with TEAP:\r\nhttps://www.rfc-editor.org/rfc/rfc5077#section-3.1\r\n\r\nIn this flow NewSessionTicket is sent by the server before it sends ChangeCipherSpec to finish the session ticket based handshake.\r\n\r\nNote that this does not prohibit the use of NewSessionTicket. https://www.rfc-editor.org/rfc/rfc5077#section-5.8 reminds that a TLS session renegotiation can be used to send a NewSessionTicket message. Because both the server and the client can renegotiate, they both need to be careful and ensure that the section 3.8.1 requirement is met.\r\n\r\n2) I'd say it would be easiest not to distribute PAC with RFC 5077 NewSessionTicket message. However, TEAP RFC section 3.2.2. 'TLS Session Resume Using a PAC' appears to require NewSessionTicket support. A quote from 3.2.2:\r\n\r\n   Implementations MUST support the TLS Ticket extension\r\n   [RFC5077] mechanism for distributing a PAC and may provide additional\r\n   ways to provision the PAC, such as manual configuration.\r\n\r\n3) Turning off TLS renegotiation would ensure that NewSessionTicket is not sent after the initial handshake. On the other hand, the TEAP RFC has a number of uses for renegotiation.\r\n\r\n4) Based on the above, my understanding is that a TEAP peer must be very careful about when it accepts a NewSessionTicket and the TEAP server must also be careful that it does not send an unexpected NewTicketSession during an initial handshake or renegotiation handshake.\r\n\r\n\r\nMaybe something like this:\r\n\r\n'abbreviated handshake' is based on TLS session ticket or TLS session id. That is, when TLS state kept on client or server side is used to start an initial (or renegotiated) TLS handshake. This hansdhake may succeed or fail.\r\n \r\n'resumed session' a session that is re-established after a successful 'abbreviated handshake'.",
+      "createdAt": "2023-01-10T22:35:05Z",
+      "updatedAt": "2023-01-26T15:28:18Z",
+      "closedAt": "2023-01-26T15:28:17Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "The consensus was to remove the PAC, so this issue is no longer relevant.",
+          "createdAt": "2023-01-26T15:28:17Z",
+          "updatedAt": "2023-01-26T15:28:17Z"
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "id": "I_kwDOInRT-s5boIKo",
+      "title": "Update author list",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/13",
+      "state": "CLOSED",
+      "author": "jsalowey",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Not all authors are currently active and should be moved to contributor section.  ",
+      "createdAt": "2023-01-18T01:10:44Z",
+      "updatedAt": "2023-01-26T15:27:43Z",
+      "closedAt": "2023-01-26T15:27:43Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Done in commit 06a99850a23d68230be8949a8bfd478d63318f22",
+          "createdAt": "2023-01-26T15:27:43Z",
+          "updatedAt": "2023-01-26T15:27:43Z"
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "id": "I_kwDOInRT-s5c4km8",
+      "title": "No identities are seen before the server has to choose authentication method",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/14",
+      "state": "CLOSED",
+      "author": "alandekok",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "When using normal EAP, the server sees the EAP Identity before it selects which EAP type is being used.\r\n\r\nHowever, with TEAP, the inner tunnel method (EAP or basic password) has to be chosen by the server before it sees any user identity.  This limitation means that it is impossible for the server to divide users into groups, as with:\r\n\r\n* users matching X get basic password auth\r\n* all other users get EAP\r\n\r\nPerhaps we have to define an `Identity-Hint` TLV which is sent by the peer as soon as the inner tunnel is established?  The server can then use this hint to select which authentication method to use.",
+      "createdAt": "2023-01-26T15:32:28Z",
+      "updatedAt": "2023-04-18T15:49:26Z",
+      "closedAt": "2023-04-18T15:49:26Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Addressed with Identity-Hint in commit 19ea60411",
+          "createdAt": "2023-04-18T15:49:25Z",
+          "updatedAt": "2023-04-18T15:49:25Z"
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "id": "I_kwDOInRT-s5h0qDp",
+      "title": "Empty EAP Identity && Error TLV value \"authentication method not configured\"",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/15",
+      "state": "CLOSED",
+      "author": "alandekok",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Windows client when configured only for a single authentication whilst the server is for chained authentication you end up with:\r\n\r\n**server:** please do machine authentication (Identity-Type-TLV) and tell me your identity (EAP-Payload-TLV[EAP-Identity])\r\nnotice that these are done simultaneously we cannot get the identity and then pick the type of authentication)\r\n\r\n**client:** my identity is \"host/bobs-workstation\" and I am doing EAP-TLS to authenticate\r\n\r\n**server:** please now do user authentication server does not know the clients configuration\r\n\r\n**client:** my identity is \"\" (empty string)\u2026.stall, instead of ?? Error\r\n\r\nWe could use `1005  User account credentials unavailable`.  But..\r\n\r\nHeikki Vatiainen says:  about identity being \"\" (empty string) and using \"credentials not available\". I'd say that a correct error message would be something like `authentication method not configured` or similar that tells the client (in this case) doesn't now how to authenticate vs. what identity to use\r\n\r\nSo we should perhaps add some text describing this behavior, and explaining why it's wrong.  And then create a new value for Error TLV",
+      "createdAt": "2023-03-27T01:19:53Z",
+      "updatedAt": "2023-08-22T14:54:52Z",
+      "closedAt": "2023-08-22T14:54:52Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Fixed with adding `Identity-Hint` TLV and associated text",
+          "createdAt": "2023-08-22T14:54:52Z",
+          "updatedAt": "2023-08-22T14:54:52Z"
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "id": "I_kwDOInRT-s5h0qi2",
+      "title": "Create Identity-Hint TLV",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/16",
+      "state": "CLOSED",
+      "author": "alandekok",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Which the client can send to the server in phase 2, as soon as the tunnel is established.\r\n\r\nIt MUST NOT be sent in the outer TLVs.\r\n\r\nIf the client does user && machine auth, it can send 2 identity hints.  It's up to the server to parse those and figure out what they mean.\r\n\r\nWe should also note that this is a _hint_.  It's only used to permit the server to select authentication methods.  The actual identity sent for EAP / basic-password can be different.   The identity hint should be otherwise ignored.",
+      "createdAt": "2023-03-27T01:22:34Z",
+      "updatedAt": "2023-04-18T15:49:05Z",
+      "closedAt": "2023-04-18T15:49:04Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Addressed in commit 19ea60411",
+          "createdAt": "2023-04-18T15:49:04Z",
+          "updatedAt": "2023-04-18T15:49:04Z"
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "id": "I_kwDOInRT-s5h01Ws",
+      "title": "Update TLS 1.2 Profiling",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/17",
+      "state": "CLOSED",
+      "author": "emanjon",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "In the EMU 116 Chat\r\n\r\n**John Preu\u00df Mattsson:**\r\nI think the TLS 1.2 profiling needs work for this to be worthy of 2023 standards track. RFC 7540 was best practice 2015. Legacy interop is tricky so I don't think the draft needs to forbid as much as the 2025 RFC 7540.\r\n\r\nWhat I strongly thing the draft must add is\r\n\r\n    Add. \"This version of the TEAP implementation MUST support and prefer TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 with the P-256 elliptic curve\". This is the cipher suite mandated by HTTP/2.\r\n\r\n    Refer to BCP 195 (RFC 9325, RFC 8996)\r\n\r\nNit: TLS RFC spells \"cipher suite\"\r\n\r\n\r\n**Yoav Nir:** If we're specifying a ciphersuite in 2023, do we specify anything with _RSA_ ?\r\n\r\n**Dan Harkins**: not RSA key exchange but RSA sig are fine\r\n\r\n**Yoav Nir:** RSA sigs are fine if your keys are big enough, and by now the recommendations are really big ones.\r\n\r\n**Dan Harkins:** ECDHE and ECDSA\r\n",
+      "createdAt": "2023-03-27T02:11:43Z",
+      "updatedAt": "2023-08-22T14:54:35Z",
+      "closedAt": "2023-08-22T14:54:34Z",
+      "comments": [
+        {
+          "author": "emanjon",
+          "authorAssociation": "MEMBER",
+          "body": "Seemed to be agreement in the room to add reference to BCP 195 and to mandate support and prefer one of\r\n\r\nTLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256\r\nTLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+          "createdAt": "2023-03-27T02:14:06Z",
+          "updatedAt": "2023-03-27T02:14:06Z"
+        },
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Addressed in recent commits.  Also update `ciphersuite` to `cipher suite`",
+          "createdAt": "2023-08-22T14:54:34Z",
+          "updatedAt": "2023-08-22T14:54:34Z"
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "id": "I_kwDOInRT-s5iOHO9",
+      "title": "Create CSR attributes TLV",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/18",
+      "state": "CLOSED",
+      "author": "elear",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "As discussed in the WG meeting and on list, create CSR attributes element that conforms to RFC 7170 and follow-on guidance from LAMPS.",
+      "createdAt": "2023-03-30T15:36:55Z",
+      "updatedAt": "2023-04-18T15:48:37Z",
+      "closedAt": "2023-04-18T15:48:36Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Address and pulled in.",
+          "createdAt": "2023-04-18T15:48:36Z",
+          "updatedAt": "2023-04-18T15:48:36Z"
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "id": "I_kwDOInRT-s5iOI3P",
+      "title": "We need a PKCS#10/PKCS#7 flow example.",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/20",
+      "state": "CLOSED",
+      "author": "elear",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Subject says it all.",
+      "createdAt": "2023-03-30T15:41:12Z",
+      "updatedAt": "2023-08-22T14:41:36Z",
+      "closedAt": "2023-08-22T14:41:35Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Fixed in `C.11. PKCS Exchange`",
+          "createdAt": "2023-08-22T14:41:36Z",
+          "updatedAt": "2023-08-22T14:41:36Z"
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "id": "I_kwDOInRT-s5ptS1d",
+      "title": "Verify Errata ",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/21",
+      "state": "OPEN",
+      "author": "osdingo",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Errata ID: [5765](https://www.rfc-editor.org/errata/eid5765)\r\nErrata ID: [6157](https://www.rfc-editor.org/errata/eid6157)\r\nErrata ID: [5127](https://www.rfc-editor.org/errata/eid5127)\r\nErrata ID: [5128](https://www.rfc-editor.org/errata/eid5128)\r\nErrata ID: [5767](https://www.rfc-editor.org/errata/eid5767)\r\nErrata ID: [5768](https://www.rfc-editor.org/errata/eid5768)\r\nErrata ID: [5770](https://www.rfc-editor.org/errata/eid5770)\r\nErrata ID: [5775](https://www.rfc-editor.org/errata/eid5775)\r\nErrata ID: [5844](https://www.rfc-editor.org/errata/eid5844)\r\nErrata ID: [5845](https://www.rfc-editor.org/errata/eid5845)\r\nErrata ID: [7145](https://www.rfc-editor.org/errata/eid7145)\r\nErrata ID: [7259](https://www.rfc-editor.org/errata/eid7259)",
+      "createdAt": "2023-06-25T20:40:34Z",
+      "updatedAt": "2023-08-29T03:43:40Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "osdingo",
+          "authorAssociation": "NONE",
+          "body": "Errata ID: [5765](https://www.rfc-editor.org/errata/eid5765) - \r\nFixed - Authority ID TLV is marked as optional (Section 4.2.2) ",
+          "createdAt": "2023-06-25T20:43:53Z",
+          "updatedAt": "2023-06-25T20:43:53Z"
+        },
+        {
+          "author": "osdingo",
+          "authorAssociation": "NONE",
+          "body": "Errata ID: [6157](https://www.rfc-editor.org/errata/eid6157)\r\nFixed - Status field text it section 4.2.9 references party since the message could be sent by client or server.  ",
+          "createdAt": "2023-06-25T20:45:58Z",
+          "updatedAt": "2023-06-25T20:45:58Z"
+        },
+        {
+          "author": "osdingo",
+          "authorAssociation": "NONE",
+          "body": "Errata ID: [5127](https://www.rfc-editor.org/errata/eid5127)\r\nFixed - Correctly describes the derivation of IMSK\r\n\r\nErrata Resolution: \r\n\r\nStatus: Hold For Document Update or Verified \r\nType: Technical\r\nSection: 5.2\r\n\r\nOriginal Text:\r\nIMSK = First 32 octets of TLS-PRF(EMSK, \"TEAPbindkey@ietf.org\" |\r\n     \"\\0\" | 64)\r\nwhere \"|\" denotes concatenation, EMSK is the EMSK from the inner\r\n     method, \"TEAPbindkey@ietf.org\" consists the ASCII value for the\r\n     label \"TEAPbindkey@ietf.org\" (without quotes), \"\\0\" = is a NULL\r\n     octet (0x00 in hex), length is the 2-octet unsigned integer in\r\n     network byte order, and TLS-PRF is the PRF negotiated as part of\r\n     TLS handshake [[RFC5246](https://datatracker.ietf.org/doc/html/rfc5246)].\r\n\r\nCorrected Text:\r\nIMSK[j] = First 32 octets of TLS-PRF(EMSK[j], \"TEAPbindkey@ietf.org\",\r\n       0x00 | 0x00 | 0x40)\r\nwhere \"|\" denotes concatenation and the TLS-PRF is defined in [[RFC5246](https://emu-wg.github.io/rfc7170bis/draft-ietf-emu-rfc7170bis.html#RFC5246)] as\r\n\r\nPRF(secret, label, seed) = P_<hash>(secret, label | seed).\r\n\r\nThe secret is the EMSK from the j'th inner method, the label is \"TEAPbindkey@ietf.org\" consisting of the ASCII value for the label \"TEAPbindkey@ietf.org\" (without quotes), the seed consists of the \"\\0\" null delimiter (0x00) and 2-octet unsigned integer length in network byte order (0x00 | 0x40) specified in [[RFC5295](https://emu-wg.github.io/rfc7170bis/draft-ietf-emu-rfc7170bis.html#RFC5295)].\r\n\r\n",
+          "createdAt": "2023-06-25T21:07:24Z",
+          "updatedAt": "2023-08-29T03:43:40Z"
+        },
+        {
+          "author": "osdingo",
+          "authorAssociation": "NONE",
+          "body": "Errata ID: [5128](https://www.rfc-editor.org/errata/eid5128)\r\nFixed - Key derivation now uses correct function signature\r\n\r\nErrata Resolution:\r\n\r\nStatus: Hold For Document Update or Verified\r\nType: Technical\r\nSection: 5.2\r\n\r\nOriginal Text:\r\nIMCK[j] = TLS-PRF(S-IMCK[j-1], \"Inner Methods Compound Keys\",\r\n                IMSK[j], 60)\r\n\r\nCorrected Text:\r\nIMCK[j] = the first 60 octets of TLS-PRF(S-IMCK[j-1],\r\n             \"Inner Methods Compound Keys\",\r\n             IMSK[j])",
+          "createdAt": "2023-06-26T02:58:55Z",
+          "updatedAt": "2023-06-26T02:58:55Z"
+        },
+        {
+          "author": "osdingo",
+          "authorAssociation": "NONE",
+          "body": "Errata ID: [5767](https://www.rfc-editor.org/errata/eid5767)\r\nFixed: Referenced sections have been updated and well as other sections in the document.  \r\n\r\nErrata Resolution:\r\n\r\nStatus: Hold For Document Update",
+          "createdAt": "2023-06-26T03:14:22Z",
+          "updatedAt": "2023-06-26T03:14:22Z"
+        },
+        {
+          "author": "osdingo",
+          "authorAssociation": "NONE",
+          "body": "Errata ID: [5768](https://www.rfc-editor.org/errata/eid5768)\r\nFixed: Calculation of compound MAC has been clarified\r\n\r\nErrata Resolution:\r\n\r\nStatus: Hold For Document Update or Verified\r\nType: Technical\r\nSection: 5.3\r\n\r\nOriginal Text:\r\n   The Compound MAC computation is as follows:\r\n\r\n      CMK = CMK[j]\r\n      Compound-MAC = MAC( CMK, BUFFER )\r\n\r\n   where j is the number of the last successfully executed inner EAP\r\n   method, MAC is the MAC function negotiated in TLS 1.2 [RFC5246], and\r\n   BUFFER is created after concatenating these fields in the following\r\n   order:\r\n\r\n   1  The entire Crypto-Binding TLV attribute with both the EMSK and MSK\r\n      Compound MAC fields zeroed out.\r\n\r\n   2  The EAP Type sent by the other party in the first TEAP message.\r\n\r\n   3  All the Outer TLVs from the first TEAP message sent by EAP server\r\n      to peer.  If a single TEAP message is fragmented into multiple\r\n      TEAP packets, then the Outer TLVs in all the fragments of that\r\n      message MUST be included.\r\n\r\n   4  All the Outer TLVs from the first TEAP message sent by the peer to\r\n      the EAP server.  If a single TEAP message is fragmented into\r\n      multiple TEAP packets, then the Outer TLVs in all the fragments of\r\n      that message MUST be included.\r\n\r\nCorrected Text:\r\nThe Compound MAC computation is as follows:\r\n\r\n   Compound-MAC = the first 20 octets of MAC( CMK[n], BUFFER )\r\n\r\nwhere n is the number of the last successfully executed inner method, MAC is the MAC function negotiated in TLS (e.g. TLS 1.2 in [[RFC5246](https://emu-wg.github.io/rfc7170bis/draft-ietf-emu-rfc7170bis.html#RFC5246)]), and BUFFER is created after concatenating these fields in the following order:\r\n\r\n    1.  The entire Crypto-Binding TLV attribute with both the EMSK and MSK Compound MAC fields zeroed out.\r\n    \r\n    2.  The EAP Type sent by the other party in the first TEAP message, which MUST be TEAP, encoded as one octet of 0x37.\r\n    \r\n    3.  All the Outer TLVs from the first TEAP message sent by EAP server to peer. If a single TEAP message is fragmented into multiple TEAP packets, then the Outer TLVs in all the fragments of that message MUST be included.\r\n    \r\n    4.  All the Outer TLVs from the first TEAP message sent by the peer to the EAP server. If a single TEAP message is fragmented into multiple TEAP packets, then the Outer TLVs in all the fragments of that message MUST be included.\r\n\r\nIf no inner EAP authentication method is run then no EMSK or MSK will be generated. If an IMSK needs to be generated then the MSK and therefore the IMSK is set to 0 (e.g., MSK = 32 octets of 0x00s).",
+          "createdAt": "2023-06-26T03:24:49Z",
+          "updatedAt": "2023-06-26T03:28:21Z"
+        },
+        {
+          "author": "osdingo",
+          "authorAssociation": "NONE",
+          "body": "Errata ID: [5770](https://www.rfc-editor.org/errata/eid5770)\r\nFixed: EAP MSK generation has been updated\r\n\r\nErrata Resolution:\r\n\r\nStatus: Hold For Document Update or Verified\r\nType: Technical\r\nSection: 5.4\r\n\r\nOriginal Text:\r\n   TEAP authentication assures the Master Session Key (MSK) and Extended\r\n   Master Session Key (EMSK) output from the EAP method are the result\r\n   of all authentication conversations by generating an Intermediate\r\n   Compound Key (IMCK).  The IMCK is mutually derived by the peer and\r\n   the server as described in [Section 5.2](https://datatracker.ietf.org/doc/html/rfc7170#section-5.2) \r\n   by combining the MSKs from inner EAP methods with key material from TEAP Phase 1.  The resulting\r\n   MSK and EMSK are generated as part of the IMCKn key hierarchy as\r\n   follows:\r\n\r\n      MSK  = TLS-PRF(S-IMCK[j], \"Session Key Generating Function\", 64)\r\n      EMSK = TLS-PRF(S-IMCK[j],\r\n           \"Extended Session Key Generating Function\", 64)\r\n\r\n   where j is the number of the last successfully executed inner EAP\r\n   method.\r\n\r\n   The EMSK is typically only known to the TEAP peer and server and is\r\n   not provided to a third party.  The derivation of additional keys and\r\n   transportation of these keys to a third party are outside the scope\r\n   of this document.\r\n\r\n   If no EAP methods have been negotiated inside the tunnel or no EAP\r\n   methods have been successfully completed inside the tunnel, the MSK\r\n   and EMSK will be generated directly from the session_key_seed meaning\r\n   S-IMCK = session_key_seed.\r\n\r\nCorrected Text:\r\n\r\n   TEAP authentication assures the Master Session Key (MSK) and Extended\r\n   Master Session Key (EMSK) output from the EAP authentication method\r\n   are the result of all authentication conversations by generating an\r\n   Intermediate Compound Key (IMCK).  The IMCK is mutually derived by\r\n   the peer and the server as described in Section 5.2 by combining the\r\n   MSKs from inner methods with key material from TEAP Phase 1.  The\r\n   resulting MSK and EMSK are generated from the final (\"n\"th) inner\r\n   method, as part of the IMCK[n] key hierarchy via the following\r\n   derivation:\r\n\r\n      MSK  = the first 64 octets of TLS-PRF(S-IMCK[n],\r\n             \"Session Key Generating Function\")\r\n      EMSK = the first 64 octets of TLS-PRF(S-IMCK[n],\r\n             \"Extended Session Key Generating Function\")\r\n\r\n   The TLS-PRF is defined in [RFC5246] as\r\n\r\n      PRF(secret, label, seed) = P_<hash>(secret, label | seed).\r\n\r\n   where \"|\" denotes concatenation.  The secret is S-IMCK[n] where n is\r\n   the number of the last generated S-IMCK[j] from Section 5.2.  The\r\n   label is is the ASCII value for the string without quotes.  The seed\r\n   is empty (0 length) and is omitted from the derivation.\r\n\r\n   The EMSK is typically only known to the TEAP peer and server and is\r\n   not provided to a third party.  The derivation of additional keys and\r\n   transportation of these keys to a third party are outside the scope\r\n   of this document.\r\n\r\n   If no EAP authentication methods have been negotiated inside the\r\n   tunnel or no EAP authentication methods have been successfully\r\n   completed inside the tunnel, the MSK and EMSK will be generated\r\n   directly from the session_key_seed meaning S-IMCK[0] =\r\n   session_key_seed.\r\n\r\n   As we noted above, not all inner methods generate both MSK and EMSK,\r\n   so we have to maintain two independent derivations of S-IMCK[j], one\r\n   for each of MSK[j] and EMSK[j].  The final derivation using S-IMCK[n]\r\n   must choose only one of these keys.\r\n\r\n   If the Crypto-Binding TLV contains an EMSK compound MAC, then the\r\n   derivation is taken from the S_IMCK_EMSK[n].  Otherwise it is taken\r\n   from the S_IMCK_MSK[n].\r\n",
+          "createdAt": "2023-06-26T03:32:22Z",
+          "updatedAt": "2023-06-26T03:32:22Z"
+        },
+        {
+          "author": "osdingo",
+          "authorAssociation": "NONE",
+          "body": "Errata ID: [5775](https://www.rfc-editor.org/errata/eid5775)\r\nFixed: updated as part of the resolution to 5770 and 5768\r\n\r\nErrata Resolution:\r\n\r\nStatus: Hold For Document Update  (fixed as part of 5768 text  perhaps it could be rejected citing that it is fixed by 5768?)",
+          "createdAt": "2023-06-26T03:44:37Z",
+          "updatedAt": "2023-06-26T03:44:37Z"
+        },
+        {
+          "author": "jsalowey",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Errata ID: [5844](https://www.rfc-editor.org/errata/eid5844)\r\nFixed: Examples C1 and C2 are updated\r\nErrata Resolution:\r\n\r\nStatus: Hold For Document Update or Verified (PAC was removed from EAP-TEAP revision) \r\nType: Technical\r\nSection: C.1 \r\n\r\nOriginal Text:\r\n\r\n                            <- Crypto-Binding TLV (Request),\r\n                                Result TLV (Success),\r\n                                (Optional PAC TLV)\r\n\r\n       Crypto-Binding TLV(Response),\r\n       Result TLV (Success),\r\n       (PAC-Acknowledgement TLV) ->\r\n\r\nCorrected Text:\r\n\r\n                           <- Intermediate-Result TLV (Success),\r\n                               Crypto-Binding TLV (Request),\r\n                               Result TLV (Success)\r\n\r\n      Intermediate-Result TLV (Success),\r\n      Crypto-Binding TLV(Response),\r\n      Result TLV (Success) ->",
+          "createdAt": "2023-06-27T16:33:55Z",
+          "updatedAt": "2023-06-27T16:33:55Z"
+        },
+        {
+          "author": "jsalowey",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Errata ID: [5845](https://www.rfc-editor.org/errata/eid5845)\r\nFixed: section has been rewritten to remove ambiguity\r\nErrata Resolution:\r\n\r\nStatus: Hold For Document Update\r\n",
+          "createdAt": "2023-06-27T16:54:39Z",
+          "updatedAt": "2023-06-27T16:54:39Z"
+        },
+        {
+          "author": "jsalowey",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Errata ID: [7145](https://www.rfc-editor.org/errata/eid7145)\r\nFixed: the new section contains the recommended text and other clarifications\r\nErrata Resolution:\r\n\r\nStatus: Hold For Document Update or Verified (section was rewritten to make it clearer)\r\nType: Technical\r\nSection: 3.3.1\r\n\r\nOriginal Text:\r\n\r\n   The Crypto-Binding TLV MUST be exchanged and verified\r\n   before the final Result TLV exchange, regardless of whether or not\r\n   there is an inner EAP method authentication.\r\n\r\nCorrected Text: \r\n\r\n   Except as noted below, the Crypto-Binding TLV MUST be exchanged and verified\r\n   before the final Result TLV exchange, regardless of whether or not\r\n   there is an inner EAP method authentication\r\n",
+          "createdAt": "2023-06-27T17:38:22Z",
+          "updatedAt": "2023-06-27T17:38:22Z"
+        },
+        {
+          "author": "jsalowey",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Errata ID: [7259](https://www.rfc-editor.org/errata/eid7259)\r\nFixed: a new section was created for EAP-MSCHAPv2\r\n\r\nErrata Resolution:\r\n\r\nStatus: Hold For Document Update or Verified (new section created and existing section was rewritten to make it clearer)\r\nType: Technical\r\nSection:  3.3.2\r\n\r\nOriginal Text:\r\n\r\n   The use of EAP-FAST-GTC as defined in RFC 5421 [RFC5421] is NOT\r\n   RECOMMENDED with TEAPv1 because EAP-FAST-GTC is not compliant with\r\n   EAP-GTC defined in [RFC3748].  Implementations should instead make\r\n   use of the password authentication TLVs defined in this\r\n   specification.  The authentication server initiates password\r\n   authentication by sending a Basic-Password-Auth-Req TLV defined in\r\n   Section 4.2.14.  If the peer wishes to participate in password\r\n   authentication, then it responds with a Basic-Password-Auth-Resp TLV\r\n   as defined in Section 4.2.15 that contains the username and password.\r\n   If it does not wish to perform password authentication, then it\r\n   responds with a NAK TLV indicating the rejection of the Basic-\r\n   Password-Auth-Req TLV.  Upon receiving the response, the server\r\n   indicates the success or failure of the exchange using an\r\n   Intermediate-Result TLV.  Multiple round trips of password\r\n   authentication requests and responses MAY be used to support some\r\n   \"housecleaning\" functions such as a password or pin change before a\r\n   user is authenticated.\r\n\r\nCorrected Text:\r\n\r\n The use of EAP-FAST-GTC as defined in RFC 5421 [RFC5421] is NOT\r\n   RECOMMENDED with TEAPv1 because EAP-FAST-GTC is not compliant with\r\n   EAP-GTC defined in [RFC3748].  Implementations should instead make\r\n   use of the password authentication TLVs defined in this\r\n   specification.  The authentication server initiates password\r\n   authentication by sending a Basic-Password-Auth-Req TLV defined in\r\n   Section 4.2.14.  If the peer wishes to participate in password\r\n   authentication, then it responds with a Basic-Password-Auth-Resp TLV\r\n   as defined in Section 4.2.15 that contains the username and password.\r\n   If it does not wish to perform password authentication, then it\r\n   responds with a NAK TLV indicating the rejection of the Basic-\r\n   Password-Auth-Req TLV.  Upon receiving the response, the server\r\n   indicates the success or failure of the exchange using an\r\n   Intermediate-Result TLV.  Multiple round trips of password\r\n   authentication requests and responses MAY be used to support some\r\n   \"housecleaning\" functions such as a password or pin change before a\r\n   user is authenticated.\r\n\r\n   If using EAP-MSCHAPv2 as an inner method, the EAP-FAST-MSCHAPv2\r\n   variant defined in [RFC5422] MUST be used.\r\n",
+          "createdAt": "2023-06-27T17:44:31Z",
+          "updatedAt": "2023-06-27T17:44:31Z"
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "id": "I_kwDOInRT-s5urRoB",
+      "title": "Update Section 3.4",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/24",
+      "state": "CLOSED",
+      "author": "alandekok",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "section 3.5: I wonder if additional references to RFC6125 and the\r\nUTA-bis version of that might be more clear.  I think that this\r\nsection is going to get beat on by security review.  I also suggest\r\nthat rather than saying how it is to be matched, I suggest the section\r\nbe more prescriptive in how certificates are expected to be formed.\r\n(I recognize that this text has not changed since 7170)\r\n\r\n@mcr",
+      "createdAt": "2023-08-18T14:40:02Z",
+      "updatedAt": "2023-08-22T14:40:52Z",
+      "closedAt": "2023-08-22T14:40:52Z",
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "fixed by commit ad89e0a",
+          "createdAt": "2023-08-22T14:40:52Z",
+          "updatedAt": "2023-08-22T14:40:52Z"
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "id": "I_kwDOInRT-s5vgpeN",
+      "title": "Errata ID: [5127](https://www.rfc-editor.org/errata/eid5127)",
+      "url": "https://github.com/emu-wg/rfc7170bis/issues/30",
+      "state": "OPEN",
+      "author": "jsalowey",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [
+        "jsalowey"
+      ],
+      "labels": [],
+      "body": "              Errata ID: [5127](https://www.rfc-editor.org/errata/eid5127)\r\nFixed - Correctly describes the derivation of IMSK\r\n\r\nErrata Resolution: \r\n\r\nStatus: Hold For Document Update or Verified \r\nType: Technical\r\nSection: 5.2\r\n\r\nOriginal Text:\r\nIMSK = First 32 octets of TLS-PRF(EMSK, \"TEAPbindkey@ietf.org\" |\r\n     \"\\0\" | 64)\r\nwhere \"|\" denotes concatenation, EMSK is the EMSK from the inner\r\n     method, \"TEAPbindkey@ietf.org\" consists the ASCII value for the\r\n     label \"TEAPbindkey@ietf.org\" (without quotes), \"\\0\" = is a NULL\r\n     octet (0x00 in hex), length is the 2-octet unsigned integer in\r\n     network byte order, and TLS-PRF is the PRF negotiated as part of\r\n     TLS handshake [[RFC5246](https://datatracker.ietf.org/doc/html/rfc5246)].\r\n\r\nCorrected Text:\r\nIMSK[j] = First 32 octets of TLS-PRF(EMSK[j], \"TEAPbindkey@ietf.org\",\r\n       0x00 | 0x00 | 0x40)\r\nwhere \"|\" denotes concatenation and the TLS-PRF is defined in [[RFC5246](https://emu-wg.github.io/rfc7170bis/draft-ietf-emu-rfc7170bis.html#RFC5246)] as\r\n\r\nPRF(secret, label, seed) = P_<hash>(secret, label | seed).\r\n\r\nThe secret is the EMSK from the j'th inner method, the label is \"TEAPbindkey@ietf.org\" consisting of the ASCII value for the label \"TEAPbindkey@ietf.org\" (without quotes), the seed consists of the \"\\0\" null delimiter (0x00) and 2-octet unsigned integer length in network byte order (0x00 | 0x40) specified in [[RFC5295](https://emu-wg.github.io/rfc7170bis/draft-ietf-emu-rfc7170bis.html#RFC5295)].\r\n\r\n_Originally posted by @osdingo in https://github.com/emu-wg/rfc7170bis/issues/21#issuecomment-1606261587_\r\n            ",
+      "createdAt": "2023-08-29T03:48:14Z",
+      "updatedAt": "2023-08-30T10:52:40Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "jsalowey",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@h-vn @alandekok @jimdigriz I edited the above resolution to the errata to match the corrected to the 7170-bis draft (good catch). Does it look to match correctly?",
+          "createdAt": "2023-08-29T03:51:40Z",
+          "updatedAt": "2023-08-29T03:51:40Z"
+        },
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Looks good to me.",
+          "createdAt": "2023-08-29T12:13:45Z",
+          "updatedAt": "2023-08-29T12:13:45Z"
+        },
+        {
+          "author": "h-vn",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "The current, yet unpublished draft has slightly different text. I rendered it with https://author-tools.ietf.org/ and got what's shown below. I highlighted the changes with **bold**.\r\n\r\n> The secret is the EMSK from the j'th inner method, the **usage** label **used** is \"TEAPbindkey@ietf.org\" consisting of the ASCII value for the label \"TEAPbindkey@ietf.org\" (without quotes), the seed consists of the \"\\0\" null delimiter (0x00) and 2-octet unsigned integer length **of 64 octets** in network byte order (0x00 | 0x40) specified in [[RFC5295](https://emu-wg.github.io/rfc7170bis/draft-ietf-emu-rfc7170bis.html#RFC5295)].",
+          "createdAt": "2023-08-30T10:52:40Z",
+          "updatedAt": "2023-08-30T10:52:40Z"
+        }
+      ]
+    }
+  ],
+  "pulls": [
+    {
+      "number": 10,
+      "id": "PR_kwDOInRT-s5HfhUv",
+      "title": "Change concat to function param",
+      "url": "https://github.com/emu-wg/rfc7170bis/pull/10",
+      "state": "MERGED",
+      "author": "jsalowey",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The TLS PRF is defined as \r\nPRF(secret, label, seed) = P_<hash>(secret, label | seed) If we reference the PRF it should use the seed as a parameter instead of concatenation.  The TLS-PRF is described earlier in the section, but we can duplicate it here if it makes it clearer.",
+      "createdAt": "2023-01-16T20:04:11Z",
+      "updatedAt": "2023-01-16T20:47:35Z",
+      "baseRepository": "emu-wg/rfc7170bis",
+      "baseRefName": "main",
+      "baseRefOid": "dd1ba27f5d276813604b81495623f24568c6a876",
+      "headRepository": "emu-wg/rfc7170bis",
+      "headRefName": "jsalowey-IMCK-deriv",
+      "headRefOid": "9541ccfe19afbb065e1a9b559d5e1d53d9cb5d9d",
+      "closedAt": "2023-01-16T20:47:34Z",
+      "mergedAt": "2023-01-16T20:47:34Z",
+      "mergedBy": "alandekok",
+      "mergeCommit": {
+        "oid": "8ce3588a3ae680b3d13d0eb69d110f314f7f9b69"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 11,
+      "id": "PR_kwDOInRT-s5HfkrP",
+      "title": "Cleanup of section 5.3",
+      "url": "https://github.com/emu-wg/rfc7170bis/pull/11",
+      "state": "MERGED",
+      "author": "jsalowey",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Removed some extraneous \\ and moved some text",
+      "createdAt": "2023-01-16T20:16:10Z",
+      "updatedAt": "2023-01-16T20:36:41Z",
+      "baseRepository": "emu-wg/rfc7170bis",
+      "baseRefName": "main",
+      "baseRefOid": "dd1ba27f5d276813604b81495623f24568c6a876",
+      "headRepository": "emu-wg/rfc7170bis",
+      "headRefName": "jsalowey-mskemskgen",
+      "headRefOid": "5a3026510f32ebba16f13bf59f5b32df0d936a49",
+      "closedAt": "2023-01-16T20:36:41Z",
+      "mergedAt": "2023-01-16T20:36:41Z",
+      "mergedBy": "alandekok",
+      "mergeCommit": {
+        "oid": "1cdb735908291f8072cb7f4dd25e913b0cabc2a1"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 12,
+      "id": "PR_kwDOInRT-s5HlgsC",
+      "title": "Added contributors section with original Authors",
+      "url": "https://github.com/emu-wg/rfc7170bis/pull/12",
+      "state": "MERGED",
+      "author": "jsalowey",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2023-01-18T00:50:13Z",
+      "updatedAt": "2023-01-24T14:54:18Z",
+      "baseRepository": "emu-wg/rfc7170bis",
+      "baseRefName": "main",
+      "baseRefOid": "4d51acca18b67379984993edcf04a6e7b4ecce11",
+      "headRepository": "emu-wg/rfc7170bis",
+      "headRefName": "jsalowey-contrib",
+      "headRefOid": "6b7dce4511f5a8badc09b98a4e61c14f0e830450",
+      "closedAt": "2023-01-24T14:54:18Z",
+      "mergedAt": "2023-01-24T14:54:18Z",
+      "mergedBy": "alandekok",
+      "mergeCommit": {
+        "oid": "7c6ea19dcba701683aa413aa4c558b01cd80b0c0"
+      },
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Do we want to leave them as authors, or remove that?",
+          "createdAt": "2023-01-18T02:18:25Z",
+          "updatedAt": "2023-01-18T02:18:25Z"
+        },
+        {
+          "author": "jsalowey",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I'll ask Peter how he wants to handle this.  My preference would be to\nremove them and only add them back if the will commit to being active\nparticipants.\n\nOn Tue, Jan 17, 2023 at 6:18 PM Alan DeKok ***@***.***> wrote:\n\n> Do we want to leave them as authors, or remove that?\n>\n> \u2014\n> Reply to this email directly, view it on GitHub\n> <https://github.com/emu-wg/rfc7170bis/pull/12#issuecomment-1386375190>,\n> or unsubscribe\n> <https://github.com/notifications/unsubscribe-auth/ABMXFJ3TVOBX5IJG56QUCE3WS5HHXANCNFSM6AAAAAAT6PRJUM>\n> .\n> You are receiving this because you authored the thread.Message ID:\n> ***@***.***>\n>\n",
+          "createdAt": "2023-01-18T18:20:08Z",
+          "updatedAt": "2023-01-18T18:20:08Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 19,
+      "id": "PR_kwDOInRT-s5NRnOm",
+      "title": "Add CSR attributes.",
+      "url": "https://github.com/emu-wg/rfc7170bis/pull/19",
+      "state": "MERGED",
+      "author": "elear",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "This PR adds the CSR attributes TLV (Issue #6).  N.b., more work is needed.  See follow-on issue.",
+      "createdAt": "2023-03-30T15:38:54Z",
+      "updatedAt": "2023-04-18T13:54:18Z",
+      "baseRepository": "emu-wg/rfc7170bis",
+      "baseRefName": "main",
+      "baseRefOid": "45824bca068f9df76926ea2b09fc97bd57652f59",
+      "headRepository": "elear/rfc7170bis",
+      "headRefName": "add-csr-attrs",
+      "headRefOid": "46fc0ae1feed5911ed34055aa2a169d53613e24b",
+      "closedAt": "2023-04-18T13:54:18Z",
+      "mergedAt": "2023-04-18T13:54:18Z",
+      "mergedBy": "alandekok",
+      "mergeCommit": {
+        "oid": "5ab0cf3ddbd2a6652240c5b6dee870b4ee1fd4d4"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 22,
+      "id": "PR_kwDOInRT-s5W1o3V",
+      "title": "Fix link to innner-password section within the document",
+      "url": "https://github.com/emu-wg/rfc7170bis/pull/22",
+      "state": "MERGED",
+      "author": "h-vn",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The link to #inner-password section was broken between draft revisions -02 and -03.",
+      "createdAt": "2023-07-31T19:49:16Z",
+      "updatedAt": "2023-07-31T20:13:31Z",
+      "baseRepository": "emu-wg/rfc7170bis",
+      "baseRefName": "main",
+      "baseRefOid": "b072e7b9d6c6e52e43563f58874416055be996e5",
+      "headRepository": "h-vn/rfc7170bis",
+      "headRefName": "h-vn-patch-inner-password",
+      "headRefOid": "573a4c9674f483aa6d533042c1cb3ae5113030df",
+      "closedAt": "2023-07-31T20:13:30Z",
+      "mergedAt": "2023-07-31T20:13:30Z",
+      "mergedBy": "alandekok",
+      "mergeCommit": {
+        "oid": "8b9bd6697df28b3dbacc281d66426baa6dfa19dd"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 23,
+      "id": "PR_kwDOInRT-s5W7vNZ",
+      "title": "Document reference, markdown and terminology fixes and updates",
+      "url": "https://github.com/emu-wg/rfc7170bis/pull/23",
+      "state": "MERGED",
+      "author": "h-vn",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The cross references should be now correct, the other updates are trivial updates.",
+      "createdAt": "2023-08-01T17:23:45Z",
+      "updatedAt": "2023-08-14T14:55:00Z",
+      "baseRepository": "emu-wg/rfc7170bis",
+      "baseRefName": "main",
+      "baseRefOid": "98d1125c7c5bed0f55185312f05c1dfbeed3af30",
+      "headRepository": "h-vn/rfc7170bis",
+      "headRefName": "h-vn-patch-housekeeping",
+      "headRefOid": "19246fd62d6bd3dfde540b5d3d6bd0c91cb4216a",
+      "closedAt": "2023-08-14T14:55:00Z",
+      "mergedAt": "2023-08-14T14:55:00Z",
+      "mergedBy": "alandekok",
+      "mergeCommit": {
+        "oid": "220984db622b81fb3b1c05834fa401cd704f46cf"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 25,
+      "id": "PR_kwDOInRT-s5YaSGU",
+      "title": "Rfc6125 uta tls",
+      "url": "https://github.com/emu-wg/rfc7170bis/pull/25",
+      "state": "CLOSED",
+      "author": "mcr",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Rewrite Server Certificate verification and requirements.\r\nClose #24",
+      "createdAt": "2023-08-21T17:21:50Z",
+      "updatedAt": "2023-08-22T14:40:43Z",
+      "baseRepository": "emu-wg/rfc7170bis",
+      "baseRefName": "main",
+      "baseRefOid": "929372d11e317cfba415ff8a26007ccafa98c0dc",
+      "headRepository": "mcr/rfc7170bis",
+      "headRefName": "rfc6125-uta-tls",
+      "headRefOid": "dbd2b95377acddc22b9bdf318c181456c2df5e8c",
+      "closedAt": "2023-08-22T14:40:43Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I'll incorporate the text and merge it in manually. I think many of these certificate validation rules more properly belong in RFC 9190, but that ship has sailed.  There's no harm in adding them here.",
+          "createdAt": "2023-08-21T20:56:15Z",
+          "updatedAt": "2023-08-21T20:56:15Z"
+        },
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "OK, text updated.  Please review to see if it matches your intent.",
+          "createdAt": "2023-08-21T20:59:05Z",
+          "updatedAt": "2023-08-21T20:59:05Z"
+        },
+        {
+          "author": "mcr",
+          "authorAssociation": "NONE",
+          "body": "Alan DeKok ***@***.***> wrote:\n    > OK, text updated.  Please review to see if it matches your intent.\n\nIt's all fine with me.\nI can't approve my own pull request.\n",
+          "createdAt": "2023-08-22T02:55:33Z",
+          "updatedAt": "2023-08-22T02:55:33Z"
+        },
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Fixed by commit ad89e0a",
+          "createdAt": "2023-08-22T14:40:43Z",
+          "updatedAt": "2023-08-22T14:40:43Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOInRT-s5eoaZW",
+          "commit": {
+            "abbreviatedOid": "dbd2b95"
+          },
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-21T18:39:58Z",
+          "updatedAt": "2023-08-21T18:39:59Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "Can we have a normative reference to an I-D?\r\n\r\nI'm wary of delaying this document until 6125bis is published.  Can we not just depend on 6215?\r\n\r\nPlus, no implementation today does this DNS-ID matching.  The peer doesn't have network access, so it can't do DNS checks.  And it's accessing the server by WiFi SSID (or wired port), not by hostname.  Is there a more generic way of configuring this?",
+              "createdAt": "2023-08-21T18:39:58Z",
+              "updatedAt": "2023-08-21T18:39:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5eocLj",
+          "commit": {
+            "abbreviatedOid": "dbd2b95"
+          },
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-21T18:45:30Z",
+          "updatedAt": "2023-08-21T18:45:30Z",
+          "comments": [
+            {
+              "originalPosition": 35,
+              "body": "I'm not sure how?\r\n\r\nRight now supplicants either connect to an SSID and pin the server certificate, or they have some pre-configured server certificate.\r\n\r\nMaybe what we need instead is to say that if you plan on authenticating via a particular realm (`user@example.com`), then the peer should verify that the server name matches that realm.  I'll note that RFC9190 is silent on this topic.  But RFC5216 Section 5.2 implies that the NAI and realm is used, but doesn't seem to require any matching of realms between EAP Identity and server subjectAltName",
+              "createdAt": "2023-08-21T18:45:30Z",
+              "updatedAt": "2023-08-21T18:45:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5eoctp",
+          "commit": {
+            "abbreviatedOid": "dbd2b95"
+          },
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-21T18:47:05Z",
+          "updatedAt": "2023-08-21T18:47:06Z",
+          "comments": [
+            {
+              "originalPosition": 49,
+              "body": "This puts the EAP certs into a the web PKI.  And also requires domain checking, which can't be done until the peer has network access.\r\n\r\nI think the solution here is again to suggest correlation between the EAP Identity / NAI, and the server name.\r\n\r\nI'll reword the original text, it seems either confusing, or wrong.",
+              "createdAt": "2023-08-21T18:47:05Z",
+              "updatedAt": "2023-08-21T18:58:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5eofD5",
+          "commit": {
+            "abbreviatedOid": "dbd2b95"
+          },
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-21T18:54:06Z",
+          "updatedAt": "2023-08-21T18:54:06Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "On reading this line, I have no idea what it means.  I'll reword the original text :(",
+              "createdAt": "2023-08-21T18:54:06Z",
+              "updatedAt": "2023-08-21T18:54:06Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5eof_b",
+          "commit": {
+            "abbreviatedOid": "dbd2b95"
+          },
+          "author": "mcr",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-21T18:56:32Z",
+          "updatedAt": "2023-08-21T18:56:32Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "> Can we have a normative reference to an I-D?\r\n> \r\n> I'm wary of delaying this document until 6125bis is published. Can we not just depend on 6215?\r\n\r\nNo, the IESG will just tell you to rewrite and update.\r\n6125bis is in the RFC-editor Q already.\r\n\r\n> Plus, no implementation today does this DNS-ID matching. The peer doesn't have network access, so it can't do DNS checks. And it's accessing the server by WiFi SSID (or wired port), not by hostname. Is there a more generic way of configuring this?\r\n\r\nDNS-ID *style* does not imply DNS.\r\nIt means if you wrote \"foo.example\" in the configuration file as the NAI, then it had better have foo.example in the subjectAldName.\r\n\r\n\r\n\r\n",
+              "createdAt": "2023-08-21T18:56:32Z",
+              "updatedAt": "2023-08-21T18:56:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5eo_H7",
+          "commit": {
+            "abbreviatedOid": "dbd2b95"
+          },
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-21T20:12:38Z",
+          "updatedAt": "2023-08-21T20:12:38Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "That's good to know.  I'll update it to reference 6125bis.\r\n",
+              "createdAt": "2023-08-21T20:12:38Z",
+              "updatedAt": "2023-08-21T20:12:38Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 26,
+      "id": "PR_kwDOInRT-s5YzIQo",
+      "title": "Unify terminology with 'Intermediate Compound Key Derivations' paragraph 2",
+      "url": "https://github.com/emu-wg/rfc7170bis/pull/26",
+      "state": "CLOSED",
+      "author": "h-vn",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Paragraph 2 in 'Intermediate Compound Key Derivations' section says:\r\n\r\n  When a particular authentication method does not provide key material (such\r\n  as with password exchange) then a special \"all zero\" IMSK is used as described\r\n  below.\r\n\r\nLater in the same section and section \"Computing the Compound MAC\" the text says:\r\n\r\n  If no inner EAP authentication method is run then no EMSK or MSK will be\r\n  generated.\r\n\r\nThis seems to be a little too restricted compared to paragraph 2 which simply states that an inner method may not be able to provide key material.\r\n\r\nIf there later is a non-EAP method, such as a provisioning method that can provide keying material, the current text becomes too restrictive.",
+      "createdAt": "2023-08-25T14:02:38Z",
+      "updatedAt": "2023-08-29T07:53:46Z",
+      "baseRepository": "emu-wg/rfc7170bis",
+      "baseRefName": "main",
+      "baseRefOid": "5d7775a3684c91dd6e044627e9a83efdedee3721",
+      "headRepository": "h-vn/rfc7170bis",
+      "headRefName": "main",
+      "headRefOid": "5d7775a3684c91dd6e044627e9a83efdedee3721",
+      "closedAt": "2023-08-29T07:53:45Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This seems reasonable. Unless there are objections on the EMU list in the next few days, I'll merge it in.",
+          "createdAt": "2023-08-25T14:05:17Z",
+          "updatedAt": "2023-08-25T14:05:17Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOInRT-s5fVV25",
+          "commit": {
+            "abbreviatedOid": "a0ae329"
+          },
+          "author": "jsalowey",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "This looks good to me",
+          "createdAt": "2023-08-29T03:54:55Z",
+          "updatedAt": "2023-08-29T03:54:55Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "id": "PR_kwDOInRT-s5Y3zIn",
+      "title": "Revert some changes in IMSK derivation for RFC 7170 compatibility.",
+      "url": "https://github.com/emu-wg/rfc7170bis/pull/27",
+      "state": "MERGED",
+      "author": "h-vn",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Revert a change in commit\r\nhttps://github.com/emu-wg/rfc7170bis/commit/69a883ef2d95a7c817a13c275d84f367e4d6b1a4 where MSK was also passed to TLS-PRF during IMSK derivation. This would break compatibility with RFC 7170 and existing implementations.\r\n\r\nNote that the above commit by itself does not immediately cause a problem. When combined with the commit below, TLS-PRF(EMSK[j] ...) gets changed to TLS-PRF(secret, ...) where 'secret' would also include MSK.\r\n\r\nRevert a change in commit\r\nhttps://github.com/emu-wg/rfc7170bis/commit/44f8a758ceb785fec398503a5aab31a8c8cfba30 where EMSK was also adjusted to 32 octet length. RFC 7170 passes unadjusted EMSK to TLS-PRF and any adjustments would break compatibility with RFC 7170 and existing implementations.\r\n\r\nClarify text in the case where there's no EMSK or MSK and the IMSK must be set to 32 zero-bit octets.",
+      "createdAt": "2023-08-27T17:15:59Z",
+      "updatedAt": "2023-08-28T19:48:11Z",
+      "baseRepository": "emu-wg/rfc7170bis",
+      "baseRefName": "main",
+      "baseRefOid": "8e59583166dd8ea9e166f3a2d7238a5fd08e4c5f",
+      "headRepository": "h-vn/rfc7170bis",
+      "headRefName": "imsk-revert",
+      "headRefOid": "5410062dd88119325bbb5bbc28a8878fc4071899",
+      "closedAt": "2023-08-28T12:06:59Z",
+      "mergedAt": "2023-08-28T12:06:59Z",
+      "mergedBy": "alandekok",
+      "mergeCommit": {
+        "oid": "49ee99afcfce6f091ddaf369d13db860a212de96"
+      },
+      "comments": [
+        {
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Barring one nit, I think this looks good.",
+          "createdAt": "2023-08-27T18:45:24Z",
+          "updatedAt": "2023-08-27T18:45:24Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOInRT-s5fMvSq",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-27T18:44:51Z",
+          "updatedAt": "2023-08-27T18:44:51Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "I would probably change this to\r\n\r\n```\r\nWhere the EMSK is available, the secret is the EMSK from ...\r\n```\r\n\r\nthat mirrors the text in the next paragraph.",
+              "createdAt": "2023-08-27T18:44:51Z",
+              "updatedAt": "2023-08-27T18:44:51Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5fMwNQ",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "h-vn",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-27T19:23:43Z",
+          "updatedAt": "2023-08-27T19:23:44Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "Changed with amended commit and force push. Now it's clear that EMSK is not always available.",
+              "createdAt": "2023-08-27T19:23:43Z",
+              "updatedAt": "2023-08-27T19:23:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5fP2Dm",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "jimdigriz",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-28T10:18:16Z",
+          "updatedAt": "2023-08-28T10:18:16Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "Maybe I am reading too much into it, but here I see the *previous* paragraph reads \"*If* an inner method supports export of an Extended Master Session Key...\" so I am lead into thinking \"skip this when not possible\" but then the next bit \"*Where* the EMSK is available [sic set the 'secret' to it]...\" might bump me back into \"the secret is optional but not the calculation\" so I may decide to use all NULLs as the secret similar to how the MSK fallback does (deduction via inferring symmetry where there is none).\r\n\r\nThere is a lot to unpack in this section, not much we can do about that, but I think we can help hugely by simply replacing `secret` with `EMSK[j-1]` (hmmm or is this `EMSK[j]`?) in:\r\n\r\n```\r\nIMSK[j] = First 32 octets of TLS-PRF(EMSK[j-1], \"TEAPbindkey@ietf.org\",\r\n       0x00 \\| 0x00 \\| 0x40)\r\n```\r\n\r\nThen we spoon feed below with \"`EMSK[0]` = first 64 bytes of `session_key_seed` defined below\"; this is in keeping with elsewhere when the draft talks of `S-IMCK[0]` and will not look out of place.\r\n\r\nWe should though *retain* unchanged the PRF function as the parameters *names* are useful to pair up with whatever library they may be using\r\n\r\n```\r\nPRF(secret, label, seed) = P_<hash>(secret, label | seed).\r\n```\r\n\r\nIf someone actually reads this and does not skim this, it is very clear the pairing between what makes up the `IMSK[j]` and how to plug it into the `PRF`.",
+              "createdAt": "2023-08-28T10:18:16Z",
+              "updatedAt": "2023-08-28T10:21:11Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5fQf3f",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-28T12:06:53Z",
+          "updatedAt": "2023-08-28T12:06:53Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "@jimdigriz The secret can be `EMSK` or `MSK`. So I think it's too confusing to replace `secret` with `EMSK...`",
+              "createdAt": "2023-08-28T12:06:53Z",
+              "updatedAt": "2023-08-28T12:06:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5fQ0ld",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "jimdigriz",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-28T12:59:14Z",
+          "updatedAt": "2023-08-28T12:59:15Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "@alandekok Not for `TLS-PRF(secret, \"TEAPbindkey@ietf.org\", ...)` it isn't, that is only `EMSK` where the output is then fed into the `S-IMCK` PRF.\r\n\r\nMeanwhile for the `MSK path, it is just fed verbatim directly into the `S-IMCK` PRF.\r\n\r\nhttps://github.com/FreeRADIUS/freeradius-server/blob/v3.2.x/src/modules/rlm_eap/types/rlm_eap_teap/eap_teap.c#L89-L160\r\n\r\nRight?",
+              "createdAt": "2023-08-28T12:59:15Z",
+              "updatedAt": "2023-08-28T12:59:15Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5fQ1vs",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "jimdigriz",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-28T13:01:59Z",
+          "updatedAt": "2023-08-28T13:02:00Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "...this said, @h-vn was able to implement TEAP from scratch using this document, so that is validation we are good enough.",
+              "createdAt": "2023-08-28T13:01:59Z",
+              "updatedAt": "2023-08-28T13:02:00Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5fQ7oS",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-28T13:15:14Z",
+          "updatedAt": "2023-08-28T13:15:14Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "sure?  Do you have updated text you can suggest?",
+              "createdAt": "2023-08-28T13:15:14Z",
+              "updatedAt": "2023-08-28T13:15:15Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5fRPXm",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "h-vn",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-28T13:56:53Z",
+          "updatedAt": "2023-08-28T13:56:53Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "What we did was based on the RFC 7170 first and then upgraded when the draft progressed. I noticed the IMSK calculation change when I was reading through the diff between RFC 7170 and draft -13. At this point I noticed that they had diverged. In other words, the updates to the draft that touched IMSK calculation from EMSK and non-zero MSK were thought of as editorial changes only, because functional changes to these were not expected.\r\n\r\nWhat's confusing about IMSK construction is that the EMSK ends up being passed to TLS-PRF, but the respective transformation for the MSK isn't done, or it can be considered a null operation. And when the IMSK is used, it's passed to the same TLS-PRF function again when `S-IMCK` is calculated.",
+              "createdAt": "2023-08-28T13:56:53Z",
+              "updatedAt": "2023-08-28T13:56:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5fRk70",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "jimdigriz",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-28T14:40:17Z",
+          "updatedAt": "2023-08-28T14:40:18Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "> sure? Do you have updated text you can suggest?\r\n\r\nquite right, https://github.com/emu-wg/rfc7170bis/pull/28",
+              "createdAt": "2023-08-28T14:40:17Z",
+              "updatedAt": "2023-08-28T14:40:18Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5fRnUM",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "jimdigriz",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-28T14:45:16Z",
+          "updatedAt": "2023-08-28T14:45:17Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "> What's confusing about IMSK construction is that the EMSK ends up being passed to TLS-PRF, but the respective transformation for the MSK isn't done, or it can be considered a null operation. And when the IMSK is used, it's passed to the same TLS-PRF function again when S-IMCK is calculated.\r\n\r\nIt is strange that the MSK path involves less work and is missing the symmetry of the EMSK path. I suspect this is a left over from [EAP-FAST](https://datatracker.ietf.org/doc/html/rfc4851#section-5.2) which also just eats the MSK directly, but whilst forming TEAP those implementing it want to retain that code but for the EMSK could not reconcile it with RFC5295 without the additional PRF step.",
+              "createdAt": "2023-08-28T14:45:17Z",
+              "updatedAt": "2023-08-28T14:45:17Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5fRrvm",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "h-vn",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-28T14:54:29Z",
+          "updatedAt": "2023-08-28T14:54:29Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "The indirect EMSK use could come from this requirement:\r\nhttps://www.rfc-editor.org/rfc/rfc5295.html#section-5\r\n\r\n> o  The usage definition MUST NOT use the EMSK in any other way except\r\n>       to derive Root Keys using the key derivation specified in\r\n>       [Section 3](https://www.rfc-editor.org/rfc/rfc5295.html#section-3) of this document.  They MUST NOT use the EMSK directly.\r\n\r\nI just noticed this when I took yet another look at RFC 5295. ",
+              "createdAt": "2023-08-28T14:54:29Z",
+              "updatedAt": "2023-08-28T14:54:29Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5fTcqE",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "alandekok",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-28T19:39:53Z",
+          "updatedAt": "2023-08-28T19:39:53Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "Do we need to update the text based on these comments?",
+              "createdAt": "2023-08-28T19:39:53Z",
+              "updatedAt": "2023-08-28T19:39:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOInRT-s5fTjzy",
+          "commit": {
+            "abbreviatedOid": "c36d23b"
+          },
+          "author": "jimdigriz",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-08-28T19:48:10Z",
+          "updatedAt": "2023-08-28T19:48:11Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "> Do we need to update the text based on these comments?\r\n\r\nI don't think so, just banter, right?",
+              "createdAt": "2023-08-28T19:48:11Z",
+              "updatedAt": "2023-08-28T19:48:11Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "id": "PR_kwDOInRT-s5Y8Ueo",
+      "title": "IMSK_EMSK rewording",
+      "url": "https://github.com/emu-wg/rfc7170bis/pull/28",
+      "state": "MERGED",
+      "author": "jimdigriz",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Rewording to be more explicit around the IMSK calculation on the EMSK path.\r\n\r\nAlso I think here we have indented the two following paraphrases when we should have not.\r\n\r\n@alandekok [rightly called me out](https://github.com/emu-wg/rfc7170bis/pull/27#discussion_r1307411363), so here is some to pull apart and decide if it improves the section or not.",
+      "createdAt": "2023-08-28T14:39:53Z",
+      "updatedAt": "2023-08-28T18:17:14Z",
+      "baseRepository": "emu-wg/rfc7170bis",
+      "baseRefName": "main",
+      "baseRefOid": "49ee99afcfce6f091ddaf369d13db860a212de96",
+      "headRepository": "corememltd/rfc7170bis",
+      "headRefName": "imck",
+      "headRefOid": "34fef6e699c414e4baa3924e64800976ba304f2a",
+      "closedAt": "2023-08-28T18:17:14Z",
+      "mergedAt": "2023-08-28T18:17:14Z",
+      "mergedBy": "alandekok",
+      "mergeCommit": {
+        "oid": "c368b1739f50063d53e2978ee6ca552b98429703"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 29,
+      "id": "PR_kwDOInRT-s5Y99tY",
+      "title": "spelling",
+      "url": "https://github.com/emu-wg/rfc7170bis/pull/29",
+      "state": "MERGED",
+      "author": "jimdigriz",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Spelling fixes",
+      "createdAt": "2023-08-28T19:53:32Z",
+      "updatedAt": "2023-08-29T07:57:32Z",
+      "baseRepository": "emu-wg/rfc7170bis",
+      "baseRefName": "main",
+      "baseRefOid": "e5ae3b5e71ac79105bf8e6f9eada15025a626e49",
+      "headRepository": "corememltd/rfc7170bis",
+      "headRefName": "sp",
+      "headRefOid": "2b5a7d5cefc5d831a981b9ad4e465443aa770d55",
+      "closedAt": "2023-08-28T20:57:40Z",
+      "mergedAt": "2023-08-28T20:57:40Z",
+      "mergedBy": "alandekok",
+      "mergeCommit": {
+        "oid": "5d7775a3684c91dd6e044627e9a83efdedee3721"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 31,
+      "id": "PR_kwDOInRT-s5ZKdST",
+      "title": "Example flow update",
+      "url": "https://github.com/emu-wg/rfc7170bis/pull/31",
+      "state": "MERGED",
+      "author": "h-vn",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The first commit removes Intermediate-Result. It was already removed from body text earlier.\r\n\r\nMake certificates visible where mutual certificate based phase 1 authentication is done.\r\n\r\nAlso update POL -> EAP-POK.",
+      "createdAt": "2023-08-30T17:40:25Z",
+      "updatedAt": "2023-08-30T17:43:19Z",
+      "baseRepository": "emu-wg/rfc7170bis",
+      "baseRefName": "main",
+      "baseRefOid": "5d7775a3684c91dd6e044627e9a83efdedee3721",
+      "headRepository": "h-vn/rfc7170bis",
+      "headRefName": "example-flow-update",
+      "headRefOid": "77d307754ed72516f11ae8c908dacbe731301e8f",
+      "closedAt": "2023-08-30T17:43:19Z",
+      "mergedAt": "2023-08-30T17:43:19Z",
+      "mergedBy": "alandekok",
+      "mergeCommit": {
+        "oid": "69be80002399e9609404a3aa3a1301b91f8a40c4"
+      },
+      "comments": [],
+      "reviews": []
+    }
+  ]
+}

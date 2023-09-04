@@ -55,10 +55,6 @@ normative:
 
 informative:
   IEEE.802-1X.2013:
-    title: "Local and Metropolitan Area Networks: Port-Based Network Access Control"
-    date: December 2017
-    author:
-      name: IEEE
   KAMATH:
      title: "Microsoft EAP CHAP Extensions"
      date: June 2007

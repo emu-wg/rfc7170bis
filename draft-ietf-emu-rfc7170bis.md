@@ -48,10 +48,11 @@ normative:
   RFC6677:
   RFC7030:
   RFC8446:
+  RFC8996:
   RFC9190:
   RFC9427:
+  RFC9525:
   I-D.ietf-lamps-rfc7030-csrattrs:
-  I-D.ietf-uta-rfc6125bis:
 
 informative:
   IEEE.802-1X.2013:
@@ -150,9 +151,14 @@ to meet the requirements outlined in {{RFC6678}} for a standard
 tunnel-based EAP method.
 
 This specification describes TEAPv1, and defines cryptographic
-derivations for TLS 1.2 and earlier.  When TLS 1.3 is used, the
+derivations for use with TLS 1.2.  When TLS 1.3 is used, the
 definitions of cryptographic derivations in {{RFC9427}} MUST be used
 instead of the ones given here.
+
+Note that while it is technically possible to use TEAPv1 with TLS 1.0
+and TLS 1.1, those protocols have been deprecated in {{RFC8996}}.  As
+such, the definitions given here are only applicable for TLS 1.2, and
+for TLS 1.3.
 
 ## Specification Requirements
 
@@ -211,7 +217,7 @@ EAP-FAST {{RFC4851}}.  However, implementation experience and analysis
 determined that the PAC was not necessary.  Instead, TEAP performs
 session resumption using the NewSessionTicket message as defined in
 {{RFC9190}} Section 2.1.2 and Section 2.1.3.  As such, the PAC has
-been removed from this document.
+been deprecated.
 
 The TEAP conversation is used to establish or resume an existing
 session to typically establish network connectivity between a peer
@@ -398,7 +404,7 @@ and in {{RFC9325}} Section 4.2 for TLS 1.3.
 It is REQUIRED that anonymous
 cipher suites such as TLS_DH_anon_WITH_AES_128_CBC_SHA {{RFC5246}} only
 be used in the case when the inner method provides
-mutual authentication, key generation, and resistance to man-in-the-middle
+mutual authentication, key generation, and resistance to on-path
 and dictionary attacks.  TLS cipher suites that do not provide
 confidentiality MUST NOT be used.  During the TEAP Phase 1, the TEAP endpoints MAY negotiate TLS compression.
 During TLS tunnel establishment, TLS extensions MAY be used.  For
@@ -451,11 +457,7 @@ renegotiation to protect privacy is shown in Appendix C.
 
 ## Server Certificate Requirements
 
-Server Certificates MAY be constructed with a SubjectDN containing a single element, "CN=" containing the FQDN of the server.
-It is also permissible for the server to have an empty subjectDN as recommended by
-{!{I-D.ietf-uta-rfc6125bis}}.
-
-Server Certificates MUST include a subjectAltName extension, with the dnsName attribute containing an FQDN string.
+Server Certificates MUST include a subjectAltName extension, with the dnsName attribute containing an FQDN string.  Server certificates MAY also include with a SubjectDN containing a single element, "CN=" containing the FQDN of the server.  However, this use of  SubjectDN is deprecated for TEAP, and is forbidden in {{RFC9525}} Section 2.
 
 The KeyUsage extension MAY be included, but are not required.
 
@@ -481,13 +483,13 @@ place, the validation steps described below MUST still be performed.
 In all other cases, the EAP peer MUST validate the server certificate.  This
 validation is done in the same manner as is done for EAP-TLS, which is
 discussed in {{RFC9190}} Section 5.3 and in {{RFC5216}} Section 5.3.
-Further guidance on server certificate validation can be found in
-{{!I-D.ietf-uta-rfc6125bis}}.
+Further guidance on server identity validation can be found in
+{{!RFC9525}} Section 6..
 
 Where the EAP peer has an NAI, EAP peers MUST use the realm to perform
-the DNS-ID validation as per {{!I-D.ietf-uta-rfc6125bis}} Section 6,
+the DNS-ID validation as per {{!RFC9525}} Section 6,
 The realm is used both to construct the list of reference identifiers
-as defined in {{!I-D.ietf-uta-rfc6125bis}} Section 6.2.1, and as the
+as defined in {{!RFC9525}} Section 6.2.1, and as the
 "source domain" field of that same section.
 
 When performing server certificate validation, implementations MUST
@@ -507,7 +509,7 @@ have few, if any ways of validating the servers certificate.
 
 ### Client Certificates sent during Phase 1 {#client-certs-phase1}
 
-Note that since TLS client certificates are sent in the clear with TLS 1.2 and earlier, if
+Note that since TLS client certificates are sent in the clear with TLS 1.2, if
 identity protection is required, then it is possible for the TLS
 authentication to be renegotiated after the first server
 authentication.  To accomplish this, the server will typically not
@@ -651,8 +653,8 @@ inner method.
 ### Inner EAP Authentication {#inner-eap}
 
 EAP {{RFC3748}} prohibits use of multiple authentication methods within
-a single EAP conversation in order to limit vulnerabilities to man-in-the-middle
-attacks.  TEAP addresses man-in-the-middle attacks
+a single EAP conversation in order to limit vulnerabilities to on-path
+attacks.  TEAP addresses on-path attacks
 through support for cryptographic protection of the inner EAP
 exchange and cryptographic binding of the inner EAP
 method(s) to the protected tunnel.  Inner methods are executed serially
@@ -773,7 +775,7 @@ password exchange.
 
 The EAP methods defined in {{RFC3748}} Section 5 such as
 MD5-Challenge, One-Time Password (OTP), and Generic Token Card (GTC)
-do not derive an EMSK, and are vulnerable to man-in-the-middle
+do not derive an EMSK, and are vulnerable to on-path
 attacks.  The construction of the OTP and GTC methods makes this
 attack less relevant, as the information being sent is a one-time
 token.  However, MD5-Challenge has no such safety, and TEAP
@@ -975,7 +977,7 @@ If the TEAP peer detects an error at any point in the TLS layer, the
 TEAP peer SHOULD send a TEAP response encapsulating a TLS record
 containing the appropriate TLS alert message, and which contains a zero-length message.  The server then MUST terminate the conversation with an EAP failure, as discussed in the previous paragraph.
 
-While {{RFC8446}} allows for the TLS conversation to be restarted, it is not clear when that would use useful (or used) for TEAP.  Fatal TLS errors will cause the TLS conversation to fail.  Non-fatal TLS errors can likely be ignored entirely.  As a result, TEAP implementations MUST NOT permit TLS restarts.
+While TLS 1.3 ({{RFC8446}}) allows for the TLS conversation to be restarted, it is not clear when that would use useful (or used) for TEAP.  Fatal TLS errors will cause the TLS conversation to fail.  Non-fatal TLS errors can likely be ignored entirely.  As a result, TEAP implementations MUST NOT permit TLS restarts.
 
 ### Phase 2 Errors {#phase-2-errors}
 
@@ -1207,7 +1209,7 @@ they have to be addressed.
 In Server Unauthenticated Provisioning Mode, an unauthenticated
 tunnel is established in Phase 1, and the peer and server negotiate
 an inner method or methods in Phase 2.  This inner method MUST support mutual authentication, provide key
-derivation, and be resistant to attacks such as man-in-the-middle and
+derivation, and be resistant to attacks such as on-path and
 dictionary attacks.  In most cases, this inner method will be an EAP authentication method.  Example inner methods which satisfy these criteria include EAP-pwd {{RFC5931}}
 and EAP-EKE {{RFC6124}}, but not EAP-FAST-MSCHAPv2.
 
@@ -1220,7 +1222,7 @@ unable to validate the identity of the server for some reason.
 
 Upon successful completion of the inner method in Phase 2, the peer and
 server exchange a Crypto-Binding TLV to bind the inner method with
-the outer tunnel and ensure that a man-in-the-middle attack has not
+the outer tunnel and ensure that an on-path attack has not
 been attempted.
 
 Support for the Server Unauthenticated Provisioning Mode is optional.
@@ -1230,8 +1232,8 @@ cipher suites MAY be supported as long as the TLS pre-master secret is
 generated from contribution from both peers.
 
 When a strong inner method is not used with Server Unauthenticated
-Provisioning Mode, it is possible for an attacker to perform a
-man-in-the-middle attack.  In effect, Server Unauthenticated
+Provisioning Mode, it is possible for an attacker to perform an
+on-path attack.  In effect, Server Unauthenticated
 Provisioning Mode has similar security issues as just running the
 inner method in the open, without the protection of TLS.  All of the
 information in the tunnel should be assumed to be visible to, and
@@ -2165,7 +2167,7 @@ EAP-FAST {{RFC4851}}.  However, implementation experience and analysis
 determined that the PAC was not necessary.  Instead, TEAP performs
 session resumption using the NewSessionTicket message as defined in
 {{RFC9190}} Section 2.1.2 and Section 2.1.3.  As such, the PAC TLV
-been removed from this document.
+has been deprecated.
 
 ### Crypto-Binding TLV {#crypto-binding-tlv}
 
@@ -2855,7 +2857,7 @@ is used or when no inner method has been run and the crypto-binding TLV
 for the Result TLV needs to be generated.  In this case, IMSK\[j]
 is set to all zeroes (i.e., IMSK\[j] = MSK = 32 octets of 0x00s).
 
-Note that using a MSK of all zeroes opens up TEAP to man-in-the-middle
+Note that using a MSK of all zeroes opens up TEAP to on-path
 attacks, as discussed below in {#separation-p1-p2}.  It is therefore
 NOT RECOMMENDED to use inner methods which fail to generate an EMSK or
 MSK.  These methods should only be used in conjunction with another
@@ -2955,7 +2957,7 @@ and then also values derived from EMSK:
 ## Computing the Compound MAC {#computing-compound-mac}
 
 For inner methods that generate keying material, further
-protection against man-in-the-middle attacks is provided through
+protection against on-path attacks is provided through
 cryptographically binding keying material established by both TEAP
 Phase 1 and TEAP Phase 2 conversations.  After each successful inner
 EAP authentication, EAP EMSK and/or MSKs are cryptographically
@@ -3072,7 +3074,7 @@ Value,Description,Reference
 8,Request-Action TLV,[THIS-DOCUMENT]
 9,EAP-Payload TLV,[THIS-DOCUMENT]
 10,Intermediate-Result TLV,[THIS-DOCUMENT]
-11,PAC TLV,(DEPRECATED) [RFC7170]
+11,PAC TLV,(DEPRECATED) [RFC7170][THIS-DOCUMENT]
 12,Crypto-Binding TLV,[THIS-DOCUMENT]
 13,Basic-Password-Auth-Req TLV,[THIS-DOCUMENT]
 14,Basic-Password-Auth-Resp TLV,[THIS-DOCUMENT]
@@ -3089,7 +3091,7 @@ Attribute Type Codes" and "TEAP PAC TLV (value 11) PAC-Type Type
 Codes" registries with a NOTE:
 
 ~~~~
-This registry was deprecated by [THIS-DOCUMENT]
+This registry has been closed. See [THIS-DOCUMENT].
 ~~~~
 
 ## TEAP Error TLV (value 5) Error Codes
@@ -3108,6 +3110,24 @@ IANA is instructed to update the "TLS Exporter Labels" registry to change the Re
 ~~~~
 Value,DTLS-OK,Recommended,Reference
 EXPORTER: teap session key seed,N,Y,[THIS-DOCUMENT]
+~~~~
+
+## Extended Master Session Key (EMSK) Parameters
+
+IANA is instructed to update the "User Specific Root Keys (USRK) Key Labels" registry to change the Reference field for Value "TEAPbindkey@ietf.org" as follows:
+
+~~~~
+Value,Description,Reference
+TEAPbindkey@ietf.org,TEAP binding usage label,[THIS-DOCUMENT]
+~~~~
+
+## Extensible Authentication Protocol (EAP) Registry
+
+IANA is instructed to update the "Method Types" regisry to change the Reference field for Value "55" as follows:
+
+~~~~
+Value,Description,Reference
+55,TEAP,[THIS-DOCUMENT]
 ~~~~
 
 # Security Considerations
@@ -3202,7 +3222,7 @@ establish a secured tunnel, TEAP enables:
 * Acknowledged success/failure indication
 * Faster re-authentications through session resumption
 * Mitigation of offline dictionary attacks
-* Mitigation of man-in-the-middle attacks
+* Mitigation of on-path attacks
 * Mitigation of some denial-of-service attacks
 
 It should be noted that in TEAP, as in many other authentication
@@ -3275,9 +3295,9 @@ TEAP implementations can mitigate against online "brute force"
 dictionary attempts by limiting the number of failed authentication
 attempts for a particular identity.
 
-### Protection against Man-in-the-Middle Attacks
+### Protection against On-Path Attacks
 
-TEAP provides protection from man-in-the-middle attacks in a few ways:
+TEAP provides protection from on-path attacks in a few ways:
 
 1. By using a certificates or a session ticket to mutually
 authenticate the peer and server during TEAP authentication Phase 1
@@ -3288,7 +3308,7 @@ establishment of a secure TLS tunnel.
 exchange and in the generation of the key material exported by
 the inner method described in [](#cryptographic-calculations).
 
-TEAP crypto binding does not guarantee man-in-the-middle protection
+TEAP crypto binding does not guarantee protection from on-path attacks
 if the client allows a connection to an untrusted server, such as in
 the case where the client does not properly validate the server's
 certificate.  If the TLS cipher suite derives the master secret solely
@@ -3336,6 +3356,13 @@ Failure packet should not be a final packet in a TEAP conversation,
 it may occur based on the conditions stated above, so an EAP peer
 should not rely upon the unprotected EAP Success and Failure
 messages.
+
+## Use of Clear-text Passwords
+
+TEAP can carry clear-text passwords in the Basic-Password-Auth-Resp
+TLV.  Implementations should take care to protect this data.  For
+example, passwords should not normally be logged, and password data
+should be securely scrubbed from memory when it is no longer needed.
 
 ## Security Claims
 
@@ -3887,7 +3914,7 @@ In the case where a certificate-based TLS handshake occurs within
 TEAP Phase 1 and client certificate authentication and identity
 privacy is desired (and therefore TLS renegotiation is being used to
 transmit the peer credentials in the protected TLS tunnel), the
-conversation will appear as follows:
+conversation will appear as follows for TLS 1.2:
 
       Authenticating Peer     Authenticator
       -------------------     -------------

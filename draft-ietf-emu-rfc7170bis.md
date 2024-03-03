@@ -103,6 +103,7 @@ informative:
   RFC6961:
   RFC7029:
   RFC7170:
+  RFC7301:
   RFC7542:
   RFC9325:
   X.690:
@@ -451,7 +452,7 @@ renegotiation to protect privacy is shown in Appendix C.
 
 ## Server Certificate Requirements
 
-Server Certificates MAY be constructed with a SubjectDN containing a single element, "CN=" containing the FQDN of the server.
+Server Certificates MAY be constructed with a subjectDN containing a single element, "CN=" containing the FQDN of the server.
 It is also permissible for the server to have an empty subjectDN as recommended by
 {!{I-D.ietf-uta-rfc6125bis}}.
 
@@ -592,7 +593,7 @@ exchange described in [](#crypto-binding-tlv) and a protected termination
 exchange described in [](#protected-termination).
 
 If the peer is not authenticated in Phase 1, the TEAP peer SHOULD send
-one or more Identity-Hint TLVs ([](#identity-hint-tlv) as soon as the
+one or more Identity-Hint TLVs ([](#identity-hint-tlv)) as soon as the
 TLS connection has been established.  This information lets the TEAP
 server choose an authentication type which is appropriate for that
 identity.  When the TEAP peer does not provide an Identity-Hint TLV,
@@ -600,6 +601,12 @@ the TEAP server does not know which inner method is supported by the
 peer.  It must necessarily choose an inner method, and propose it to
 the peer, which may reject that inner method.  The result will be that
 the peer fails to authenticate, and fails to obtain network access.
+
+The peer SHOULD NOT send Identity-Hint TLVs where the server has not
+been authenticated (i.e. during unauthenticated provisioning) in
+deployments where privacy is desired as so not to leak session identities;
+this may not be possible due to its use case described in
+[](#identity-hint-tlv).
 
 The TLV exchange includes the execution of zero or more inner
 methods within the protected tunnel as described in [](#inner-eap)
@@ -2642,6 +2649,8 @@ The peer SHOULD send an Identity-Hint TLV for each Identity-Type which is availa
 
 The contents of the Identity-Hint TLV SHOULD be in the format of an NAI {{RFC7542}}, but we note that as given in the example above, Machine identities might not follow that format.  As these identities are never used for AAA routing as discussed in {{RFC7542}} Section 3, the format and definition of these identities is entirely site local.  Robust implementations MUST support arbitrary data in the content of this TLV, including binary octets.
 
+When sending the TLV during unauthenticated provisioning, it is RECOMMENDED that the user and hostname components of the identities are replaced with their anonymous identity counterparts.  Examples of suitable substitutions would be where "host/name.example.com" becomes "/name.example.com" and "user@example.com" becomes "@example.com". The purpose here is to maintain user privacy and to only leak necessary information that would have been provided during routing (i.e. EAP Identity).
+
 As the Identity-Hint TLV is a "hint", server implementations are free to ignore the hints given, and do whatever is required by site-local policies.
 
 The Identity-Hint TLV is used only as a guide to selecting which inner methods to use.  This TLV has no other meaning, and it MUST NOT be used for any other purpose.  Specifically. server implementations MUST NOT compare the identities given this TLV to later identities given as part of the inner methods.  There is no issue with the hint(s) failing to match any subsequent identity which is used.
@@ -3241,8 +3250,16 @@ compare any identity disclosed in the initial cleartext EAP Identity
 response packet with those Identities authenticated in Phase 2.
 
 Identity request/response exchanges sent after the TEAP tunnel is
-established are protected from modification and eavesdropping by
-attackers.
+established, and where the server is authenticated during Phase 1, are
+protected from modification and eavesdropping by attackers.
+
+During unauthenticated provisioning, it is RECOMMENDED that if the
+client sends Identity-Hint TLVs that only anonymous identities are
+used. The purpose here is to only provide information that has already
+been provided for the purposes of routing (i.e. EAP Identity).  An
+attacker could though run an attack N times iterating over each inner
+authentication method to discover each identity or just wait for the
+EAP Identity response from the peer.
 
 When a client certificate is sent outside of the TLS tunnel in Phase
 1, the peer MUST include Identity-Type as an outer TLV, in order to
@@ -3301,6 +3318,41 @@ cipher suite derives the master secret from the contribution of
 secrets from both sides of the conversation (such as in cipher suites
 based on Diffie-Hellman), then crypto binding can detect an attacker
 in the conversation if a strong inner method is used.
+
+#### Version Downgrading
+
+Until the first Crypto-Binding TLV is processed, it is not possible
+to detect a version downgrade attack.
+
+The consequence is an inner authentication method would run to
+completion before this attack is discovered.
+
+Once discovered, the request would be immediately rejected and so
+for now this is not problem mostly due to that only TEAPv1 exists.
+
+A problem could arise if TEAPv2 was proposed and as an example it
+removed the Basic-Password-Auth TLV ([](#bp-auth-req-tlv)). An
+attacker could force a deployment under a phased migration between
+versions to use this inner authentication method.
+
+This document recommends that any future version of TEAP considers
+using the Application-Layer Protocol Negotiation (ALPN) {{RFC7301}}
+for version negotiation.
+
+#### Outer- TLVs
+
+Until the first Crypto-Binding TLV is processed, it is not possible
+to detect manipulation of any Outer TLVs.
+
+Further to this problem, a flaw in the Crypto-Binding TLV makes it
+possible for an attacker to remove the last server-to-peer outer TLV
+and prepend it to the peer-to-server TLVs, or vice versa. This results
+in the same MAC being calculated.
+
+One mitigation of this attack, is to send a dummy (marked optional)
+Outer TLVs which would neuter the ability for an attacker to gain from
+this. Where done, it is recommended that a Vendor-Specific TLV is used
+to maintain both future and backwards compatibility.
 
 ## Protecting against Forged Cleartext EAP Packets
 
@@ -3420,9 +3472,9 @@ document are based on his work.
 
 We wish to thank the many reviewers and commenters in the EMU WG,
 including Eliot Lear, Jouni Malinen, Joe Salowey, Heikki Vatiainen,
-Bruno Pereria Vidal, and Michael Richardson.  Many corner cases and
-edge conditions were caught and corrected as a result of their
-feedback.
+Bruno Pereria Vidal, Michael Richardson and David Mandelberg.  Many
+corner cases and edge conditions were caught and corrected as a result
+of their feedback.
 
 # Changes from RFC 7170
 

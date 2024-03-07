@@ -3070,7 +3070,10 @@ change the Reference field in all tables from {{RFC7170}} to \[THIS-DOCUMENT].
 
 ## TEAP TLV Types
 
-IANA is instructed to update the references in the "TEAP TLV Types" registry as follows.
+IANA is instructed to update the references in the "TEAP TLV Types"
+registry as follows.  Most references to {{RFC7170}} are changed to
+this document.  TLV 11 is deprecated.  TLV 18 and TLV 19 are new
+additions to the registry.
 
 ~~~~
 Value,Description,Reference

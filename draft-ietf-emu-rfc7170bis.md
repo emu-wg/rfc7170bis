@@ -399,7 +399,7 @@ cipher suites:
 
 Other cipher suites MAY be supported.  Implementations MUST implement
 the recommended cipher suites in {{RFC9325}} Section 4.2 for TLS 1.2,
-and in {{RFC9325}} Section 4.2 for TLS 1.3.
+and in {{RFC9325}} Section 4.3 for TLS 1.3.
 
 It is REQUIRED that anonymous
 cipher suites such as TLS_DH_anon_WITH_AES_128_CBC_SHA {{RFC5246}} only
@@ -1258,7 +1258,7 @@ or any of its contents.
 
 ### Channel Binding
 
-{{RFC6677}} defines channel bindings for WAP which solve the "lying NAS" and
+{{RFC6677}} defines channel bindings for EAP which solve the "lying NAS" and
 the "lying provider" problems, using a process in which the EAP peer
 gives information about the characteristics of the service provided
 by the authenticator to the Authentication, Authorization, and
@@ -2648,6 +2648,8 @@ As the Identity-Hint TLV is a "hint", server implementations are free to ignore 
 
 The Identity-Hint TLV is used only as a guide to selecting which inner methods to use.  This TLV has no other meaning, and it MUST NOT be used for any other purpose.  Specifically. server implementations MUST NOT compare the identities given this TLV to later identities given as part of the inner methods.  There is no issue with the hint(s) failing to match any subsequent identity which is used.
 
+The Identity-Hint TLV MUST NOT be used for server unauthenticated provisioning.  This TLV is only used as a hint for normal authentication.
+
 The Identity-Hint TLV is defined as follows:
 
 ~~~~
@@ -2995,9 +2997,18 @@ the EAP server.  If a single TEAP message is fragmented into
 multiple TEAP packets, then the Outer TLVs in all the fragments of
 that message MUST be included.
 
- is run then no EMSK or MSK
+If no inner method is run then no EMSK or MSK
 will be generated.  If an IMSK needs to be generated then the MSK
 and therefore the IMSK is set to all zeroes (i.e., IMSK = MSK = 32 octets of 0x00s).
+
+Note that there is no boundary marker between the fields in steps (3)
+and (4).  However, the server calculates the compound MAC using the
+outer TLVs it sent, and the outer TLVs it received from the peer.  On
+the other side, the peer calculates the compound MAC using the outer
+TLVs it sent, and the outer TLVs it received from the server.  As a
+result, and modification in transit of the outer TLVs will be detected
+because the two sides will calculate different values for the compound
+MAC.
 
 ## EAP Master Session Key Generation
 
@@ -3153,6 +3164,9 @@ tunnel is verified through the calculation of the Crypto-Binding TLV.
 This ensures that the tunnel endpoints are the same as the inner
 method endpoints.
 
+Where server unauthenticated provisioning is performed, TEAP requires
+that the inner provisioning method provide for mutual authentication.
+
 ## Method Negotiation
 
 As is true for any negotiated EAP protocol, EAP NAK message used to
@@ -3260,9 +3274,12 @@ authenticated identity.  TEAP implementations should not attempt to
 compare any identity disclosed in the initial cleartext EAP Identity
 response packet with those Identities authenticated in Phase 2.
 
-Identity request/response exchanges sent after the TEAP tunnel is
-established are protected from modification and eavesdropping by
-attackers.
+When the server is authenticated, identity request/response exchanges
+sent after the TEAP tunnel is established are protected from
+modification and eavesdropping by attackers.  For server
+unauthenticated provisioning, the outer TLS session provides little
+security, and the provisioning method must necessarily provide this
+protection instead.
 
 When a client certificate is sent outside of the TLS tunnel in Phase
 1, the peer MUST include Identity-Type as an outer TLV, in order to
@@ -3380,7 +3397,9 @@ Mutual authentication:   Yes
 Integrity protection:    Yes.  Any method executed within the TEAP
                          tunnel is integrity protected.  The
                          cleartext EAP headers outside the tunnel are
-                         not integrity protected.
+                         not integrity protected.  Server
+                         unauthenticated provisioning provides its own
+                         protection mechanisms.
 
 Replay protection:       Yes
 

@@ -178,7 +178,7 @@ Type-Length-Value (TLV)
 > The TEAP protocol utilizes objects in TLV format.  The TLV format
 > is defined in [](#teap-tlv-format).
 
-Inner method
+Inner Method
 
 > An authentication method which is sent as application data inside
 > of a TLS exchange which is carried over TEAP.  The inner method
@@ -461,7 +461,7 @@ Server Certificates MUST include a subjectAltName extension, with the dnsName at
 
 The KeyUsage extension MAY be included, but are not required.
 
-The ExtendedKeyUsage extensions defined in {{RFC5280}} MAY also be included, but their use is discouraged.  Systems SHOULD use a a private Certification Authority (CA) for EAP in preference to public CAs.
+The ExtendedKeyUsage extensions defined in {{RFC5280}} MAY also be included, but their use is discouraged.  Systems SHOULD use a private Certification Authority (CA) for EAP in preference to public CAs.
 
 ## Server Certificate Validation
 
@@ -713,7 +713,7 @@ Multiple round trips of password authentication requests and responses
 MAY be used to support some "housekeeping" functions such as a
 password or pin change before a user is considered to be
 authenticated.  Multiple rounds MAY also be used to communicate a
-users password, and separately a one-time password such as TOTP {{?RFC6238}}.
+users password, and separately a one-time password such as Time-Based One-Time Passwords (TOTP) {{?RFC6238}}.
 
 Implementations MUST limit the number of rounds trips for password
 authentication.  It is reasonable to use one or two round trips.
@@ -751,7 +751,7 @@ The Intermediate-Result TLVs can be included with other TLVs which
 indicate a subsequent authentication, or with the Result TLV used in
 the protected termination exchange.
 
-The use of EAP-FAST-GTC as defined in RFC 5421 {{RFC5421}} is NOT
+The use of EAP-FAST-GTC as defined in {{RFC5421}} is NOT
 RECOMMENDED with TEAPv1 because EAP-FAST-GTC is not compliant with
 EAP-GTC defined in {{RFC3748}}.  Implementations should instead make
 use of the password authentication TLVs defined in this
@@ -1163,7 +1163,7 @@ authenticator is from an authenticated user.  The CSR itself should
 also be examined by the authenticator or Certification Authority (CA)
 before any certificate is issued.
 
-The format of a CSR is complex, and contain a substantial amount of
+The format of a CSR is complex, and contains a substantial amount of
 information.  That information could be incorrect, such as a user
 claiming a wrong physical address, email address, etc.  Alternatively,
 the supplied information could contain private data which should not
@@ -1249,7 +1249,7 @@ authenticate TEAP servers if at all possible.  Authenticating the
 server means that a client can be provisioned securely with no chance of
 an attacker eaves-dropping on the connection.
 
-Note that server unauthenticated provisioning can only use anonymous
+Note that server Unauthenticated Provisioning can only use anonymous
 cipher suites in TLS 1.2 and earlier.  These cipher suites have been
 deprecated in TLS 1.3 ({{RFC8446}} Section C.5).  For TLS 1.3, the
 server MUST provide a certificate, and the peer performs server
@@ -2274,7 +2274,7 @@ Sub-Type
 >
 >> 0  Binding Request
 >>
->< 1  Binding Response
+>> 1  Binding Response
 
 Nonce
 
@@ -2597,7 +2597,7 @@ Request Action frame for a PKCS#10 TLV.  This is an indication to the
 peer that the server would like the peer to renew its certificate
 using the parameters provided in this TLV.  Servers shall construct
 the contents of the CSR-Attributes TLV as specified in {{RFC7030}} Section 4.5.2 with the
-exception that the DER encoding MUST NOT be encoded in base64.  The base64 encoding in used in {{RFC7030}} because the transport protocol used there requires textual encoding.  In contrast, TEAP attributes can transport arbitrary binary data.
+exception that the DER encoding MUST NOT be encoded in base64.  The base64 encoding is used in {{RFC7030}} because the transport protocol used there requires textual encoding.  In contrast, TEAP attributes can transport arbitrary binary data.
 
 Servers and peers MUST follow the guidance provided in
 {{!I-D.ietf-lamps-rfc7030-csrattrs}} when creating the CSR-Attributes TLV. Peers MAY ignore the contents
@@ -2638,7 +2638,7 @@ The Identity-Hint TLV is an optional TLV which can sent by the peer to the serve
 
 The purpose of this TLV is to solve the "bootstrapping" problem for the server.  In order to perform authentication, the server must choose an inner method.  However, the server has no knowledge of what methods are supported by the peer.  Without an identity hint, the server needs to propose a method, and then have the peer return a response indicating that the requested method is not available.  This negotiation increases the number of round trips required for TEAP to conclude, with no additional benefit.
 
-When the Identity-Hint is use, the peer can signal which identities it has available, which enables the server to choose an inner method which is appropriate for that identity.
+When the Identity-Hint is used, the peer can signal which identities it has available, which enables the server to choose an inner method which is appropriate for that identity.
 
 The peer SHOULD send an Identity-Hint TLV for each Identity-Type which is available to it.  For example, if the peer can do both Machine and User authentication, it can send two Identity-Hint TLVs, with values "host/name.example.com" (for a machine with hostname "name.example.com"), and "user@example.com" (for a person with identity "user@example.com").
 
@@ -2646,9 +2646,9 @@ The contents of the Identity-Hint TLV SHOULD be in the format of an NAI {{RFC754
 
 As the Identity-Hint TLV is a "hint", server implementations are free to ignore the hints given, and do whatever is required by site-local policies.
 
-The Identity-Hint TLV is used only as a guide to selecting which inner methods to use.  This TLV has no other meaning, and it MUST NOT be used for any other purpose.  Specifically. server implementations MUST NOT compare the identities given this TLV to later identities given as part of the inner methods.  There is no issue with the hint(s) failing to match any subsequent identity which is used.
+The Identity-Hint TLV is used only as a guide when selecting which inner methods to use.  This TLV has no other meaning, and it MUST NOT be used for any other purpose.  Specifically. server implementations MUST NOT compare the identities given this TLV to later identities given as part of the inner methods.  There is no issue with the hint(s) failing to match any subsequent identity which is used.
 
-The Identity-Hint TLV MUST NOT be used for server unauthenticated provisioning.  This TLV is only used as a hint for normal authentication.
+The Identity-Hint TLV MUST NOT be used for Server Unauthenticated Provisioning.  This TLV is only used as a hint for normal authentication.
 
 The Identity-Hint TLV is defined as follows:
 
@@ -2997,7 +2997,7 @@ the EAP server.  If a single TEAP message is fragmented into
 multiple TEAP packets, then the Outer TLVs in all the fragments of
 that message MUST be included.
 
-If no inner method is run then no EMSK or MSK
+If no inner method is run, then no EMSK or MSK
 will be generated.  If an IMSK needs to be generated then the MSK
 and therefore the IMSK is set to all zeroes (i.e., IMSK = MSK = 32 octets of 0x00s).
 
@@ -3036,7 +3036,7 @@ The TLS-PRF is defined in {{RFC5246}} as
 
 where "|" denotes concatenation. The secret is S-IMCK\[n] where n is the
 number of the last generated
-S-IMCK\[j] from [](#intermediate-compound-key).  The label is is the ASCII
+S-IMCK\[j] from [](#intermediate-compound-key).  The label is the ASCII
 value for the string without quotes.  The seed is empty (0 length) and
 is omitted from the derivation.
 
@@ -3167,7 +3167,7 @@ tunnel is verified through the calculation of the Crypto-Binding TLV.
 This ensures that the tunnel endpoints are the same as the inner
 method endpoints.
 
-Where server unauthenticated provisioning is performed, TEAP requires
+Where Server Unauthenticated Provisioning is performed, TEAP requires
 that the inner provisioning method provide for mutual authentication.
 
 ## Method Negotiation

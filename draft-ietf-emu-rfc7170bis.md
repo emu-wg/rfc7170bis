@@ -3010,6 +3010,10 @@ result, and modification in transit of the outer TLVs will be detected
 because the two sides will calculate different values for the compound
 MAC.
 
+If no key generating inner method is run then no EMSK or MSK will be
+generated. If an IMSK needs to be generated then the MSK and therefore
+the IMSK is set to all zeroes (i.e., IMSK = MSK = 32 octets of 0x00s)
+
 ## EAP Master Session Key Generation
 
 TEAP authentication assures the Master Session Key (MSK) and Extended

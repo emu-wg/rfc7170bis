@@ -1,7 +1,7 @@
 ---
 title: Tunnel Extensible Authentication Protocol (TEAP) Version 1
 abbrev: TEAP
-docname: draft-ietf-emu-rfc7170bis-latest
+docname: draft-ietf-emu-rfc7170bis-16
 
 stand_alone: true
 ipr: trust200902
@@ -55,7 +55,7 @@ normative:
   I-D.ietf-lamps-rfc7030-csrattrs:
 
 informative:
-  IEEE.802-1X.2013:
+  IEEE.802-1X.2020:
   KAMATH:
      title: "Microsoft EAP CHAP Extensions"
      date: June 2007
@@ -125,7 +125,7 @@ secure communication between a peer and a server by using the
 Transport Layer Security (TLS) protocol to establish a mutually
 authenticated tunnel.  Within the tunnel, TLV objects are used to
 convey authentication-related data between the EAP peer and the EAP
-server.  This document obsoletes RFC 7170.
+server.  This document obsoletes RFC 7170 and updates RFC 9427.
 
 --- middle
 
@@ -201,7 +201,7 @@ channel-binding information.
 
 As discussed in {{RFC9190}} Section 2.1.7 and {{RFC9427}} Section 3.1,
 the outer EAP Identity SHOULD be an anonymous NAI Network Access
-Identifier (NAI) {{RFC7542}}.  While {{RFC3748}} Section 5.1 places no
+Identifier (NAI) as descrived in {{RFC7542, Section 2.4}}.  While {{RFC3748}} Section 5.1 places no
 limits on the contents of the Identity field, {{RFC7542}} Section 2.6
 states that Identities which do not follow the NAI format cannot be
 transported in an Authentication, Authorization, and Accounting (AAA)
@@ -293,7 +293,7 @@ between an EAP peer and an EAP server.  All data exchanges in the TEAP
 protected tunnel are encapsulated in a TLV layer.
 
 Methods for encapsulating EAP within carrier protocols are already
-defined.  For example, IEEE 802.1X [IEEE.802-1X.2013] may be used to
+defined.  For example, IEEE 802.1X {{IEEE.802-1X.2020}} may be used to
 transport EAP between the peer and the authenticator; RADIUS
 {{RFC3579}} or Diameter {{RFC4072}} may be used to transport EAP between
 the authenticator and the EAP server.
@@ -457,11 +457,11 @@ renegotiation to protect privacy is shown in Appendix C.
 
 ## Server Certificate Requirements
 
-Server Certificates MUST include a subjectAltName extension, with the dnsName attribute containing an FQDN string.  Server certificates MAY also include with a SubjectDN containing a single element, "CN=" containing the FQDN of the server.  However, this use of  SubjectDN is deprecated for TEAP, and is forbidden in {{RFC9525}} Section 2.
+Server Certificates MUST include a subjectAltName extension, with the dnsName attribute containing an FQDN string.  Server certificates MAY also include a SubjectDN containing a single element, "CN=" containing the FQDN of the server.  However, this use of  SubjectDN is deprecated for TEAP, and is forbidden in {{RFC9525}} Section 2.
 
 The KeyUsage extension MAY be included, but are not required.
 
-The ExtendedKeyUsage extensions defined in {{RFC5280}} MAY also be included, but their use is discouraged.  Systems SHOULD use a private Certification Authority (CA) for EAP in preference to public CAs.
+The ExtendedKeyUsage extensions defined in {{RFC5280}} MAY also be included, but their use is discouraged.  Systems SHOULD use a private Certification Authority (CA) for EAP in preference to public CAs.  The most commonly used public CAs are focussed on the web, and those certificates are not always suitable for use with EAP.  In contrast, private CAs can be designed for any purposes, and can be restricted to an enterprise or an other organization.
 
 ## Server Certificate Validation
 
@@ -470,7 +470,7 @@ certificate to the peer.  In most cases the certificate needs to be
 validated, but there are a number of situations where the EAP peer
 need not do certificate validation:
 
-* when the peer has the Server's End Entity (EE) certificate pinned or loaded directly into it's Trusted Anchor store {{?RFC4949}};
+* when the peer has the Server's End Entity (EE) certificate pinned or loaded directly into it's trusted anchor information {{?RFC4949}};
 
 * when the peer is requesting server unauthenticated provisioning;
 
@@ -501,7 +501,7 @@ However, in certain deployments, this comparison might not be
 appropriate or enabled.
 
 In most situations, the EAP peer will have no network access during
-the authentication process.  It will therefore no way of correlating
+the authentication process.  It will therefore have no way of correlating
 the server identity given in the certificate presented by the EAP
 server with a hostname, as is done with other protocols such as HTTPS.
 Therefore, if the EAP peer has no preconfigured trust anchor, it will
@@ -775,7 +775,7 @@ password exchange.
 
 The EAP methods defined in {{RFC3748}} Section 5 such as
 MD5-Challenge, One-Time Password (OTP), and Generic Token Card (GTC)
-do not derive an EMSK, and are vulnerable to on-path
+do not derive an Extended Master Session Key (EMSK), and are vulnerable to on-path
 attacks.  The construction of the OTP and GTC methods makes this
 attack less relevant, as the information being sent is a one-time
 token.  However, MD5-Challenge has no such safety, and TEAP
@@ -790,7 +790,12 @@ authentication defined in [](#inner-password).
 Implementations SHOULD limit the permitted inner EAP methods to a
 small set such as EAP-TLS, EAP-MSCHAPv2, and perhaps EAP-pwd.  There
 are few reasons for allowing all possible EAP methods to be used in
-Phase 2.
+Phase 2.  The above EAP methods are widely implemented, and known to
+be widely used.
+
+Other EAP methods such as EAP-SIM, EAP-AKA, or EAP-AKA' have their own
+use-cases, and are not generally suitable for use inside of a TEAP
+tunnel.
 
 Implementations MUST NOT permit resumption for the inner EAP methods
 such as EAP-TLS.  If the user or machine needs to be authenticated, it
@@ -977,7 +982,7 @@ If the TEAP peer detects an error at any point in the TLS layer, the
 TEAP peer SHOULD send a TEAP response encapsulating a TLS record
 containing the appropriate TLS alert message, and which contains a zero-length message.  The server then MUST terminate the conversation with an EAP failure, as discussed in the previous paragraph.
 
-While TLS 1.3 ({{RFC8446}}) allows for the TLS conversation to be restarted, it is not clear when that would use useful (or used) for TEAP.  Fatal TLS errors will cause the TLS conversation to fail.  Non-fatal TLS errors can likely be ignored entirely.  As a result, TEAP implementations MUST NOT permit TLS restarts.
+While TLS 1.3 ({{RFC8446}}) allows for the TLS conversation to be restarted, it is not clear when that would be useful (or used) for TEAP.  Fatal TLS errors will cause the TLS conversation to fail.  Non-fatal TLS errors can likely be ignored entirely.  As a result, TEAP implementations MUST NOT permit TLS restarts.
 
 ### Phase 2 Errors {#phase-2-errors}
 
@@ -1025,8 +1030,8 @@ Non-Fatal Error due to inner method
 >
 > If there is no error code which matches the particular issue, then the value Inner Method Error (1001) SHOULD be used. This response is a positive indication that
 > there was an error processing the current inner method.  The side
-> receiving a non-fatal Error TLV MAY decide to start a new inner method
-> instead or to send back a Result TLV to terminate the TEAP
+> receiving a non-fatal Error TLV MAY decide to start a new and different inner method
+> instead or, send back a Result TLV to terminate the TEAP
 > authentication session.
 
 ## Fragmentation {#fragmentation}
@@ -1058,12 +1063,9 @@ TEAP peers MUST track whether or not server authentication has taken
 place. When the server cannot be authenticated, the peer MUST NOT
 request any services such as certificate provisioning ({#cert-provisioning}) from it.
 
-Peer implementations MUST be configured so that by default, the
-current authentication session fails if the server cannot be
-authenticated.  However, it is possible to have a configuration flag
-which permits access to networks where the server cannot be
-authenticated.  Such configurations are NOT recommended, and further
-discussion is outside of the scope of this specification.
+Unless the peer requests server unauthenticated provisioning, it MUST
+authenticate the server, and fail the current authentication
+session fails if the server cannot be authenticated.
 
 An additional complication arises when an inner method authenticates
 multiple parties such as authenticating both the peer machine and the
@@ -1114,7 +1116,7 @@ performing the Simple PKI Request/Response from {{RFC5272}} using
 PKCS#10 and PKCS#7 TLVs, respectively.  A peer sends the Simple PKI
 Request using a PKCS#10 CertificateRequest {{RFC2986}} encoded into the
 body of a PKCS#10 TLV (see [](#pkcs10-tlv)).  The TEAP server issues a
-Simple PKI Response using a PKCS#7 {{RFC2315}} degenerate (i.e. unsigned) "Certificates
+Simple PKI Response using a PKCS#7 {{RFC2315}} unsigned (i.e. degenerate) "Certificates
 Only" message encoded into the body of a PKCS#7 TLV (see
 [](#pkcs7-tlv)), only after an inner method has run and
 provided an identity proof on the peer prior to a certificate is
@@ -1407,11 +1409,10 @@ support of the TLV is required.  If the peer or server does not
 support a TLV marked mandatory, then it MUST send a NAK TLV in the
 response, and all the other TLVs in the message MUST be ignored.  If
 an EAP peer or server finds an unsupported TLV that is marked as
-optional, it can ignore the unsupported TLV.  It MUST NOT send a NAK
-TLV for a TLV that is not marked mandatory.  If all TLVs in a message
-are marked optional and none are understood by the peer, then a NAK
-TLV or Result TLV could be sent to the other side in order to
-continue the conversation.
+optional, it can ignore the unsupported TLV.  It MUST only send a NAK
+TLV for a TLV which is marked mandatory, and MUST NOT otherwise send a NAK TLV.  If all TLVs in a message
+are marked optional and none are understood by the peer, then a Result TLV SHOULD be sent to the other side in order to
+continue the conversation.  It is also possible to send a NAK TLV when all TLVs in a message are marked optional.
 
 Note that a peer or server may support a TLV with the mandatory bit
 set but may not understand the contents.  The appropriate response to
@@ -1980,11 +1981,11 @@ is as follows:
 > If multiple Request-Action TLVs are in the request and none of
 > them is processed, then the most fatal status should be used in
 > the Result TLV returned.  If a status code in the Request-Action
-> TLV is not understood by the receiving entity, then it should be
-> treated as a fatal error.
+> TLV is not understood by the receiving entity, then it SHOULD be
+> treated as a fatal error.  Otherwise, the receiving entity MAY send a Request-Action TLV containing an Error TLV of value 2002 (Unexpected TLVs Exchanged).
 >
 > After processing the TLVs or inner method in the request, another
-> round of Result TLV exchange would occur to synchronize the final
+> round of Result TLV exchange MUST occur to synchronize the final
 > status on both sides.
 
 The peer or the server MAY send multiple Request-Action TLVs to the
@@ -2053,7 +2054,7 @@ TLVs
 
 ### EAP-Payload TLV {#eap-payload-tlv}
 
-To allow piggybacking an EAP request or response with other TLVs, the
+To allow coalescing an EAP request or response with other TLVs, the
 EAP-Payload TLV is defined, which includes an encapsulated EAP packet
 and a list of optional TLVs.  The optional TLVs are provided for
 future extensibility to provide hints about the current EAP
@@ -2168,6 +2169,10 @@ determined that the PAC was not necessary.  Instead, TEAP performs
 session resumption using the NewSessionTicket message as defined in
 {{RFC9190}} Section 2.1.2 and Section 2.1.3.  As such, the PAC TLV
 has been deprecated.
+
+As the PAC TLV is deprecated, an entity receiving it should send a
+Result TLV indicating failure, and an Error TLV of Unexpected TLVs
+Exchanged.
 
 ### Crypto-Binding TLV {#crypto-binding-tlv}
 
@@ -3315,7 +3320,7 @@ credential-based inner method.
 TEAP mitigates dictionary attacks by permitting inner methods such as
 EAP-pwd which are not vulnerable to dictionary attacks.
 
-TEAP implementations can mitigate against online "brute force"
+TEAP implementations can mitigate online "brute force"
 dictionary attempts by limiting the number of failed authentication
 attempts for a particular identity.
 
@@ -3904,7 +3909,7 @@ handshake, the conversation will appear as follows:
       // TLS channel established
          (messages sent within the TLS channel)
 
-      // First EAP Payload TLV is piggybacked to the TLS Finished as
+      // First EAP Payload TLV is coalesced with the TLS Finished as
          Application Data and protected by the TLS tunnel.
 
       EAP-Payload TLV
@@ -4071,7 +4076,7 @@ will appear as follows:
       // TLS channel established
          (messages sent within the TLS channel)
 
-      // First EAP Payload TLV is piggybacked to the TLS Finished as
+      // First EAP Payload TLV is coalesced with the TLS Finished as
          Application Data and protected by the TLS tunnel.
 
       EAP-Payload TLV
@@ -4145,7 +4150,7 @@ method Y, the conversation will occur as follows:
       // TLS channel established
          (messages sent within the TLS channel)
 
-      // First EAP Payload TLV is piggybacked to the TLS Finished as
+      // First EAP Payload TLV is coalesced with the TLS Finished as
          Application Data and protected by the TLS tunnel
 
       Identity_Type TLV
@@ -4248,7 +4253,7 @@ conversation will appear as follows:
          // TLS channel established
             (messages sent within the TLS channel)
 
-         // First EAP Payload TLV is piggybacked to the TLS Finished as
+         // First EAP Payload TLV is coalesced with the TLS Finished as
             Application Data and protected by the TLS tunnel.
 
       EAP-Payload TLV/
@@ -4324,7 +4329,7 @@ Vendor-Specific TLV exchange, the conversation will occur as follows:
       // TLS channel established
          (messages sent within the TLS channel)
 
-      // First EAP Payload TLV is piggybacked to the TLS Finished as
+      // First EAP Payload TLV is coalesced with the TLS Finished as
          Application Data and protected by the TLS tunnel.
 
       EAP-Payload TLV

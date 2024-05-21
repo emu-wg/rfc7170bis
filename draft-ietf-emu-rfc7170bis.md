@@ -1410,7 +1410,7 @@ support a TLV marked mandatory, then it MUST send a NAK TLV in the
 response, and all the other TLVs in the message MUST be ignored.  If
 an EAP peer or server finds an unsupported TLV that is marked as
 optional, it can ignore the unsupported TLV.  It MUST only send a NAK
-TLV for a TLV which is marked mandatory, and MUST NOT otherwise send a NAK TLV.  If all TLVs in a message
+TLV for a TLV which is marked mandatory but is not understood, and MUST NOT otherwise send a NAK TLV.  If all TLVs in a message
 are marked optional and none are understood by the peer, then a Result TLV SHOULD be sent to the other side in order to
 continue the conversation.  It is also possible to send a NAK TLV when all TLVs in a message are marked optional.
 
@@ -2172,7 +2172,7 @@ has been deprecated.
 
 As the PAC TLV is deprecated, an entity receiving it should send a
 Result TLV indicating failure, and an Error TLV of Unexpected TLVs
-Exchanged.
+Exchanged.  Deprecated TLVs are ignored, similar to Outer TLVs which are invalid or which contain unknown values.
 
 ### Crypto-Binding TLV {#crypto-binding-tlv}
 

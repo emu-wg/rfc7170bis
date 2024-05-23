@@ -1,7 +1,7 @@
 ---
 title: Tunnel Extensible Authentication Protocol (TEAP) Version 1
 abbrev: TEAP
-docname: draft-ietf-emu-rfc7170bis-16
+docname: draft-ietf-emu-rfc7170bis-17
 
 stand_alone: true
 ipr: trust200902
@@ -185,7 +185,7 @@ Inner Method
 > can be an EAP authentication method, a username / password
 > authentication, or a vendor-specific authentication method.  Where the
 > TLS connection is authenticated, the inner method could also be
-> a PKCS exchange.
+> a Public Key Cryptography Standard (PKCS) exchange.
 
 # Protocol Overview
 
@@ -200,8 +200,8 @@ the inner authentication, results, and other information, such as
 channel-binding information.
 
 As discussed in {{RFC9190}} Section 2.1.7 and {{RFC9427}} Section 3.1,
-the outer EAP Identity SHOULD be an anonymous NAI Network Access
-Identifier (NAI) as descrived in {{RFC7542, Section 2.4}}.  While {{RFC3748}} Section 5.1 places no
+the outer EAP Identity SHOULD be an anonymous Network Access
+Identifier (NAI) as describd in {{RFC7542, Section 2.4}}.  While {{RFC3748}} Section 5.1 places no
 limits on the contents of the Identity field, {{RFC7542}} Section 2.6
 states that Identities which do not follow the NAI format cannot be
 transported in an Authentication, Authorization, and Accounting (AAA)
@@ -209,8 +209,8 @@ proxy network.  As such, Identities in non-NAI form are likely to not
 work outside of limited and local networks.
 
 Any inner identities (EAP or otherwise) SHOULD also
-follow the recommendations of {{RFC9427}} Section
-3.1.
+follow the recommendations of {{RFC9427, Section
+3.1}} about inner identities.
 
 {{RFC7170}} defined a Protected Access Credential (PAC) to mirror
 EAP-FAST {{RFC4851}}.  However, implementation experience and analysis
@@ -793,9 +793,12 @@ are few reasons for allowing all possible EAP methods to be used in
 Phase 2.  The above EAP methods are widely implemented, and known to
 be widely used.
 
-Other EAP methods such as EAP-SIM, EAP-AKA, or EAP-AKA' have their own
-use-cases, and are not generally suitable for use inside of a TEAP
-tunnel.
+Other EAP methods such as EAP-SIM, EAP-AKA, or EAP-AKA' are less
+commonly used within a TEAP tunnel.  The main reason to use an EAP
+method inside of a TLS-based EAP method such as TEAP is for privacy.
+Many legacy EAP methods may leak information about user identity, and
+those leaks are prevented by running the method inside of a protected
+TLS tunnel.
 
 Implementations MUST NOT permit resumption for the inner EAP methods
 such as EAP-TLS.  If the user or machine needs to be authenticated, it

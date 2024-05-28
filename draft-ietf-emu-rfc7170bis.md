@@ -88,7 +88,6 @@ informative:
   RFC4851:
   RFC4945:
   RFC4962:
-  RFC5226:
   RFC5247:
   RFC5272:
   RFC5280:
@@ -105,6 +104,7 @@ informative:
   RFC7029:
   RFC7170:
   RFC7542:
+  RFC8126:
   RFC9325:
   X.690:
     title: "SN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
@@ -3073,38 +3073,19 @@ change the Reference field in all tables from {{RFC7170}} to \[THIS-DOCUMENT].
 ## TEAP TLV Types
 
 IANA is instructed to update the references in the "TEAP TLV Types"
-registry as follows.  Most references to {{RFC7170}} are changed to
-this document.  TLV 11 is deprecated.  TLV 18 and TLV 19 are new
-additions to the registry.
+registry to from {{RFC7170}} to \[THIS-DOCUMENT], and add TLV 18 and TLV 19 to
+to the registry.  The Unassigned values then begin at 20 instead of at 18.
 
 ~~~~
 Value,Description,Reference
-0,Unassigned,
-1,Authority-ID TLV,[THIS-DOCUMENT]
-2,Identity-Type TLV,[THIS-DOCUMENT]
-3,Result TLV,[THIS-DOCUMENT]
-4,NAK TLV,[THIS-DOCUMENT]
-5,Error TLV,[THIS-DOCUMENT]
-6,Channel-Binding TLV,[THIS-DOCUMENT]
-7,Vendor-Specific TLV,[THIS-DOCUMENT]
-8,Request-Action TLV,[THIS-DOCUMENT]
-9,EAP-Payload TLV,[THIS-DOCUMENT]
-10,Intermediate-Result TLV,[THIS-DOCUMENT]
-11,PAC TLV,(DEPRECATED) [RFC7170][THIS-DOCUMENT]
-12,Crypto-Binding TLV,[THIS-DOCUMENT]
-13,Basic-Password-Auth-Req TLV,[THIS-DOCUMENT]
-14,Basic-Password-Auth-Resp TLV,[THIS-DOCUMENT]
-15,PKCS#7 TLV,[THIS-DOCUMENT]
-16,PKCS#10 TLV,[THIS-DOCUMENT]
-17,Trusted-Server-Root TLV,[THIS-DOCUMENT]
 18,CSR-Attributes TLV,[THIS-DOCUMENT]
 19,Identity-Hint TLV,[THIS-DOCUMENT]
 20-16383,Unassigned,
 ~~~~
 
-IANA is instructed to update the "TEAP PAC TLV (value 11) PAC
+IANA is instructed to close the "TEAP PAC TLV (value 11) PAC
 Attribute Type Codes" and "TEAP PAC TLV (value 11) PAC-Type Type
-Codes" registries with a NOTE:
+Codes" to new registries, and update update those registries with with a NOTE:
 
 ~~~~
 This registry has been closed. See [THIS-DOCUMENT].

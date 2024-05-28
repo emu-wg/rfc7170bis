@@ -1049,8 +1049,8 @@ provisioning, certificate provisioning, and channel binding, depend on
 the peer trusting the TEAP server. If the peer trusts the provided
 server certificate, then the server is authenticated.
 
-Typically, this authentication process involves the peer both
-validating the certificate to a trust anchor and confirming that the
+Typically, this authentication process involves the peer
+validating the certificate to a trust anchor by verifying that the server presenting the certificate holds the private key, and confirming that the
 entity named by the certificate is the intended server.  Server
 authentication also occurs when the procedures in [](#phase1) are used
 to resume a session where the peer and server were previously mutually
@@ -1151,9 +1151,9 @@ field MUST be empty to indicate that the peer did not include the
 optional channel-binding information (any value submitted is verified
 by the server as tls-unique information).
 
-The server SHOULD verify the tls-unique information.  This ensures
-that the authenticated TEAP peer is in possession of the private key
-used to sign the certification request.
+The server SHOULD verify the tls-unique information.  This ensures that the
+signed certificate request is being presented by an authenticated TEAP peer
+which is in possession of the private key.
 
 The Simple PKI Request/Response generation and processing rules of
 {{RFC5272}} SHALL apply to TEAP, with the exception of error
@@ -1170,32 +1170,22 @@ before any certificate is issued.
 
 The format of a CSR is complex, and contains a substantial amount of
 information.  That information could be incorrect, such as a user
-claiming a wrong physical address, email address, etc.  Alternatively,
-the supplied information could contain private data which should not
-be sent over a TLS 1.2 connection where that data would be exposed.
-
-It is RECOMMENDED that systems provisioning these certificates
+claiming a wrong physical address, email address, etc.  It is RECOMMENDED that systems provisioning these certificates
 validate that the CSR both contains the expected data, and also that
 is does not contain unexpected data.  For example, a CA could refuse
-to issue the certificate if the CSR contained unknown fields, or a
-known field contained an unexpected value.
+to issue the certificate if the CSR contained unknown fields, or if a
+known field contained an unexpected or invalid value.  The CA can modify or refuse a particular CSR to address these deficiencies for any
+reasons, including local site policy.  We note that the "A" in "CA" means for "Authority", while the "R" in "CSR" means "Request".  i.e. There is no requirement for a CA to sign any and all CSRs  which are presented to it.  
 
-We note that there is no requirement for a CA to sign any and all CSRs
-which are presented to it.  The CA can refuse a particular CSR for any
-reasons, including local site policy.
-
-Once an EAP peer receives the signed certificate, that certificate
-could potentially be used for in TLS contexts other than TEAP.  For
-example, the certificate could be used with EAP-TLS, or even with
-HTTPS.
-
-It is NOT RECOMMENDED to use certificates provisioned via TEAP with
-any other protocol which uses TLS.  One method of enforcing this
+Once an EAP peer receives the signed certificate, the peer could
+potentially be (ab) used for in TLS contexts other than TEAP.  For example,
+the certificate could be used with EAP-TLS, or even with HTTPS.  It is NOT RECOMMENDED to use certificates provisioned via TEAP for
+any non-TEAP protocol.  One method of enforcing this
 restriction is to have different CAs (or different intermediate CAs)
 which issue certificates for different uses.  For example, TLS-based
-EAP methods could share one CA, and HTTPS servers could use a
-different CA.  The different protocols could therefore be configured
-to validate client certificates only from their preferred CA.
+EAP methods could share one CA, and even use different intermediary CAs for different TLS-based EAP methods.  HTTPS servers could use an
+entirely different CA.  The different protocols could then be configured
+to validate client certificates only from their preferred CA, which would prevent peers from using certificates outside of the intended use-case.
 
 Another method of limiting the uses of a certificate is to provision
 it with an appropriate value for the Extended Key Usage field
@@ -2173,9 +2163,9 @@ session resumption using the NewSessionTicket message as defined in
 {{RFC9190}} Section 2.1.2 and Section 2.1.3.  As such, the PAC TLV
 has been deprecated.
 
-As the PAC TLV is deprecated, an entity receiving it should send a
+As the PAC TLV is deprecated, an entity receiving it SHOULD send a
 Result TLV indicating failure, and an Error TLV of Unexpected TLVs
-Exchanged.  Deprecated TLVs are ignored, similar to Outer TLVs which are invalid or which contain unknown values.
+Exchanged.
 
 ### Crypto-Binding TLV {#crypto-binding-tlv}
 
@@ -3180,7 +3170,7 @@ This ensures that the tunnel endpoints are the same as the inner
 method endpoints.
 
 Where Server Unauthenticated Provisioning is performed, TEAP requires
-that the inner provisioning method provide for mutual authentication.
+that the inner provisioning method provide for both peer and server authentication.
 
 ## Method Negotiation
 
@@ -4538,53 +4528,53 @@ knowledge (TLS-POK).  The conversation will appear as follows:
 |Peer|                                             |AuthSrv|
 `-+--'                                             `---+---'
   |               EAP-Request / Identity               |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - -
+  | - - - - - - - - - - - - < - - - - - - - - - - - - - 
   |                                                    |
   |           EAP-Response / Identity (MYID1)          |
-  |  - - - - - - - - - - - - - - - - - - - - - - - - - >
+  |  - - - - - - - - - - - > - - - - - - - - - - - - - -
   |                                                    |
   |             EAP-Request/EAP-Type=TEAP,             |
   |              V=1(TEAP Start,                       |
   |              S bit set,                            |
   |              Authority-ID)                         |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - -
+  | - - - - - - - - - - - - < - - - - - - - - - - - - - 
   |                                                    |
   |             EAP-Response/EAP-Type=TEAP,            |
   |              V=1(TLS client_hello)                 |
-  |  - - - - - - - - - - - - - - - - - - - - - - - - - >
+  |  - - - - - - - - - - - > - - - - - - - - - - - - - -
   |                                                    |
   |             EAP-Request/ EAP-Type=TEAP,            |
   |              V=1(TLS server_hello,                 |
   |              TLS certificate,                      |
   |              TLS certificate_request,              |
   |              TLS finished)                         |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - -
+  | - - - - - - - - - - - - < - - - - - - - - - - - - - 
   |                                                    |
   |        EAP-Response/EAP-Type=TEAP,                 |
   |         V=1(TLS change_cipher_spec,                |
   |             TLS certificate,                       |
   |        TLS finished) TLS channel established       |
-  |  - - - - - - - - - - - - - - - - - - - - - - - - - >
+  |  - - - - - - - - - - - > - - - - - - - - - - - - - -
   |                                                    |
   |               Send Request Action TLV              |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - -
+  | - - - - - - - - - - - - < - - - - - - - - - - - - - 
   |                                                    |
   |                   Send PKCS10 TLV                  |
-  |  - - - - - - - - - - - - - - - - - - - - - - - - - >
+  |  - - - - - - - - - - - > - - - - - - - - - - - - - -
   |                                                    |
   | Sign the CSR and send PKCS7 TLV Intermediate-Result|
   | TLV request(Success),                              |
   |  Crypto-Binding TLV(Request),                      |
   |  Result TLV(Success)                               |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - -
+  | - - - - - - - - - - - - < - - - - - - - - - - - - - -
   |                                                    |
   |     Intermediate-Result TLV response(Success),     |
   |      Crypto-Binding TLV(Response),                 |
   |      Result TLV(Success)                           |
-  |  - - - - - - - - - - - - - - - - - - - - - - - - - >
+  |  - - - - - - - - - - - > - - - - - - - - - - - - - -
   |                                                    |
   |                     EAP Success                    |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - -
+  | - - - - - - - - - - - - < - - - - - - - - - - - - - 
 ~~~~
 
 
@@ -4599,44 +4589,44 @@ will appear as follows:
 |Peer|                                                  |AuthSrv|
 `-+--'                                                  `---+---'
   |                  EAP-Request / Identity                 |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | - - - - - - - - - - - - < - - - - - - - - - - - - - - - -
   |                                                         |
   |             EAP-Response / Identity (MYID1)             |
-  |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
+  |  - - - - - - - - - - - - - > - - - - - - - - - - - - - -
   |                                                         |
   |          EAP-Request/EAP-Type=TEAP, V=1                 |
   |          (TEAP Start, S bit set, Authority-ID)          |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | - - - - - - - - - - - - < - - - - - - - - - - - - - - - -
   |                                                         |
   |    EAP-Response/EAP-Type=TEAP, V=1(TLS client_hello)    |
-  |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
+  |  - - - - - - - - - - - - - > - - - - - - - - - - - - - -
   |                                                         |
   | EAP-Request/ EAP-Type=TEAP, V=1                         |
   | (TLS server_hello,(TLS change_cipher_spec, TLS finished)|
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | - - - - - - - - - - - - < - - - - - - - - - - - - - - - -
   |                                                         |
   |             EAP-Response/EAP-Type=TEAP, V=1             |
   |             (TLS change_cipher_spec,                    |
   |             TLS finished)                               |
   |             TLS channel established                     |
-  |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
+  |  - - - - - - - - - - - - - > - - - - - - - - - - - - - -
   |                                                         |
   |                    Request Action TLV                   |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | - - - - - - - - - - - - < - - - - - - - - - - - - - - - -
   |                                                         |
   |                      Bad PKCS10 TLV                     |
-  |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
+  |  - - - - - - - - - - - - - > - - - - - - - - - - - - - -
   |                                                         |
   |        Intermediate-Result TLV request(Failure),        |
   |        Result TLV(Failure)                              |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | - - - - - - - - - - - - < - - - - - - - - - - - - - - - -
   |                                                         |
   |        Intermediate-Result TLV response(Failure),       |
   |        Result TLV(Failure)                              |
-  |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
+  |  - - - - - - - - - - - - - > - - - - - - - - - - - - - -
   |                                                         |
   |                       EAP Failure                       |
-  | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  | - - - - - - - - - - - - < - - - - - - - - - - - - - - - -
 ~~~~
 
 ## C.13. Client certificate in Phase 1

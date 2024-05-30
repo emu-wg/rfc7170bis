@@ -2641,7 +2641,7 @@ When the Identity-Hint is used, the peer can signal which identities it has avai
 
 The peer SHOULD send an Identity-Hint TLV for each Identity-Type which is available to it.  For example, if the peer can do both Machine and User authentication, it can send two Identity-Hint TLVs, with values "host/name.example.com" (for a machine with hostname "name.example.com"), and "user@example.com" (for a person with identity "user@example.com").
 
-The contents of the Identity-Hint TLV SHOULD be in the format of an NAI {{RFC7542}}, but we note that as given in the example above, Machine identities might not follow that format.  As these identities are never used for AAA routing as discussed in {{RFC7542}} Section 3, the format and definition of these identities is entirely site local.  Robust implementations MUST support arbitrary data in the content of this TLV, including binary octets.
+The contents of the Identity-Hint TLV SHOULD be in the format of an NAI {{RFC7542}}, but we note that as given in the example above, Machine identities might not follow that format.  As these identities are never used for AAA routing as discussed in {{RFC7542}} Section 3, the format and definition of these identities are entirely site local.  Robust implementations MUST support arbitrary data in the content of this TLV, including binary octets.
 
 As the Identity-Hint TLV is a "hint", server implementations are free to ignore the hints given, and do whatever is required by site-local policies.
 
@@ -2858,7 +2858,7 @@ is used or when no inner method has been run and the crypto-binding TLV
 for the Result TLV needs to be generated.  In this case, IMSK\[j]
 is set to all zeroes (i.e., IMSK\[j] = MSK = 32 octets of 0x00s).
 
-Note that using a MSK of all zeroes opens up TEAP to on-path
+Note that using an MSK of all zeroes opens up TEAP to on-path
 attacks, as discussed below in {#separation-p1-p2}.  It is therefore
 NOT RECOMMENDED to use inner methods which fail to generate an EMSK or
 MSK.  These methods should only be used in conjunction with another

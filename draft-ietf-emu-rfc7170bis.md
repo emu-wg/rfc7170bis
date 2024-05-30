@@ -125,7 +125,8 @@ secure communication between a peer and a server by using the
 Transport Layer Security (TLS) protocol to establish a mutually
 authenticated tunnel.  Within the tunnel, TLV objects are used to
 convey authentication-related data between the EAP peer and the EAP
-server.  This document obsoletes RFC 7170 and updates RFC 9427.
+server.  This document obsoletes RFC 7170 and updates RFC 9427 by
+moving all TEAP specifications from those documents to this one.
 
 --- middle
 
@@ -713,7 +714,7 @@ Multiple round trips of password authentication requests and responses
 MAY be used to support some "housekeeping" functions such as a
 password or pin change before a user is considered to be
 authenticated.  Multiple rounds MAY also be used to communicate a
-users password, and separately a one-time password such as Time-Based One-Time Passwords (TOTP) {{?RFC6238}}.
+user's password, and separately a one-time password such as Time-Based One-Time Passwords (TOTP) {{?RFC6238}}.
 
 Implementations MUST limit the number of rounds trips for password
 authentication.  It is reasonable to use one or two round trips.
@@ -769,7 +770,7 @@ is used as the Inner Method Session Keys (IMSK) for TEAP.
 ### Limitations on inner methods {#inner-method-limitations}
 
 Tunneled EAP methods such as (PEAP) [PEAP], EAP-TTLS {{RFC5281}}, and
-EAP- FAST {{RFC4851}} MUST NOT be used for inner EAP authentication.
+EAP-FAST {{RFC4851}} MUST NOT be used for inner EAP authentication.
 There is no reason to have multiple layers of TLS to protect a
 password exchange.
 
@@ -866,7 +867,7 @@ cleartext EAP Success or EAP Failure.
 
 If the peer receives a Result TLV indicating success from the server,
 but its authentication policies are not satisfied (for example, it
-requires a particular authentication mechanism be run), it may request further action from the server using
+requires a particular authentication mechanism to be run), it may request further action from the server using
 the Request-Action TLV.  The Request-Action TLV is sent with a Status
 field indicating what EAP Success/Failure result the peer would
 expect if the requested action is not granted.  The value of the
@@ -946,7 +947,7 @@ TEAP uses the error-handling rules summarized below:
 [](#outer-layer-errors).
 
 2. Errors in the TLS layer are communicated via TLS alert messages
-in all phases of TEAP.
+in both phases of TEAP.
 
 3. The Intermediate-Result TLVs carry success or failure indications
 of the individual inner methods in TEAP Phase 2.  Errors within an
@@ -1107,7 +1108,7 @@ be associated with any session ticket.
 
 Note that the act of re-provisioning a device is essentially
 indistinguishable from any initial provisioning.  The device
-authentications, and obtains new credentials via the standard
+authenticates, and obtains new credentials via the standard
 provisioning mechanisms.  The only caveat is that the device SHOULD
 NOT discard the old credentials unless either they are known to have
 expired, or the new credentials have been verified to work.
@@ -1270,7 +1271,7 @@ Channel-Binding TLV to indicate the request.  The peer responds to the
 request by sending a Channel-Binding TLV containing a channel-binding
 message as defined in {{RFC6677}}.  The server validates the
 channel-binding message and sends back a Channel-Binding TLV with a result
-code.  If the server didn't initiate the channel-binding request and
+code.  If the server did not initiate the channel-binding request and
 the peer still wants to send the channel-binding information to the
 server, it can do that by using the Request-Action TLV along with the
 Channel-Binding TLV.  The peer MUST only send channel-binding
@@ -1611,7 +1612,7 @@ messages for protected termination within TEAP.  If the Status field
 does not contain one of the known values, then the peer or EAP server
 MUST treat this as a fatal error of Unexpected TLVs Exchanged.  The
 behavior of the Result TLV is further discussed in [](#protected-termination) and
-[](#phase-2-errors)  A Result TLV indicating failure MUST NOT be accompanied by
+[](#phase-2-errors).  A Result TLV indicating failure MUST NOT be accompanied by
 the following TLVs: NAK, EAP-Payload TLV, or Crypto-Binding TLV.  The
 Result TLV is defined as follows:
 
@@ -1991,7 +1992,7 @@ receiving side processes the fatal items first, the communication
 time will be shorter.
 
 The peer or the server MAY return a new set of Request-Action TLVs
-after one or more of the requested items has been processed and the
+after one or more of the requested items have been processed and the
 other side has signaled it wants to end the EAP conversation.
 
 The Request-Action TLV is defined as follows:
@@ -2632,7 +2633,7 @@ Length
 
 ### Identity-Hint TLV  {#identity-hint-tlv}
 
-The Identity-Hint TLV is an optional TLV which can sent by the peer to the server at the beginning of the Phase 2 TEAP conversation.  The purpose of the TLV is to provide a "hint" as to the identity or identities which the peer will be using by subsequent inner methods.
+The Identity-Hint TLV is an optional TLV which can be sent by the peer to the server at the beginning of the Phase 2 TEAP conversation.  The purpose of the TLV is to provide a "hint" as to the identity or identities which the peer will be using by subsequent inner methods.
 
 The purpose of this TLV is to solve the "bootstrapping" problem for the server.  In order to perform authentication, the server must choose an inner method.  However, the server has no knowledge of what methods are supported by the peer.  Without an identity hint, the server needs to propose a method, and then have the peer return a response indicating that the requested method is not available.  This negotiation increases the number of round trips required for TEAP to conclude, with no additional benefit.
 

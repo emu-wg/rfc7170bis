@@ -3065,7 +3065,7 @@ from the S_IMCK_MSK\[n].
 
 This section provides guidance to the Internet Assigned Numbers
 Authority (IANA) regarding registration of values related to the TEAP
-protocol, in accordance with BCP 26 {{RFC5226}}.
+protocol, in accordance with BCP 26 {{RFC8126}}.
 
 Except as noted below, IANA is instructed to update the "Tunnel
 Extensible Authentication Protocol (TEAP) Parameters" registry to

@@ -202,7 +202,7 @@ channel-binding information.
 
 As discussed in {{RFC9190}} Section 2.1.7 and {{RFC9427}} Section 3.1,
 the outer EAP Identity SHOULD be an anonymous Network Access
-Identifier (NAI) as describd in {{RFC7542, Section 2.4}}.  While {{RFC3748}} Section 5.1 places no
+Identifier (NAI) as described in {{RFC7542, Section 2.4}}.  While {{RFC3748}} Section 5.1 places no
 limits on the contents of the Identity field, {{RFC7542}} Section 2.6
 states that Identities which do not follow the NAI format cannot be
 transported in an Authentication, Authorization, and Accounting (AAA)
@@ -1176,7 +1176,7 @@ validate that the CSR both contains the expected data, and also that
 is does not contain unexpected data.  For example, a CA could refuse
 to issue the certificate if the CSR contained unknown fields, or if a
 known field contained an unexpected or invalid value.  The CA can modify or refuse a particular CSR to address these deficiencies for any
-reasons, including local site policy.  We note that the "A" in "CA" means for "Authority", while the "R" in "CSR" means "Request".  i.e. There is no requirement for a CA to sign any and all CSRs  which are presented to it.  
+reasons, including local site policy.  We note that the "A" in "CA" means for "Authority", while the "R" in "CSR" means "Request".  There is no requirement for a CA to sign any and all CSRs  which are presented to it.
 
 Once an EAP peer receives the signed certificate, the peer could
 potentially be (ab) used for in TLS contexts other than TEAP.  For example,
@@ -3086,7 +3086,7 @@ Value,Description,Reference
 
 IANA is instructed to close the "TEAP PAC TLV (value 11) PAC
 Attribute Type Codes" and "TEAP PAC TLV (value 11) PAC-Type Type
-Codes" to new registries, and update update those registries with with a NOTE:
+Codes" to new registrations, and update update those registries with with a NOTE:
 
 ~~~~
 This registry has been closed. See [THIS-DOCUMENT].

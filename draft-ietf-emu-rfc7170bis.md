@@ -769,37 +769,38 @@ is used as the Inner Method Session Keys (IMSK) for TEAP.
 
 ### Limitations on inner methods {#inner-method-limitations}
 
+Implementations SHOULD limit the permitted inner EAP methods to a
+small set such as EAP-TLS and the EAP-FAST-MSCHAPv2 variant of
+EAP-MSCHAPv2.  These EAP methods are the most commonly supported inner
+methods in TEAP, and are known to be interoperable among multiple
+implementations.
+
+Other EAP methods such as EAP-pwd, EAP-SIM, EAP-AKA, or EAP-AKA' may
+be used within a TEAP tunnel, but do not appear to be well tested by
+existing implementations.
+
 Tunneled EAP methods such as (PEAP) [PEAP], EAP-TTLS {{RFC5281}}, and
 EAP-FAST {{RFC4851}} MUST NOT be used for inner EAP authentication.
-There is no reason to have multiple layers of TLS to protect a
+There is no reason to have multiple layers of TLS in order to protect a
 password exchange.
 
 The EAP methods defined in {{RFC3748}} Section 5 such as
 MD5-Challenge, One-Time Password (OTP), and Generic Token Card (GTC)
-do not derive an Extended Master Session Key (EMSK), and are vulnerable to on-path
-attacks.  The construction of the OTP and GTC methods makes this
-attack less relevant, as the information being sent is a one-time
-token.  However, MD5-Challenge has no such safety, and TEAP
-implementations MUST NOT permit the use of MD5-Challenge or other
-inner methods which fail to perform crypto-binding of the inner method
-to the TLS session.
+do not derive a Master Session Key (MSK) or an Extended Master Session
+Key (EMSK), and are vulnerable to on-path attacks.  The construction
+of the OTP and GTC methods makes this attack less relevant, as the
+information being sent is generally a one-time token. However, EAP-OTP
+and EAP-GTC offer no benefit over the basic password authentication
+defined in [](#inner-password), which also does not perform crypto-binding of
+the inner method to the TLS session.  These EAP methods are therefore
+not useful as phase 2 methods within TEAP.
 
-Similarly, EAP-OTP and EAP-GTC MUST NOT be used for inner EAP
-authentication.  They offer no benefit over the basic password
-authentication defined in [](#inner-password).
+Other EAP methods are less widely used, and highly likely to not work
+as the inner EAP method for TEAP.
 
-Implementations SHOULD limit the permitted inner EAP methods to a
-small set such as EAP-TLS, EAP-MSCHAPv2, and perhaps EAP-pwd.  There
-are few reasons for allowing all possible EAP methods to be used in
-Phase 2.  The above EAP methods are widely implemented, and known to
-be widely used.
-
-Other EAP methods such as EAP-SIM, EAP-AKA, or EAP-AKA' are less
-commonly used within a TEAP tunnel.  The main reason to use an EAP
-method inside of a TLS-based EAP method such as TEAP is for privacy.
-Many legacy EAP methods may leak information about user identity, and
-those leaks are prevented by running the method inside of a protected
-TLS tunnel.
+In order to protect from on-path attacks, TEAP implementations MUST
+NOT permit the use of inner EAP methods which fail to perform
+crypto-binding of the inner method to the TLS session.
 
 Implementations MUST NOT permit resumption for the inner EAP methods
 such as EAP-TLS.  If the user or machine needs to be authenticated, it

@@ -462,7 +462,7 @@ Server Certificates MUST include a subjectAltName extension, with the dnsName at
 
 The KeyUsage extension MAY be included, but are not required.
 
-The ExtendedKeyUsage extensions defined in {{RFC5280}} MAY also be included, but their use is discouraged.  Systems SHOULD use a private Certification Authority (CA) for EAP in preference to public CAs.  The most commonly used public CAs are focussed on the web, and those certificates are not always suitable for use with EAP.  In contrast, private CAs can be designed for any purposes, and can be restricted to an enterprise or an other organization.
+The ExtendedKeyUsage extensions defined in {{RFC5280}} MAY also be included, but their use is discouraged.  Systems SHOULD use a private Certification Authority (CA) for EAP in preference to public CAs.  The most commonly used public CAs are focused on the web, and those certificates are not always suitable for use with EAP.  In contrast, private CAs can be designed for any purposes, and can be restricted to an enterprise or an other organization.
 
 ## Server Certificate Validation
 
@@ -2853,7 +2853,7 @@ MSK is truncated at 32 octets if it is longer than 32 octets or
 padded to a length of 32 octets with zeros if it is less than 32
 octets. In this case, IMSK\[j] is the adjusted MSK.
 
-An inner method may not provider either EMSK or MSK, such as when basic password authentication
+An inner method may not provide either EMSK or MSK, such as when basic password authentication
 is used or when no inner method has been run and the crypto-binding TLV
 for the Result TLV needs to be generated.  In this case, IMSK\[j]
 is set to all zeroes (i.e., IMSK\[j] = MSK = 32 octets of 0x00s).
@@ -3058,8 +3058,8 @@ for each of MSK\[j] and EMSK\[j].  The final derivation using
 S-IMCK\[n] must choose only one of these keys.
 
 If the Crypto-Binding TLV contains an EMSK compound MAC, then the
-derivation is taken from the S_IMCK_EMSK\[n].  Otherwise it is taken
-from the S_IMCK_MSK\[n].
+derivation is taken from the S-IMCK_EMSK\[n].  Otherwise it is taken
+from the S-IMCK_MSK\[n].
 
 # IANA Considerations
 
@@ -3121,7 +3121,7 @@ TEAPbindkey@ietf.org,TEAP binding usage label,[THIS-DOCUMENT]
 
 ## Extensible Authentication Protocol (EAP) Registry
 
-IANA is instructed to update the "Method Types" regisry to change the Reference field for Value "55" as follows:
+IANA is instructed to update the "Method Types" registry to change the Reference field for Value "55" as follows:
 
 ~~~~
 Value,Description,Reference

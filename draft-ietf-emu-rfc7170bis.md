@@ -1,7 +1,7 @@
 ---
 title: Tunnel Extensible Authentication Protocol (TEAP) Version 1
 abbrev: TEAP
-docname: draft-ietf-emu-rfc7170bis-18
+docname: draft-ietf-emu-rfc7170bis-19
 
 stand_alone: true
 ipr: trust200902
@@ -2963,6 +2963,60 @@ and then also values derived from EMSK:
    CMK_EMSK[j]
 ~~~~
 
+### Unintended Side Effects {#oops}
+
+The above description has issues which were only discovered after TEAP
+had been widely implemented, following draft publications of this
+document.  These issues need to be documented in order to enable
+interoparable implementations.
+
+As noted above, some inner EAP methods derive MSK, but do not derive
+EMSK.  When there is no EMSK, it is therefore not possible to derive
+IMCK_EMSK\[j] from it.  The choice of multiple implementations was
+then to simply define:
+
+~~~~
+    IMCK_EMSK[j] = IMCK_EMSK[j - 1]
+~~~~
+
+This definition can be trivially implementation by simply keeping a
+cached copy of IMCK_EMSK in a data structure.  If EMSK is available,
+IMCK_EMCK is updated from it via the TLS-PRF function as defined
+above.  If EMSK is not available, then the IMCK_EMSK value is
+unmodified.
+
+This behavior was not explicitly anticipated by earlier drafts of this
+document.  It instead appears to be an accidental outcome of
+implementing the derivations above, with the limitiation of a missing
+EMSK.  This behavior is explicitly called out here in the interest of
+fully documenting TEAP.
+
+Another unintended consequence is in the calculation of the
+Crypto-Binding TLV.  That TLV includes compound MACs which depend on
+the MSK and EMSK of the current authentication method.  Where the
+current method does not provide an EMSK, the Crypto-Binding TLV does
+not include a compound MAC which depends on the EMSK.  Where the
+current method does not provide an MSK, the Crypto-Binding TLV
+includes a compound MAC which depends on a special "all zero" IMSK as
+discussed earlier.
+
+The result of this definition is that the final Crypto-Binding TLV in
+an inner TEAP exchange may not include a compond MAC which depends on
+EMSK, even if earlier EAP methods in the phase 2 exchange provided an
+ESMK.  This result likely has negative affects on security, though the
+full impact is unknown at the time of writing this document.
+
+These design flaws have nonetheless resulted in multiple interoperable
+implementations.  We note that these implementations seem to support
+only EAP-TLS and the EAP-FAST-MSCHAPv2 variant of EAP-MSCHAPv2.  Other
+inner EAP methods may work by accident, but are not likely to work by
+design.  For this document, we can only ensure that the behavior of
+TEAPv1 is fully documented, even if that behavior was an unintended
+consequence of unclear text in earlier versions of this document.
+
+We expect that these issues will be addressed in a future revision of
+TEAP.
+
 ## Computing the Compound MAC {#computing-compound-mac}
 
 For inner methods that generate keying material, further
@@ -3376,6 +3430,36 @@ TLV.  Implementations should take care to protect this data.  For
 example, passwords should not normally be logged, and password data
 should be securely scrubbed from memory when it is no longer needed.
 
+## Accidental or Unintended Behavior
+
+Due to the complexity of TEAP, and the long time between {{RFC7170}}
+and any substantial implementation, there are many accidental or
+unintended behaviors in the protocol.
+
+The first one is that EAP-FAST-MSCHAPv2 is used instead of
+EAP-MSCHAPv2.  While {{RFC7170}} defined TEAP to use EAP-MSCHAPv2, an
+early implementor or implementors instead used EAP-FAST-MSCHAPv2.  The
+choice for this document was either to define a new version of TEAP
+which used EAP-MSCHAPv2, or instead to document implemented behavior.
+The choice taken here was to document running code.
+
+The issues discussed in [](#oops) could have security impacts, but no
+analysis has been performed.  The choice of using a special "all zero"
+IMSK in [](#intermediate-compound-key) made for simplicity, but could
+also have negative security impacts.
+
+The definition of the Crypto-Binding TLV means that it the final
+Crypto-Binding TLV values might not depend on all previous values of
+MSK and EMSK.  This limitation could have negative security impacts,
+but again no analysis has been performed.
+
+We suggest that the TEAP protocol be revised to TEAP version 2, which
+could address these issues.  There are proposals at this time to
+better derive the various keying materials and cryptographic binding
+derivations.  However, in the interest of documenting running code, we
+are publishing this document with the acknowledgement that there are
+improvements to be made.
+
 ## Security Claims
 
 This section provides the needed security claim requirement for EAP
@@ -3460,10 +3544,16 @@ on nearly every aspect of the specification.  The corrections in this
 document are based on his work.
 
 We wish to thank the many reviewers and commenters in the EMU WG,
-including Eliot Lear, Jouni Malinen, Joe Salowey, Heikki Vatiainen,
+including Eliot Lear, Joe Salowey, Heikki Vatiainen,
 Bruno Pereria Vidal, and Michael Richardson.  Many corner cases and
 edge conditions were caught and corrected as a result of their
 feedback.
+
+Jouni Malinin initially pointed out the issues with RFC 7170.  Those
+comments resulted in substantial discussion on the EMU WG mailing
+list, and eventually this document.  Jouni also made substantial
+contributions in analyzing corner cases, which resulted in the text in
+[](#oops).
 
 # Changes from RFC 7170
 
@@ -3493,6 +3583,10 @@ All uses of the PAC were removed.  It had not been implemented, and
 there were no plans by implementors to use it.
 
 Text was added on recommendations for inner and outer identities.
+
+[](#oops) was added late in the document lifecycle, in order to
+document accidental behavior which could result in interability
+issues.
 
 # Appendix A Evaluation against Tunnel-Based EAP Method Requirements
 {:numbered="false"}

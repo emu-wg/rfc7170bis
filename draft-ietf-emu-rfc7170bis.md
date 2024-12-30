@@ -810,16 +810,23 @@ rely on the outer TLS session for resumption.  This restriction
 applies also to all TLS-based EAP methods which can tunnel other EAP
 methods.  As a result, this document updates {{RFC9427}}.
 
+In general, the reason to use a non-TLS-based EAP method inside of a
+TLS-based EAP method such as TEAP is for privacy.  Many previous EAP
+methods may leak information about user identity, and those leaks are
+prevented by running the method inside of a protected TLS tunnel.
+
 EAP-TLS is permitted in Phase 2 for two use-cases.  The first is when
 TLS 1.2 is used, as the client certificate is not protected as with
-TLS 1.3.  It is therefore RECOMMENDED that when TLS 1.3 is used, the
-client certificate is sent in Phase 1, instead of doing EAP-TLS in
-Phase 2.
+TLS 1.3.  It is therefore RECOMMENDED that when TLS 1.3 is used for
+the outer TEAP exchange, the client certificate is sent in Phase 1,
+instead of doing EAP-TLS in Phase 2.  This behavior will simplify the
+authentication exchange, and use fewer round trips than doing EAP-TLS
+inside of TEAP.
 
 The second use-case for EAP-TLS in Phase 2 is where both the user and
-machine use client certificates for authentication.  Since TLS only
-permits one client certificate to be presented, only one certificate
-can be used in Phase 1.  The second certificate is then presented via
+machine use client certificates for authentication.  Since TLS permits
+only one client certificate to be presented, only one certificate can
+be used in Phase 1.  The second certificate is then presented via
 EAP-TLS in Phase 2.
 
 For basic password authentication, it is RECOMMENDED that this method

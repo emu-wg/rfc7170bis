@@ -1565,8 +1565,14 @@ The Identity-Type TLV allows an EAP server to send a hint to help the
 EAP peer select the right type of identity, for example, user or
 machine.  TEAPv1 implementations MUST support this TLV.  Only one
 Identity-Type TLV SHOULD be present in the TEAP request or response
-packet.  The Identity-Type TLV request MUST come with an EAP-Payload
-TLV or Basic-Password-Auth-Req TLV.  If the EAP peer does have an
+packet.
+
+For a server sending the Identity-Type TLV, the request MUST also
+include an EAP-Payload TLV or a Basic-Password-Auth-Resp TLV.  For a
+peer sending an Identity-Type TLV, the response MUST also include
+EAP-Payload TLV or a Basic-Password-Auth-Resp TLV.
+
+If the EAP peer has an
 identity corresponding to the identity type requested, then the peer
 SHOULD respond with an Identity-Type TLV with the requested type.  If
 the Identity-Type field does not contain one of the known values or

@@ -3108,13 +3108,7 @@ following derivation:
           "Extended Session Key Generating Function")
 ~~~
 
-The TLS-PRF is defined in {{RFC5246}} as
-
-~~~
-   PRF(secret, label, seed) = P_<hash>(secret, label | seed).
-~~~
-
-where "|" denotes concatenation. The secret is S-IMCK\[n] where n is the
+The secret is S-IMCK\[n] where n is the
 number of the last generated
 S-IMCK\[j] from [](#intermediate-compound-key).  The label is the ASCII
 value for the string without quotes.  The seed is empty (0 length) and
@@ -3460,7 +3454,7 @@ The choice taken here was to document running code.
 
 The issues discussed in [](#oops) could have security impacts, but no
 analysis has been performed.  The choice of using a special "all zero"
-IMSK in [](#intermediate-compound-key) made for simplicity, but could
+IMSK in [](#intermediate-compound-key) was made for simplicity, but could
 also have negative security impacts.
 
 The definition of the Crypto-Binding TLV means that it the final
@@ -3599,7 +3593,7 @@ there were no plans by implementors to use it.
 
 Text was added on recommendations for inner and outer identities.
 
-[](#oops) was added late in the document lifecycle, in order to
+[](#oops) was added late in the document life cycle, in order to
 document accidental behavior which could result in interability
 issues.
 

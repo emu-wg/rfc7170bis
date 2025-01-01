@@ -775,9 +775,12 @@ EAP-MSCHAPv2.  These EAP methods are the most commonly supported inner
 methods in TEAP, and are known to be interoperable among multiple
 implementations.
 
-Other EAP methods such as EAP-pwd, EAP-SIM, EAP-AKA, or EAP-AKA' may
-be used within a TEAP tunnel, but do not appear to be well tested by
-existing implementations.
+Other EAP methods such as EAP-pwd, EAP-SIM, EAP-AKA, or EAP-AKA' can
+be used within a TEAP tunnel.  Any EAP method which derives both MSK
+and ESMK is likely to work as an inner method for TEAP, because
+EAP-TLS has that behavior, and it works.  EAP methods which derive
+only MSK should work, as EAP-FAST-MSCHAPv2 has that behavior, and it
+works.  Other EAP methods are untested, and may or may not work.
 
 Tunneled EAP methods such as (PEAP) [PEAP], EAP-TTLS {{RFC5281}}, and
 EAP-FAST {{RFC4851}} MUST NOT be used for inner EAP authentication.
@@ -4337,16 +4340,16 @@ conversation will appear as follows:
       EAP Identity Response ->
 
                              <-  EAP Payload TLV, EAP-Request,
-                                 (EAP-MSCHAPV2, Challenge)
+                                 (EAP-FAST-MSCHAPV2, Challenge)
 
       EAP Payload TLV, EAP-Response,
-      (EAP-MSCHAPV2, Response) ->
+      (EAP-FAST-MSCHAPV2, Response) ->
 
                              <-  EAP Payload TLV, EAP-Request,
-                                 (EAP-MSCHAPV2, Success Request)
+                                 (EAP-FAST-MSCHAPV2, Success Request)
 
       EAP Payload TLV, EAP-Response,
-      (EAP-MSCHAPV2, Success Response) ->
+      (EAP-FAST-MSCHAPV2, Success Response) ->
 
                            <- Intermediate-Result TLV (Success),
                                Crypto-Binding TLV (Request),

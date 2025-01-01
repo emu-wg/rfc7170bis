@@ -2972,6 +2972,12 @@ and then also values derived from EMSK:
    CMK_EMSK[j]
 ~~~~
 
+At the conclusion of a successfully exchange of Crypto-Binding TLVs, a
+single S-IMCK\[j] is selected based on which Compound MAC value was
+included in the Crypto-Binding TLV from the client. If EMSK Compound
+MAC was included, S-IMCK\[j] is taken from S-IMCK_EMSK\[j].  Otherwise,
+S-IMCK\[j] is taken from S-IMCK_MSK\[j].
+
 ### Unintended Side Effects {#oops}
 
 The above description has issues which were only discovered after TEAP

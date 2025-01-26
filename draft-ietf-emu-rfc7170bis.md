@@ -693,11 +693,6 @@ always imply a failure of the overall authentication.  If one
 inner method fails, the server may attempt to authenticate
 the peer with a different method (EAP or password).
 
-If a particular inner method succeeds, the server MUST NOT
-attempt a subsequent inner method for the same Identity-Type.  For example, if a user is
-authenticated via an inner method of EAP-TLS, there is no benefit to
-also requesting additional authentication via a different inner method.
-
 ### Inner Password Authentication {#inner-password}
 
 The authentication server initiates password
@@ -1567,24 +1562,61 @@ machine.  TEAPv1 implementations MUST support this TLV.  Only one
 Identity-Type TLV SHOULD be present in the TEAP request or response
 packet.
 
-For a server sending the Identity-Type TLV, the request MUST also
-include an EAP-Payload TLV or a Basic-Password-Auth-Resp TLV.  For a
-peer sending an Identity-Type TLV, the response MUST also include
+A server sending the Identity-Type TLV MUST also
+include an EAP-Payload TLV or a Basic-Password-Auth-Resp TLV.  A
+peer sending an Identity-Type TLV MUST also include
 EAP-Payload TLV or a Basic-Password-Auth-Resp TLV.
 
-If the EAP peer has an
-identity corresponding to the identity type requested, then the peer
+An EAP peer receiving an Identity-Type request
 SHOULD respond with an Identity-Type TLV with the requested type.  If
-the Identity-Type field does not contain one of the known values or
+the Identity-Type field does not contain one of the known values, or
 if the EAP peer does not have an identity corresponding to the
 identity type requested, then the peer SHOULD respond with an
-Identity-Type TLV with the one of available identity types.  If the
-server receives an identity type in the response that does not match
-the requested type, then the peer does not possess the requested
-credential type, and the server SHOULD proceed with authentication
-for the credential type proposed by the peer, proceed with requesting
-another credential type, or simply apply the network policy based on
-the configured policy, e.g., sending Result TLV with Failure.
+Identity-Type TLV with the one of available identity types.
+
+A server receiving an Identity-Type in the response MUST check if the
+value of the Identity-Type in the response matches the value of the
+Identity-Type which was sent in the request.  A match means that the
+server can proceed with authentication.
+
+However, if the values do not match, the server can proceed with
+authentication if and only if the following two conditions match.  If
+either of the following two conditions does not match, the server MUST
+respond with a Result TLV of Failure.
+
+> 1. The Identity-Type contains a value permitted by the server configuration.
+>
+> 2. The Identity-Type value was not previously used for a successful authentication.
+
+The first condition allows a server to be configured to permit only
+User authentication, or else only Machine Authentication.  A server
+could also use an Identity-Hint TLV sent in the response to permit
+different types of authentication for different identities.  A server
+could also permit or forbid different kinds of authentication based on
+other information, such an outer EAP Identity, or fields in an outer
+EAP client certificate, or other fields received in a RADIUS or
+Diameter packet along with the TEAP session.  There is no requirement
+that a server has to support both User and Machine authentication for
+all TEAP sessions.
+
+The second condition ensures that if a particular inner method
+succeeds, the server does not attempt a subsequent inner method for
+the same Identity-Type.  For example, if a user is authenticated via
+an inner method of EAP-TLS, there is no benefit to also requesting
+additional authentication via a different inner method.  Similarly,
+there is no benefit to repeating an authentication sessions for the
+same user; the result will not change.
+
+This second condition also forbids multiple rounds of challenge /
+response authentication via the Basic-Password-Auth-Req TLV.  TEAPv1
+supports only one round of Basic-Password-Auth-Req followed by
+Basic-Password-Auth-Resp.  The result of that round MUST NOT be
+another Basic-Password-Auth-Req TLV.
+
+This second condition also means that a server MUST NOT send an
+Identity-Hint TLV which has the same value as was previously used for
+a successful authentication.
+
 
 The Identity-Type TLV is defined as follows:
 

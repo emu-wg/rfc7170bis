@@ -2243,21 +2243,24 @@ included with the Intermediate-Result TLV to perform cryptographic
 binding after each successful inner method in a sequence of inner
 methods, before proceeding with another inner method.  If no MSK or
 EMSK has been generated and a Crypto-Binding TLV is required then the
-MSK Compound MAC field contains the MAC using keys generated according
+MSK Compound-MAC field contains the MAC using keys generated according
 to [](#computing-compound-mac).
 
 The Crypto-Binding TLV is valid only if the following checks pass on
 its contents:
 
 * The Version field contain a known value,
-* The Received Ver field matches the TEAP version sent by the receiver during the EAP version negotiation,
+* The Received-Ver field matches the TEAP version sent by the receiver during the EAP version negotiation,
 * The Sub-Type field is set to the correct value for this exchange,
 * The Flags field is set to a known value,
-* The MAC verifies correctly.
+* The Compound-MAC(s) verify correctly.
 
 If any of the above checks fails, then the TLV is invalid.  An
 invalid Crypto-Binding TLV is a fatal error and is handled as
 described in [](#phase-2-errors)
+
+See {#cryptographic-calculations} for a more detailed discussion of
+how the Compound-MAC fields are constructed and verified.
 
 The Crypto-Binding TLV is defined as follows:
 
@@ -2267,18 +2270,18 @@ The Crypto-Binding TLV is defined as follows:
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |M|R|         TLV Type          |            Length             |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|    Reserved   |    Version    |  Received Ver.| Flags|Sub-Type|
+|    Reserved   |    Version    |  Received-Ver.| Flags|Sub-Type|
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                               |
 ~                             Nonce                             ~
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                               |
-~                   EMSK Compound MAC                           ~
+~                   EMSK Compound-MAC                           ~
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                               |
-~                    MSK Compound MAC                           ~
+~                    MSK Compound-MAC                           ~
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ~~~~
@@ -2310,9 +2313,9 @@ Version
 > implementation compliant with TEAPv1, the version
 > number MUST be set to one (1).
 
-Received Ver
+Received-Ver
 
-> The Received Ver field is a single octet and MUST be set to the
+> The Received-Ver field is a single octet and MUST be set to the
 > TEAP version number received during version negotiation.  Note
 > that this field only provides protection against downgrade
 > attacks, where a version of EAP requiring support for this TLV is
@@ -2324,11 +2327,11 @@ Flags
 
 > The Flags field is four bits.  Defined values include
 >
->> 1  EMSK Compound MAC is present
+>> 1  EMSK Compound-MAC is present
 >>
->> 2  MSK Compound MAC is present
+>> 2  MSK Compound-MAC is present
 >>
->> 3  Both EMSK and MSK Compound MAC are present
+>> 3  Both EMSK and MSK Compound-MAC are present
 >>
 >> All other values of the Flags field are invalid.
 
@@ -2345,15 +2348,15 @@ Sub-Type
 Nonce
 
 > The Nonce field is 32 octets.  It contains a 256-bit nonce that is
-> temporally unique, used for Compound MAC key derivation at each
+> temporally unique, used for Compound-MAC key derivation at each
 > end.  The nonce in a request MUST have its least significant bit
 > set to zero (0), and the nonce in a response MUST have the same
 > value as the request nonce except the least significant bit MUST
 > be set to one (1).
 
-EMSK Compound MAC
+EMSK Compound-MAC
 
-> The EMSK Compound MAC field is 20 octets.  This can be the Server
+> The EMSK Compound-MAC field is 20 octets.  This can be the Server
 > MAC (B1_MAC) or the Client MAC (B2_MAC).  The computation of the
 > MAC is described in [](#computing-compound-mac).
 >
@@ -2361,9 +2364,9 @@ EMSK Compound MAC
 > MAC is simply truncated.  All validations or comparisons MUST be done
 > on the truncated value.
 
-MSK Compound MAC
+MSK Compound-MAC
 
-> The MSK Compound MAC field is 20 octets.  This can be the Server
+> The MSK Compound-MAC field is 20 octets.  This can be the Server
 > MAC (B1_MAC) or the Client MAC (B2_MAC).  The computation of the
 > MAC is described in [](#computing-compound-mac).
 >
@@ -3023,7 +3026,7 @@ and then also values derived from EMSK:
 ~~~~
 
 At the conclusion of a successfully exchange of Crypto-Binding TLVs, a
-single S-IMCK\[j] is selected based on which Compound MAC value was
+single S-IMCK\[j] is selected based on which Compound-MAC value was
 included in the Crypto-Binding TLV from the client. If EMSK Compound
 MAC was included, S-IMCK\[j] is taken from S-IMCK_EMSK\[j].  Otherwise,
 S-IMCK\[j] is taken from S-IMCK_MSK\[j].
@@ -3082,7 +3085,7 @@ consequence of unclear text in earlier versions of this document.
 We expect that these issues will be addressed in a future revision of
 TEAP.
 
-## Computing the Compound MAC {#computing-compound-mac}
+## Computing the Compound-MAC {#computing-compound-mac}
 
 For inner methods that generate keying material, further
 protection against on-path attacks is provided through
@@ -3090,13 +3093,13 @@ cryptographically binding keying material established by both TEAP
 Phase 1 and TEAP Phase 2 conversations.  After each successful inner
 EAP authentication, EAP EMSK and/or MSKs are cryptographically
 combined with key material from TEAP Phase 1 to generate a Compound
-Session Key (CMK).  The CMK is used to calculate the Compound MAC as
+Session Key (CMK).  The CMK is used to calculate the Compound-MAC as
 part of the Crypto-Binding TLV described in [](#crypto-binding-tlv), which
 helps provide assurance that the same entities are involved in all
-communications in TEAP.  During the calculation of the Compound MAC,
+communications in TEAP.  During the calculation of the Compound-MAC,
 the MAC field is filled with zeros.
 
-The Compound MAC computation is as follows:
+The Compound-MAC computation is as follows:
 
 ~~~~
    Compound-MAC = the first 20 octets of MAC( CMK[n], BUFFER )
@@ -3108,7 +3111,7 @@ BUFFER is created after concatenating these fields in the following
 order:
 
 1. The entire Crypto-Binding TLV attribute with both the EMSK and MSK
- Compound MAC fields zeroed out.
+ Compound-MAC fields zeroed out.
 
 2. The EAP Type sent by the other party in the first TEAP message,
 which MUST be TEAP, encoded as one octet of 0x37.
@@ -4318,7 +4321,7 @@ method Y, the conversation will occur as follows:
                               EAP-Payload TLV[
                               EAP-Request/Identity])
 
-      // Compound MAC calculated using keys generated from
+      // Compound-MAC calculated using keys generated from
          EAP method X and the TLS tunnel.
 
       // Next EAP conversation started (with EAP-Request/Identity)
@@ -4346,7 +4349,7 @@ method Y, the conversation will occur as follows:
       Crypto-Binding TLV (Response),
       Result TLV (Success) ->
 
-      // Compound MAC calculated using keys generated from EAP
+      // Compound-MAC calculated using keys generated from EAP
          methods X and Y and the TLS tunnel.  Compound keys are
          generated using keys generated from EAP methods X and Y
          and the TLS tunnel.
@@ -4497,7 +4500,7 @@ Vendor-Specific TLV exchange, the conversation will occur as follows:
          and Crypto-Binding TLVs are sent with Vendor-Specific TLV
          in next packet to minimize round trips.
 
-      // Compound MAC calculated using keys generated from
+      // Compound-MAC calculated using keys generated from
          EAP method X and the TLS tunnel.
 
       Intermediate Result TLV (Success),

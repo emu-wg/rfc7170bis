@@ -835,12 +835,13 @@ The updates to EAP-pwd in {{?RFC8146}} permit it to be used with
 databases which store passwords in "salted" form, which greatly
 increases security.
 
-Where the inner method does not provide an MSK or EMSK, the
-Crypto-Binding TLV offers little protection, as it cannot tie the
-inner EMSK to the TLS session via the TLS-PRF.  As a result, the TEAP
-session will be vulnerable to on-path active attacks.  Implementations
-and deployments SHOULD adopt various mitigation strategies described in
-{{RFC7029}} Section 3.2.
+Where no inner method provides an EMSK, the Crypto-Binding TLV
+offers little protection, as it cannot tie the inner EMSK to the TLS
+session via the TLS-PRF.  As a result, the TEAP session will be
+vulnerable to on-path active attacks.  Implementations and deployments
+SHOULD adopt various mitigation strategies described in {{RFC7029}}
+Section 3.2.  Implementations also need to implement the inner method
+ordering described in {#key-derivations}, below, in order to fully prevent on-path attacks.
 
 ### Protected Termination and Acknowledged Result Indication {#protected-termination}
 

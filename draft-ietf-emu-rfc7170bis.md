@@ -2909,16 +2909,16 @@ MSK is truncated at 32 octets if it is longer than 32 octets or
 padded to a length of 32 octets with zeros if it is less than 32
 octets. In this case, IMSK\[j] is the adjusted MSK.
 
-An inner method may not provide either EMSK or MSK, such as when basic password authentication
+An inner method may not provide either MSK or EMSK, such as when basic password authentication
 is used or when no inner method has been run and the crypto-binding TLV
 for the Result TLV needs to be generated.  In this case, IMSK\[j]
 is set to all zeroes (i.e., IMSK\[j] = MSK = 32 octets of 0x00s).
 
 Note that using an MSK of all zeroes opens up TEAP to on-path
 attacks, as discussed below in {#separation-p1-p2}.  It is therefore
-NOT RECOMMENDED to use inner methods which fail to generate an EMSK or
-MSK.  These methods should only be used in conjunction with another
-inner method which does provide for EMSK or MSK generation.  It is
+NOT RECOMMENDED to use inner methods which fail to generate an MSK or
+EMSK.  These methods should only be used in conjunction with another
+inner method which does provide for MSK or EMSK generation.  It is
 also RECOMMENDED that TEAP peers order authentication such that
 methods which generate EMSKs are performed before methods which do not
 generate EMSKs.
@@ -3112,7 +3112,7 @@ the EAP server.  If a single TEAP message is fragmented into
 multiple TEAP packets, then the Outer TLVs in all the fragments of
 that message MUST be included.
 
-If no inner method is run, then no EMSK or MSK
+If no inner method is run, then no MSK or EMSK
 will be generated.  If an IMSK needs to be generated then the MSK
 and therefore the IMSK is set to all zeroes (i.e., IMSK = MSK = 32 octets of 0x00s).
 
@@ -3125,7 +3125,7 @@ result, and modification in transit of the outer TLVs will be detected
 because the two sides will calculate different values for the compound
 MAC.
 
-If no key generating inner method is run then no EMSK or MSK will be
+If no key generating inner method is run then no MSK or EMSK will be
 generated. If an IMSK needs to be generated then the MSK and therefore
 the IMSK is set to all zeroes (i.e., IMSK = MSK = 32 octets of 0x00s)
 
@@ -3158,7 +3158,7 @@ not provided to a third party.  The derivation of additional keys and
 transportation of these keys to a third party are outside the scope
 of this document.
 
-If no inner method has created an EMSK or MSK, the MSK
+If no inner method has created an MSK or EMSK, the MSK
 and EMSK will be generated directly from the session_key_seed meaning
 S-IMCK\[0] = session_key_seed.
 

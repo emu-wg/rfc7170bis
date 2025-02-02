@@ -2235,13 +2235,14 @@ EMSK has been generated and a Crypto-Binding TLV is required then the
 MSK Compound MAC field contains the MAC using keys generated according
 to [](#computing-compound-mac).
 
-The Crypto-Binding TLV is valid only if the following checks pass:
+The Crypto-Binding TLV is valid only if the following checks pass on
+its contents:
 
-* The Crypto-Binding TLV version is supported.
+* The Version field contain a known value,
+* The Received Ver field matches the TEAP version sent by the receiver during the EAP version negotiation,
+* The Sub-Type field is set to the correct value for this exchange,
+* The Flags field is set to a known value,
 * The MAC verifies correctly.
-* The received version in the Crypto-Binding TLV matches the version
-   sent by the receiver during the EAP version negotiation.
-* The subtype is set to the correct value.
 
 If any of the above checks fails, then the TLV is invalid.  An
 invalid Crypto-Binding TLV is a fatal error and is handled as
@@ -2295,7 +2296,7 @@ Version
 
 > The Version field is a single octet, which is set to the version
 > of Crypto-Binding TLV the TEAP method is using.  For an
-> implementation compliant with this version of TEAP, the version
+> implementation compliant with TEAPv1, the version
 > number MUST be set to one (1).
 
 Received Ver
@@ -2305,6 +2306,8 @@ Received Ver
 > that this field only provides protection against downgrade
 > attacks, where a version of EAP requiring support for this TLV is
 > required on both sides.
+>
+> For TEAPv1, this version number MUST be set to one (1).
 
 Flags
 
@@ -2315,6 +2318,8 @@ Flags
 >> 2  MSK Compound MAC is present
 >>
 >> 3  Both EMSK and MSK Compound MAC are present
+>>
+>> All other values of the Flags field are invalid.
 
 Sub-Type
 
@@ -2323,6 +2328,8 @@ Sub-Type
 >> 0  Binding Request
 >>
 >> 1  Binding Response
+>>
+>> All other values of the Sub-Type field are invalid.
 
 Nonce
 

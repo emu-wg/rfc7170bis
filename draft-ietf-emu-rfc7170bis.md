@@ -2874,21 +2874,49 @@ other TLS keying materials are derived and used as defined in
 
 ## Intermediate Compound Key Derivations {#intermediate-compound-key}
 
-The session_key_seed derived as part of TEAP Phase 2 is used in TEAP
-Phase 2 to generate an Intermediate Compound Key (IMCK) used to
-verify the integrity of the TLS tunnel after each successful inner
-authentication and in the generation of Master Session Key (MSK) and
-Extended Master Session Key (EMSK) defined in {{RFC3748}}.  Note that
-the IMCK MUST be recalculated after each successful inner method.
+As TEAP can run multiple inner methods, there needs to be a way to
+cryptographically bind each inner method to the TLS tunnel, and to
+cryptographically bind each method to the previous one.  This binding
+is done by deriving a number of intermediate keys, and exchanging that
+information in the Crypto-Binding TLV.
 
-The first step in these calculations is the generation of the base
-compound key, IMCK\[j] from the session_key_seed, and any session keys
-derived from the successful execution of j'th inner
-methods. The inner method(s) MUST
-provide Inner Method Session Keys (IMSKs), IMSK\[1]..IMSK\[n], corresponding
-to inner method 1 through n.  When a particular inner method
-does not provide key material (such as with password exchange) then a special "all zero" IMSK
-is used as described below.
+The key derivation is complicated by a number of factors.  An inner
+method can derive MSK, or (as with basic passwords) not derive an MSK.
+An inner method can derive an EMSK, or perhaps not derive an EMSK, or
+some EAP types may derive different EMSKs for the peer and the server.
+All of these cases must be accounted for, and recommendations made for
+how peers and servers can interoperate.
+
+There are a number of intermediate keys used to calculate the final
+MSK and EMSK for TEAP.  We give a brief overview here in order to
+clarify the detailed definitions and deriviations given below.  As
+each inner method can derive MSK (or not), and can derive EMSK (or
+not), there need to be separate intermediate key calculations for MSK
+and for EMSK.  For the purposes of this overview, we just describe the
+derivations at a high level, and state that the MSK/EMSK issue is
+addressed in the more detailed text below.
+
+For each inner method, we derive an Inner Method Session Key (IMSK).
+This key depends on the inner key (MSK or EMSK).  This IMSK is then
+tied to the TLS session via the TLS-PRF to derive an Inner Method
+Compound Key (IMCK).  The IMCK is used to generate a Compound-MAC key
+(CMK).  The CMK is mixed with with various data from the TEAP
+negotiation to create Compound-MAC field of the Crypto-Binding
+attribute.  This TLV cryptographically binds the inner method to the
+protected tunnel, and to the other fields which have been negotiated.
+The cryptographic binding prevents on-path attacks.
+
+The IMCK for this inner method is then mixed with keys from previous
+inner methods, beginning with the TEAP Phase 2 session_key_seed
+derived above, to yield a Secure ICMK (S-IMCK) for this round.  The
+S-IMCK from the final is then used to derive the MSK and EMSK for
+TEAP.
+
+We differentiate keys for inner methods by counting inner methods
+starting from 0, and use an index "j" to refer to an arbitrary inner
+method.  e.g. IMCK\[0] is the IMCK for the first, or "0" inner method.
+While TEAPv1 is currently limited to one or two inner methods (j=0 or
+j=0,1), further updates could allow for more inner method exchanges.
 
 If an inner method supports export of an Extended Master Session Key
 (EMSK), then the IMSK SHOULD be derived from the EMSK as defined in

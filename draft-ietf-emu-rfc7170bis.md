@@ -627,11 +627,26 @@ calculation of the Crypto-Binding TLV, and MUST use
 Intermediate-Result TLV and Result TLV as is done with other
 authentication methods.
 
-Implementations SHOULD support both EAP and basic password for inner methods.
-  Implementations which support
-multiple types of inner method MUST support all of those methods in any
-order or combination.  That is, it is explicitly permitted to "mix
-and match" inner methods.
+### Inner Method Ordering {#inner-method-ordering}
+
+Implementations SHOULD support both EAP and basic password for inner
+methods.  Implementations which support multiple types of inner method
+(User and Machine) MUST support all of those methods in any order or
+combination.  That is, it is explicitly permitted to "mix and match"
+inner methods.
+
+For example, a server can request User authentication from the peer,
+and have the peer return Machine authentication (or vice versa).  If
+the server is configured to accept Machine authentication, it MUST
+accept that response.  If that authentication succeeds, then depending
+on local policy, the server SHOULD proceed with requesting User
+authentication again.
+
+Similarly, a peer which is configured to support multiple types of
+inner method (User and Machine) can return a method other that what
+the server requested.  This action is usually taken by the peer so that it orders
+inner methods for increased security.  See
+[](#choosing-inner-methods) for further discussion of this issue.
 
 However, the peer and server MUST NOT assume that either will skip
 inner methods or other TLV exchanges, as the other peer might have
@@ -1893,13 +1908,15 @@ Error-Code
 >>
 >> 2003  The Crypto-Binding TLV is invalid (Version, or Received-Ver, or Sub-Type)
 >>
->> 2004  The Crypto-Binding TLV did not include a required MSK Compound-MAC
+>> 2004  The first inner method did not derive EMSK
 >>
->> 2005  The MSK Compound-MAC fails verification
+>> 2005  The Crypto-Binding TLV did not include a required MSK Compound-MAC
 >>
->> 2006  The Crypto-Binding TLV did not include a required EMSK Compound-MAC
+>> 2006  The MSK Compound-MAC fails verification
 >>
->> 2007  The EMSK Compound-MAC fails verification
+>> 2007  The Crypto-Binding TLV did not include a required EMSK Compound-MAC
+>>
+>> 2008  The EMSK Compound-MAC fails verification
 
 ### Channel-Binding TLV {#channel-binding-tlv}
 
@@ -3052,11 +3069,60 @@ and then also values derived from EMSK:
 
 At the conclusion of a successfully exchange of Crypto-Binding TLVs, a
 single S-IMCK\[j] is selected based on which Compound-MAC value was
-included in the Crypto-Binding TLV from the client. If EMSK Compound
-MAC was included, S-IMCK\[j] is taken from S-IMCK_EMSK\[j].  Otherwise,
+included in the Crypto-Binding TLV from the client. If EMSK Compound-MAC
+was included, S-IMCK\[j] is taken from S-IMCK_EMSK\[j].  Otherwise,
 S-IMCK\[j] is taken from S-IMCK_MSK\[j].
 
-### Generating and Verifying Crypto-Binding Compound-MACs
+### Choosing Inner Methods Securely {#choosing-inner-methods}
+
+In order to further secure TEAP, implementations can take steps to
+increase their security by carefully ordering inner methods.  Where
+multiple inner methods are used, implementations SHOULD choose an
+ordering so that the first inner method used is one which derives
+EMSK.
+
+For an EAP server, it can select the first inner method to be one
+which derives EMSK. Since ordering of inner methods is not otherwise
+important in EAP, any chosen order is supported by the peer which
+receives this request.
+
+For an EAP peer, it can choose its response to a servers request for
+a particular type of of authentication.  The peer can ignore that
+request, and return an inner method which derives EMSK.  Again, since
+ordering of inner methods is not otherwise important in EAP, any
+chosen order is supported by the server which receives this response.
+Once the more secure authentication has succeed, the server then
+requests the other type of authentication and the peer can respond
+with the chosen type of authentication.
+
+Implementations can also provide configuration flags, policies or
+documentated recommendations which control the type of inner methods
+used or verify their order.  These configurations allow
+implementations and administrators to control their security exposure
+to on-path attackers.
+
+Impementations can permit administators to confgure TEAP so that the
+following security checks are enforced:
+
+* verifying that the first inner method used is one which derives EMSK.
+  If this is not done, a fatal error can be returned,
+
+* verifying that if any inner method derives EMSK, that the received
+  Crypto-Binding TLV for that method contains an EMSK Compound-MAC.
+  If an EMSK has been derived and no EMSK Compound-MAC is seen, a
+  fatal error can be returned.
+
+The goal of these suggestions is to enforce the use of the EMSK
+Compound-MAC to protect the TEAP session from on-path attackers.  If
+these suggestions are not enforced, then the TEAP session is
+vulnerable.
+
+Most of these suggestions are not normative, as some existing
+implementations are known to not follow them.  Instead, these
+suggestions are here to inform new implementers, along with
+administrators, of the issues surrounding this subject.
+
+### Deriving Crypto-Binding Compound-MAC Fields
 
 On the sender of the Crypto-Binding TLV side:
 
@@ -3291,10 +3357,11 @@ IANA is instructed to update the "TEAP Error TLV (value 5) Error Codes" registry
 Value,Description,Reference
 1032,Inner method not supported,[THIS-DOCUMENT]
 2003,The Crypto-Binding TLV is invalid (Version, or Received-Ver, or Sub-Type),[THIS-DOCUMENT]
-2004,The Crypto-Binding TLV did not include a required MSK Compound-MAC,[THIS-DOCUMENT]
-2005,The MSK Compound-MAC fails verification,[THIS-DOCUMENT]
-2006,The Crypto-Binding TLV did not include a required MSK Compound-MAC,[THIS-DOCUMENT]
-2007,The EMSK Compound-MAC fails verification,[THIS-DOCUMENT]
+2004,The first inner method did not derive EMSK,[THIS-DOCUMENT]
+2005,The Crypto-Binding TLV did not include a required MSK Compound-MAC,[THIS-DOCUMENT]
+2006,The MSK Compound-MAC fails verification,[THIS-DOCUMENT]
+2007,The Crypto-Binding TLV did not include a required EMSK Compound-MAC,[THIS-DOCUMENT]
+2008,The EMSK Compound-MAC fails verification,[THIS-DOCUMENT]
 ~~~~
 
 ## TLS Exporter Labels

@@ -2970,30 +2970,35 @@ The derivation of IMSK\[j] from the j'th EMSK is given as follows:
 > integer length of 64 octets in network byte order (0x00 | 0x40) specified
 > in [RFC5295].
 
-If an inner method does not support export of an Extended Master
-Session Key (EMSK), then the IMSK is derived from the MSK of the inner method.  The
-MSK is truncated at 32 octets if it is longer than 32 octets or
-padded to a length of 32 octets with zeros if it is less than 32
-octets. In this case, IMSK\[j] is the adjusted MSK.
+If an inner method does not support export of EMSK but does export
+MSK, then the IMSK is copied from the MSK of the inner method.  If the
+MSK is longer than 32 octets, the IMSK is copied from the first 32
+octets, and the rest of MSK is ignored.  If the MSK is shorter than 32
+octets, then the ISMK is copied from MSK, and the remaining data in
+IMSK is padded with zeros to a length of 32 octets.  IMSK\[j] is then
+this derived value.
 
-An inner method may not provide either MSK or EMSK, such as when basic password authentication
-is used or when no inner method has been run, and the Crypto-Binding TLV
-for the Result TLV needs to be generated.  In this case, both MSK and IMSK\[j]
-are set to all zeroes (i.e., IMSK\[j] = MSK = 32 octets of 0x00s).
+If inner method does not provide either MSK or EMSK, such as when
+basic password authentication is used or when no inner method has been
+run,then both MSK and IMSK\[j] are set to all zeroes (i.e., IMSK\[j] =
+MSK = 32 octets of 0x00s).
 
 Note that using an MSK of all zeroes opens up TEAP to on-path
 attacks, as discussed below in {#separation-p1-p2}.  It is therefore
 NOT RECOMMENDED to use inner methods which fail to generate an MSK or
 EMSK.  These methods should only be used in conjunction with another
-inner method which does provide for MSK or EMSK generation.  It is
-also RECOMMENDED that TEAP peers order authentication such that
+inner method which does provide for MSK or EMSK generation.
+
+It is also RECOMMENDED that TEAP peers order inner methods such that
 methods which generate EMSKs are performed before methods which do not
-generate EMSKs.
+generate EMSKs.  Ordering inner methods in this manner ensures that
+the first inner method detects any on-path attackers, and any
+subsequent inner method used is therefore secure.
 
 For example, Phase 2 could perform both Machine authentication using
 EAP-TLS, followed by User authentication via the Basic Password
 Authentication TLVs.  In that case, the use of EAP-TLS would allow an
-attacker to be detected before the User password was sent.
+attacker to be detected before the users' password was sent.
 
 However, it is possible that the peer and server sides might not have
 the same capability to export EMSK.  In order to maintain maximum

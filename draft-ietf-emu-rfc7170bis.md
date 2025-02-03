@@ -2918,9 +2918,36 @@ method.  e.g. IMCK\[0] is the IMCK for the first, or "0" inner method.
 While TEAPv1 is currently limited to one or two inner methods (j=0 or
 j=0,1), further updates could allow for more inner method exchanges.
 
+### Generating the Inner Method Session Key
+
+Each inner method generates an Inner Method Session Key (IMSK) which
+depends on the EMSK (preferred) or the MSK if it exists, or else it is
+all zeros.  We refer to the IMSK for inner method "j" as IMSK\[j].
+
 If an inner method supports export of an Extended Master Session Key
-(EMSK), then the IMSK SHOULD be derived from the EMSK as defined in
+(EMSK), then the IMSK SHOULD be derived from the EMSK which is defined in
 {{RFC5295}}.  The optional data parameter is not used in the derivation.
+
+The above derivation is not a requirement, as some peer
+implementations of TEAP are also known to not derive IMSK from EMSK,
+and to only derive IMSK from MSK.  In order to be compatible with
+those implementations, the use of EMSK here is not made mandatory.
+
+Some EAP methods may also have the peer and server derive different
+EMSKs.  Mandating an EMSK-based derivation there would prevent
+interoperability, as the Crypto-Binding TLV contents which depend on
+EMSK could not then be validated by either side.  Those methods SHOULD
+NOT derive IMSK from EMSK unless the method has a way to negotiate how
+the EMSK is derived, along with a way signal that both peer and server
+have derived the same EMSK.
+
+It is RECOMMENDED that for those EAP methods, implementations take the
+simpler approach of ignoring EMSK, and always derive IMSK from MSK.
+This approach is less secure, as IMSK no longer cryptographically
+binds the inner method to the TLS tunnel.  A better solution is to
+suggest that deployments of TEAP SHOULD avoid such methods.
+
+The derivation of IMSK\[j] from the j'th EMSK is given as follows:
 
 ~~~~
    IMSK[j] = First 32 octets of TLS-PRF(

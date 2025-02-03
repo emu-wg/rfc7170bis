@@ -2924,9 +2924,9 @@ padded to a length of 32 octets with zeros if it is less than 32
 octets. In this case, IMSK\[j] is the adjusted MSK.
 
 An inner method may not provide either MSK or EMSK, such as when basic password authentication
-is used or when no inner method has been run and the crypto-binding TLV
-for the Result TLV needs to be generated.  In this case, IMSK\[j]
-is set to all zeroes (i.e., IMSK\[j] = MSK = 32 octets of 0x00s).
+is used or when no inner method has been run, and the Crypto-Binding TLV
+for the Result TLV needs to be generated.  In this case, both MSK and IMSK\[j]
+are set to all zeroes (i.e., IMSK\[j] = MSK = 32 octets of 0x00s).
 
 Note that using an MSK of all zeroes opens up TEAP to on-path
 attacks, as discussed below in {#separation-p1-p2}.  It is therefore

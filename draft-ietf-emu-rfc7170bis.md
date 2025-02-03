@@ -200,24 +200,23 @@ authorization policies.  TEAP makes use of TLV objects to carry out
 the inner authentication, results, and other information, such as
 channel-binding information.
 
-As discussed in {{RFC9190}} Section 2.1.7 and {{RFC9427}} Section 3.1,
+As discussed in {{RFC9190, Section 2.1.7}} and {{RFC9427, Section 3.1}},
 the outer EAP Identity SHOULD be an anonymous Network Access
-Identifier (NAI) as described in {{RFC7542, Section 2.4}}.  While {{RFC3748}} Section 5.1 places no
-limits on the contents of the Identity field, {{RFC7542}} Section 2.6
+Identifier (NAI) as described in {{RFC7542, Section 2.4}}.  While {{RFC3748, Section 5.1}} places no
+limits on the contents of the Identity field, {{RFC7542, Section 2.6}}
 states that Identities which do not follow the NAI format cannot be
 transported in an Authentication, Authorization, and Accounting (AAA)
 proxy network.  As such, Identities in non-NAI form are likely to not
 work outside of limited and local networks.
 
 Any inner identities (EAP or otherwise) SHOULD also
-follow the recommendations of {{RFC9427, Section
-3.1}} about inner identities.
+follow the recommendations of {{RFC9427, Section 3.1}} about inner identities.
 
 {{RFC7170}} defined a Protected Access Credential (PAC) to mirror
 EAP-FAST {{RFC4851}}.  However, implementation experience and analysis
 determined that the PAC was not necessary.  Instead, TEAP performs
 session resumption using the NewSessionTicket message as defined in
-{{RFC9190}} Section 2.1.2 and Section 2.1.3.  As such, the PAC has
+{{RFC9190, Section 2.1.2}} and {{RFC9190, Section 2.1.3}}.  As such, the PAC has
 been deprecated.
 
 The TEAP conversation is used to establish or resume an existing
@@ -241,9 +240,9 @@ The network architectural model for TEAP usage is shown below:
 ~~~~
 {: title="TEAP Architectural Model"}
 
-The Peer and Authenticator are defined in Section 1.2 of {{RFC3748}}.
+The Peer and Authenticator are defined in {{RFC3748, Section 1.2}},
 The TEAP server is the "backend authentication server" defined in
-Section 1.2 of {{RFC3748}}.  The "Inner Method server" is usually part of the
+{{RFC3748, Section 1.2}}.  The "Inner Method server" is usually part of the
 TEAP server, and handles the application data (inner methods, EAP, passwords, etc.)
 inside of the TLS tunnel.
 
@@ -399,8 +398,8 @@ cipher suites:
 * TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
 
 Other cipher suites MAY be supported.  Implementations MUST implement
-the recommended cipher suites in {{RFC9325}} Section 4.2 for TLS 1.2,
-and in {{RFC9325}} Section 4.3 for TLS 1.3.
+the recommended cipher suites in {{RFC9325, Section 4.2}} for TLS 1.2,
+and in {{RFC9325, Section 4.3}} for TLS 1.3.
 
 It is REQUIRED that anonymous
 cipher suites such as TLS_DH_anon_WITH_AES_128_CBC_SHA {{RFC5246}} only
@@ -458,7 +457,7 @@ renegotiation to protect privacy is shown in Appendix C.
 
 ## Server Certificate Requirements
 
-Server Certificates MUST include a subjectAltName extension, with the dnsName attribute containing an FQDN string.  Server certificates MAY also include a SubjectDN containing a single element, "CN=" containing the FQDN of the server.  However, this use of  SubjectDN is deprecated for TEAP, and is forbidden in {{RFC9525}} Section 2.
+Server Certificates MUST include a subjectAltName extension, with the dnsName attribute containing an FQDN string.  Server certificates MAY also include a SubjectDN containing a single element, "CN=" containing the FQDN of the server.  However, this use of  SubjectDN is deprecated for TEAP, and is forbidden in {{RFC9525, Section 2}}.
 
 The KeyUsage extension MAY be included, but are not required.
 
@@ -483,14 +482,14 @@ place, the validation steps described below MUST still be performed.
 
 In all other cases, the EAP peer MUST validate the server certificate.  This
 validation is done in the same manner as is done for EAP-TLS, which is
-discussed in {{RFC9190}} Section 5.3 and in {{RFC5216}} Section 5.3.
+discussed in {{RFC9190, Section 5.3}} and in {{RFC5216, Section 5.3}}.
 Further guidance on server identity validation can be found in
-{{!RFC9525}} Section 6..
+{{RFC9525, Section 6}}.
 
 Where the EAP peer has an NAI, EAP peers MUST use the realm to perform
-the DNS-ID validation as per {{!RFC9525}} Section 6,
+the DNS-ID validation as per {{RFC9525, Section 6}}.
 The realm is used both to construct the list of reference identifiers
-as defined in {{!RFC9525}} Section 6.2.1, and as the
+as defined in {{RFC9525, Section 6.2.1}}, and as the
 "source domain" field of that same section.
 
 When performing server certificate validation, implementations MUST
@@ -536,9 +535,9 @@ this issue is given below in [](#inner-method-limitations)
 
 ## Resumption
 
-For resumption, {{RFC9190}} Section 5.7 discusses EAP-TLS resumption
+For resumption, {{RFC9190, Section 5.7}} discusses EAP-TLS resumption
 for all versions of TLS, and is incorporated herein by reference.
-{{RFC9427}} Section 4 is also incorporated by reference, as it
+{{RFC9427, Section 4}} is also incorporated by reference, as it
 provides generic discussion of resumption for TLS-based EAP methods
 when TLS 1.3 is used.
 
@@ -548,7 +547,7 @@ which are specific to TEAP for TLS 1.3.
 
 If the server agrees to resume the session, Phase 2 is bypassed
 entirely.  If the server does not agree to resume the session, then
-the server rejects the resumption as per {{RFC9190}} Section 5.7.  It
+the server rejects the resumption as per {{RFC9190, Section 5.7}}.  It
 then continues with a full handshake.  After the full TLS handshake
 has completed, both EAP server and peer MUST proceed with Phase 2.
 
@@ -699,7 +698,7 @@ The authentication server initiates password
 authentication by sending a Basic-Password-Auth-Req TLV defined in
 [](#bp-auth-req-tlv).  If the peer wishes to participate in password
 authentication, then it responds with a Basic-Password-Auth-Resp TLV
-as defined in Section 4.2.15 that contains the username and password.
+as defined in [](#bp-auth-resp-tlv) that contains the username and password.
 If it does not wish to perform password authentication, then it
 responds with a NAK TLV indicating the rejection of the Basic-Password-Auth-Req TLV.
 
@@ -756,7 +755,7 @@ specification.
 ### EAP-MSCHAPv2
 
 If using EAP-MSCHAPv2 {{KAMATH}} as an inner EAP method, the EAP-FAST-MSCHAPv2
-variant defined in Section 3.2.3 of {{RFC5422}} MUST be used, instead of the derivation defined in {{MSCHAP}}.
+variant defined in {{RFC5422, Section 3.2.3}} MUST be used, instead of the derivation defined in {{MSCHAP}}.
 
 The difference between EAP-MSCHAPv2 and EAP-FAST-MSCHAPv2 is that the
 first and the second 16 octets of EAP-MSCHAPv2 Master Session Key (MSK) are swapped when it
@@ -782,7 +781,7 @@ EAP-FAST {{RFC4851}} MUST NOT be used for inner EAP authentication.
 There is no reason to have multiple layers of TLS in order to protect a
 password exchange.
 
-The EAP methods defined in {{RFC3748}} Section 5 such as
+The EAP methods defined in {{RFC3748, Section 5}} such as
 MD5-Challenge, One-Time Password (OTP), and Generic Token Card (GTC)
 do not derive a Master Session Key (MSK) or an Extended Master Session
 Key (EMSK), and are vulnerable to on-path attacks.  The construction
@@ -839,8 +838,7 @@ Where no inner method provides an EMSK, the Crypto-Binding TLV
 offers little protection, as it cannot tie the inner EMSK to the TLS
 session via the TLS-PRF.  As a result, the TEAP session will be
 vulnerable to on-path active attacks.  Implementations and deployments
-SHOULD adopt various mitigation strategies described in {{RFC7029}}
-Section 3.2.  Implementations also need to implement the inner method
+SHOULD adopt various mitigation strategies described in {{RFC7029, Section 3.2}}.  Implementations also need to implement the inner method
 ordering described in {#key-derivations}, below, in order to fully prevent on-path attacks.
 
 ### Protected Termination and Acknowledged Result Indication {#protected-termination}
@@ -944,7 +942,7 @@ follows:
 > tls-unique = tls-unique from the Phase 1 outer tunnel at the
 > beginning of Phase 2 as defined by Section 3.1 of {{RFC5929}}
 
-The Session-Id derivation for TLS 1.3 is given in {{RFC9427}} Section 2.1
+The Session-Id derivation for TLS 1.3 is given in {{RFC9427, Section 2.1}}
 
 ## Error Handling
 
@@ -1047,7 +1045,7 @@ Non-Fatal Error due to inner method
 
 ## Fragmentation {#fragmentation}
 
-Fragmentation of EAP packets is discussed in {{RFC5216}} Section 2.1.5.
+Fragmentation of EAP packets is discussed in {{RFC5216, Section 2.1.5.}}
 There is no special handling of fragments for TEAP.
 
 ## Services Requested by the Peer
@@ -1105,7 +1103,7 @@ the authenticated credentials, then the device will obtain the correct
 kind of network access.
 
 The correct authorization must also be applied to any resumption, as
-noted in {{RFC9190}} Section 5.7.  However, as it is possible in TEAP
+noted in {{RFC9190, Section 5.7.}}  However, as it is possible in TEAP
 for the credentials to change, the new credentials MUST be associated
 with the session ticket.  If this association cannot be done, then the
 server MUST invalidate any session tickets for the current session.
@@ -1254,7 +1252,7 @@ an attacker eaves-dropping on the connection.
 
 Note that server Unauthenticated Provisioning can only use anonymous
 cipher suites in TLS 1.2 and earlier.  These cipher suites have been
-deprecated in TLS 1.3 ({{RFC8446}} Section C.5).  For TLS 1.3, the
+deprecated in TLS 1.3 ({{RFC8446, Appendix C.5}}).  For TLS 1.3, the
 server MUST provide a certificate, and the peer performs server
 unauthenticated provisioning by not validating the certificate chain
 or any of its contents.
@@ -2221,7 +2219,7 @@ TLVs
 EAP-FAST {{RFC4851}}.  However, implementation experience and analysis
 determined that the PAC was not necessary.  Instead, TEAP performs
 session resumption using the NewSessionTicket message as defined in
-{{RFC9190}} Section 2.1.2 and Section 2.1.3.  As such, the PAC TLV
+{{RFC9190, Section 2.1.2}} and Section 2.1.3.  As such, the PAC TLV
 has been deprecated.
 
 As the PAC TLV is deprecated, an entity receiving it SHOULD send a
@@ -2466,7 +2464,7 @@ Username
 > Username in UTF-8 {{RFC3629}} format
 >
 > The content of Username SHOULD follow the guidelines set in
-> {{RFC9427}} Section 3.1.
+> {{RFC9427, Section 3.1.}}
 
 Passlen
 
@@ -2665,7 +2663,7 @@ been established.  A server MAY also send in the same message a
 Request Action frame for a PKCS#10 TLV.  This is an indication to the
 peer that the server would like the peer to renew its certificate
 using the parameters provided in this TLV.  Servers shall construct
-the contents of the CSR-Attributes TLV as specified in {{RFC7030}} Section 4.5.2 with the
+the contents of the CSR-Attributes TLV as specified in {{RFC7030, Section 4.5.2}} with the
 exception that the DER encoding MUST NOT be encoded in base64.  The base64 encoding is used in {{RFC7030}} because the transport protocol used there requires textual encoding.  In contrast, TEAP attributes can transport arbitrary binary data.
 
 Servers and peers MUST follow the guidance provided in
@@ -2711,7 +2709,7 @@ When the Identity-Hint is used, the peer can signal which identities it has avai
 
 The peer SHOULD send an Identity-Hint TLV for each Identity-Type which is available to it.  For example, if the peer can do both Machine and User authentication, it can send two Identity-Hint TLVs, with values "host/name.example.com" (for a machine with hostname "name.example.com"), and "user@example.com" (for a person with identity "user@example.com").
 
-The contents of the Identity-Hint TLV SHOULD be in the format of an NAI {{RFC7542}}, but we note that as given in the example above, Machine identities might not follow that format.  As these identities are never used for AAA routing as discussed in {{RFC7542}} Section 3, the format and definition of these identities are entirely site local.  Robust implementations MUST support arbitrary data in the content of this TLV, including binary octets.
+The contents of the Identity-Hint TLV SHOULD be in the format of an NAI {{RFC7542}}, but we note that as given in the example above, Machine identities might not follow that format.  As these identities are never used for AAA routing as discussed in {{RFC7542, Section 3}}, the format and definition of these identities are entirely site local.  Robust implementations MUST support arbitrary data in the content of this TLV, including binary octets.
 
 As the Identity-Hint TLV is a "hint", server implementations are free to ignore the hints given, and do whatever is required by site-local policies.
 
@@ -3410,7 +3408,7 @@ discussed above in [](#client-certs-phase1)
 Note that the Phase 2 data could simply be a Result TLV with value
 Success, along with a Crypto-Binding TLV.
 This Phase 2 data serves as a protected success indication as
-discussed in {{RFC9190}} Section 2.1.1
+discussed in {{RFC9190, Section 2.1.1}}
 
 ## Dictionary Attack Resistance
 
@@ -3776,7 +3774,7 @@ have a synchronized state as defined in [](#result-tlv).
 
 TEAPv1 meets this requirement by supporting UTF-8 format in the
 Basic-Password-Auth-Req TLV as defined in [](#bp-auth-req-tlv) and the
-Basic-Password-Auth-Resp TLV as defined in Section 4.2.15.
+Basic-Password-Auth-Resp TLV as defined in [](#bp-auth-resp-tlv).
 
 ## A.18.  Requirement 4.4: EAP Channel-Binding Requirements
 {:numbered="false"}

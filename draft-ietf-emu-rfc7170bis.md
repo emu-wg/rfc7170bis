@@ -3005,45 +3005,12 @@ the same capability to export EMSK.  In order to maintain maximum
 flexibility while prevent downgrading attack, the following mechanism
 is in place.
 
-On the sender of the Crypto-Binding TLV side:
+### Generating S-IMCK
 
-> If the EMSK is not available, then the sender computes the Compound
-> MAC using the MSK of the inner method.
->
-> If the EMSK is available and the sender's policy accepts MSK-based
-> MAC, then the sender computes two Compound MAC values.  The first
-> is computed with the EMSK.  The second one is computed using the
-> MSK.  Both MACs are then sent to the other side.
->
-> If the EMSK is available but the sender's policy does not allow
-> downgrading to MSK-generated MAC, then the sender SHOULD only send
-> EMSK-based MAC.
-
-On the receiver of the Crypto-Binding TLV side:
-
-> If the EMSK is not available and an MSK-based Compound MAC was
-> sent, then the receiver validates the Compound MAC and sends back
-> an MSK-based Compound MAC response.
->
-> If the EMSK is not available and no MSK-based Compound MAC was
-> sent, then the receiver handles like an invalid Crypto-Binding TLV
-> with a fatal error.
->
-> If the EMSK is available and an EMSK-based Compound MAC was sent,
-> then the receiver validates it and creates a response Compound MAC
-> using the EMSK.
->
-> If the EMSK is available but no EMSK-based Compound MAC was sent
-> and its policy accepts MSK-based MAC, then the receiver validates
-> it using the MSK and, if successful, generates and returns an MSK-based
-> Compound MAC.
->
-> If the EMSK is available but no EMSK Compound MAC was sent and its
-> policy does not accept MSK-based MAC, then the receiver handles
-> like an invalid Crypto-Binding TLV with a fatal error.
-
-If an inner method results in failure, then it is not included in this
-calculation.
+Once IMSK\[j] has been determined, it is mixed via the TLS-PRF with
+the key S-IMCK\[j-1], from a previous round.  That mixing derives a
+new key IMCK\[j].  This key is then used to derive both S-IMCK\[j] for
+this round, and CMK\[j] for this round.
 
 The derivation of S-IMCK is as follows:
 
@@ -3088,6 +3055,48 @@ single S-IMCK\[j] is selected based on which Compound-MAC value was
 included in the Crypto-Binding TLV from the client. If EMSK Compound
 MAC was included, S-IMCK\[j] is taken from S-IMCK_EMSK\[j].  Otherwise,
 S-IMCK\[j] is taken from S-IMCK_MSK\[j].
+
+### Generating and Verifying Crypto-Binding Compound-MACs
+
+On the sender of the Crypto-Binding TLV side:
+
+> If the EMSK is not available, then the sender computes the Compound
+> MAC using the MSK of the inner method.
+>
+> If the EMSK is available and the sender's policy accepts MSK-based
+> MAC, then the sender computes two Compound MAC values.  The first
+> is computed with the EMSK.  The second one is computed using the
+> MSK.  Both MACs are then sent to the other side.
+>
+> If the EMSK is available but the sender's policy does not allow
+> downgrading to MSK-generated MAC, then the sender SHOULD only send
+> EMSK-based MAC.
+
+On the receiver of the Crypto-Binding TLV side:
+
+> If the EMSK is not available and an MSK-based Compound MAC was
+> sent, then the receiver validates the Compound MAC and sends back
+> an MSK-based Compound MAC response.
+>
+> If the EMSK is not available and no MSK-based Compound MAC was
+> sent, then the receiver handles like an invalid Crypto-Binding TLV
+> with a fatal error.
+>
+> If the EMSK is available and an EMSK-based Compound MAC was sent,
+> then the receiver validates it and creates a response Compound MAC
+> using the EMSK.
+>
+> If the EMSK is available but no EMSK-based Compound MAC was sent
+> and its policy accepts MSK-based MAC, then the receiver validates
+> it using the MSK and, if successful, generates and returns an MSK-based
+> Compound MAC.
+>
+> If the EMSK is available but no EMSK Compound MAC was sent and its
+> policy does not accept MSK-based MAC, then the receiver handles
+> like an invalid Crypto-Binding TLV with a fatal error.
+
+If an inner method results in failure, then it is not included in this
+calculation.
 
 ### Unintended Side Effects {#oops}
 

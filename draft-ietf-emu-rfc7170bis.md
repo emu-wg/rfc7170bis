@@ -1892,6 +1892,16 @@ Error-Code
 >> 2001  Tunnel Compromise Error
 >>
 >> 2002  Unexpected TLVs Exchanged
+>>
+>> 2003  The Crypto-Binding TLV is invalid (Version, or Received-Ver, or Sub-Type)
+>>
+>> 2004  The Crypto-Binding TLV did not include a required MSK Compound-MAC
+>>
+>> 2005  The MSK Compound-MAC fails verification
+>>
+>> 2006  The Crypto-Binding TLV did not include a required EMSK Compound-MAC
+>>
+>> 2007  The EMSK Compound-MAC fails verification
 
 ### Channel-Binding TLV {#channel-binding-tlv}
 
@@ -3205,11 +3215,16 @@ This registry has been closed. See [THIS-DOCUMENT].
 
 ## TEAP Error TLV (value 5) Error Codes
 
-IANA is instructed to update the "TEAP Error TLV (value 5) Error Codes" registry to add the following entry:
+IANA is instructed to update the "TEAP Error TLV (value 5) Error Codes" registry to add the following entries"
 
 ~~~~
 Value,Description,Reference
 1032,Inner method not supported,[THIS-DOCUMENT]
+2003,The Crypto-Binding TLV is invalid (Version, or Received-Ver, or Sub-Type),[THIS-DOCUMENT]
+2004,The Crypto-Binding TLV did not include a required MSK Compound-MAC,[THIS-DOCUMENT]
+2005,The MSK Compound-MAC fails verification,[THIS-DOCUMENT]
+2006,The Crypto-Binding TLV did not include a required MSK Compound-MAC,[THIS-DOCUMENT]
+2007,The EMSK Compound-MAC fails verification,[THIS-DOCUMENT]
 ~~~~
 
 ## TLS Exporter Labels

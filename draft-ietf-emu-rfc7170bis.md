@@ -3030,7 +3030,7 @@ S-IMCK\[j] is taken from S-IMCK_MSK\[j].
 
 ### Unintended Side Effects {#oops}
 
-The above description has issues which were only discovered after TEAP
+The above descriptions have issues which were only discovered after TEAP
 had been widely implemented, following draft publications of this
 document.  These issues need to be documented in order to enable
 interoparable implementations.

@@ -759,7 +759,7 @@ If using EAP-MSCHAPv2 {{KAMATH}} as an inner EAP method, the EAP-FAST-MSCHAPv2
 variant defined in Section 3.2.3 of {{RFC5422}} MUST be used, instead of the derivation defined in {{MSCHAP}}.
 
 The difference between EAP-MSCHAPv2 and EAP-FAST-MSCHAPv2 is that the
-first and the second 16 octets of EAP-MSCHAPv2 MSK are swapped when it
+first and the second 16 octets of EAP-MSCHAPv2 Master Session Key (MSK) are swapped when it
 is used as the Inner Method Session Keys (IMSK) for TEAP.
 
 ### Limitations on inner methods {#inner-method-limitations}

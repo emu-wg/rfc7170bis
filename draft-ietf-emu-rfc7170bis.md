@@ -372,7 +372,7 @@ The receiver of the Crypto-Binding TLV MUST verify that the version
 received in the Crypto-Binding TLV matches the version sent by the
 receiver in the TEAP version negotiation.
 
-Intermediate results are signaled via the Intermediate-Result TLV.
+Intermediate results are signaled via the Intermediate-Result TLV ([](#intermediate-result-tlv)).
 However, the Crypto-Binding TLV MUST be validated before any
 Intermediate-Result TLV or Result TLV is examined.  If the
 Crypto-Binding TLV fails to be validated for any reason, then it is a
@@ -661,7 +661,7 @@ Intermediate-Result TLV.  Where the Intermediate-Result TLV indicates
 failure, an Error TLV SHOULD also be included, using the most descriptive error code possible.  The
 Intermediate-Result TLV may be accompanied by another TLV indicating
 that the server wishes to perform a subsequent authentication.  When
-the authentication sequence completes, the server MUST send a Result
+all inner methods have completed, the server MUST send a Result
 TLV indicating success or failure instead of a TLV which carries an
 inner method.
 
@@ -1675,9 +1675,14 @@ messages for protected termination within TEAP.  If the Status field
 does not contain one of the known values, then the peer or EAP server
 MUST treat this as a fatal error of Unexpected TLVs Exchanged.  The
 behavior of the Result TLV is further discussed in [](#protected-termination) and
-[](#phase-2-errors).  A Result TLV indicating failure MUST NOT be accompanied by
-the following TLVs: NAK, EAP-Payload TLV, or Crypto-Binding TLV.  The
-Result TLV is defined as follows:
+[](#phase-2-errors).
+
+A Result TLV indicating Failure MUST NOT be accompanied by
+the following TLVs: NAK, EAP-Payload TLV, or Crypto-Binding TLV.
+
+A Result TLV Indicating Success MUST be accompanied by a Crypto-Binding TLV.
+
+The Result TLV is defined as follows:
 
 ~~~~
  0                   1                   2                   3
@@ -2250,6 +2255,9 @@ participated in the tunnel establishment and sequence of
 authentications.  It also provides verification of the TEAP type,
 version negotiated, and Outer TLVs exchanged before the TLS tunnel
 establishment.
+
+A Crypto-Binding MUST be accompanied by an Intermediate-Result TLV
+indicating Success.
 
 The Crypto-Binding TLV MUST be exchanged and validated before any
 Intermediate-Result or Result TLV value is examined, regardless of

@@ -1922,6 +1922,8 @@ Error-Code
 >> 2007  The Crypto-Binding TLV did not include a required EMSK Compound-MAC
 >>
 >> 2008  The EMSK Compound-MAC fails verification
+>>
+>> 2009  The EMSK Compound-MAC exists, but the inner method did not derive EMSK
 
 ### Channel-Binding TLV {#channel-binding-tlv}
 
@@ -3130,54 +3132,185 @@ implementations are known to not follow them.  Instead, these
 suggestions are here to inform new implementers, along with
 administrators, of the issues surrounding this subject.
 
-### Deriving Crypto-Binding Compound-MAC Fields
+### Managing and Computing Crypto-Binding
 
-On the sender of the Crypto-Binding TLV side:
+After an inner method has been completed successfully and the inner
+keys derived, the server sends a Crypto-Binding TLV to the peer.  If
+the inner method has failed, the server does not send a Crypto-Binding
+TLV.
 
-> If the EMSK is not available, then the sender computes the Compound
-> MAC using the MSK of the inner method.
->
-> If the EMSK is available and the sender's policy accepts MSK-based
-> MAC, then the sender computes two Compound MAC values.  The first
-> is computed with the EMSK.  The second one is computed using the
-> MSK.  Both MACs are then sent to the other side.
->
-> If the EMSK is available but the sender's policy does not allow
-> downgrading to MSK-generated MAC, then the sender SHOULD only send
-> EMSK-based MAC.
+The peer verifies the Crypto-Binding TLV by applying the rules defined
+in [](#crypto-binding-tlv).  If verification passes, the peer responds
+with its own Crypto-Binding TLV, which the server in turn verifies.
+If at any point verification fails, the party which makes this
+determination terminates the session.
 
-On the receiver of the Crypto-Binding TLV side:
+The Crypto-Binding TLV is normally sent in conjunction with other TLVs
+which indicate intermediate results, final results, or which begin
+negotiation of a new inner method.  This negotation does not otherwise
+affect the Crypto-Binding TLV.
 
-> If the EMSK is not available and an MSK-based Compound MAC was
-> sent, then the receiver validates the Compound MAC and sends back
-> an MSK-based Compound MAC response.
->
-> If the EMSK is not available and no MSK-based Compound MAC was
-> sent, then the receiver handles like an invalid Crypto-Binding TLV
-> with a fatal error.
->
-> If the EMSK is available and an EMSK-based Compound MAC was sent,
-> then the receiver validates it and creates a response Compound MAC
-> using the EMSK.
->
-> If the EMSK is available but no EMSK-based Compound MAC was sent
-> and its policy accepts MSK-based MAC, then the receiver validates
-> it using the MSK and, if successful, generates and returns an MSK-based
-> Compound MAC.
->
-> If the EMSK is available but no EMSK Compound MAC was sent and its
-> policy does not accept MSK-based MAC, then the receiver handles
-> like an invalid Crypto-Binding TLV with a fatal error.
+While [](#crypto-binding-tlv) defines that the Compound-MAC fields
+exist in the Crypto-Binding TLV, it does not describe the derivation
+and management of those fields.  This derivation is complex, and
+is therefore located here, along with the other key deriviations.
 
-If an inner method results in failure, then it is not included in this
-calculation.
+The following text defines how the server and peer compute, send, and
+then verify the Compound-MAC fields Crypto-Binding TLV.  Depending on
+the inner method and site policy, Crypto-Binding TLV can contain only
+an MSK Compound-MAC (Flags=2), it it can contain only the EMSK
+Compound-MAC (Flags=2), or it can contain both Compound-MACs
+(Flags=3).  Each party to the TEAP session follows its own set of
+procedures to compute and verify the Compound-MAC fields.
+
+The determination of the contents of the Crypto-Binding TLV is done
+separately for each inner method.  If at any point the verification of
+a Compound-MAC fails, the determining party returns a fatal error as
+described in [](#phase-2-errors).
+
+We presume that each of the peer and server have site policies which
+require (or not) the use of the MSK Compound-MAC and/or the EMSK
+Compound-MAC.  These policies can be enforced globally for all inner
+methods, or they can be enforced separately on each inner method.
+These policies could be enabled automatically when the EAP method is
+known to always generate an EMSK, and could otherwise be configurable.
+
+The server initiates crypto binding by determining which
+Compound-MAC(s) to use, computing their value(s), placing the
+resulting Compond-MAC(s) into the Crypto-Binding TLV, and then sending
+it to the peer.
+
+The steps taken by the server are then as follows.
+
+> If the inner method is known to generate only MSK, or if the servers
+> policy is to not use EMSK Compound-MACs:
+>
+>> The server computes the MSK Compound-MAC using the MSK of the inner
+>> method.  The server does not use the EMSK Compound-MAC field.
+>> (Flags=2)
+>
+> Otherwise the EMSK is available.
+>
+> If the servers policy permits the use of the MSK Compound-MAC:
+>
+>> The sender computes the MSK Compound-MAC along with the EMSK
+>> Compound-MAC. (Flags=3).
+>
+> Otherwise the servers policy does not allow the use of the
+> MSK Compound-MAC:
+>
+> The server computes only the EMSK Compound-MAC (Flags=1).
+
+The peer verifies the Crypto-Binding TLV it receives from the server.
+It then replies with its own crypto binding response by determining
+which Compound-MAC(s) to use, computing their value(s), placing the
+resulting Compond-MAC(s) into the Crypto-Binding TLV, and then sending
+it to the server.  The result of this process is either a fatal error,
+or one or more Compound-MACs which are placed in the Crypto-Binding
+TLV, and sent to the server.
+
+The steps taken by the peer are then as follows.
+
+> If the peer site policy requires the use of the EMSK Compound-MAC:
+>
+>> The peer checks if the Flags field indicates the presence of the
+>> EMSK Compound MAC (Flags=1 or 3).  If the Flags field has any other
+>> value, the peer returns a fatal error.
+>>
+>> The peer checks if the inner method has derived an EMSK.  If not,
+>> the peer returns a fatal error.
+>
+> Otherwise the peer site policy does not require the use of the EMSK
+> Compound-MAC, and the EMSK may or may not exist.
+>
+> If the inner method is known to generate only MSK and not EMSK:
+>>
+>> The peer checks if the Flags field indicates that only the MSK
+>> Compound-MAC exists (Flags=2).  If the Flags field has any other
+>> value, the peer returns a fatal error.
+>
+> Otherwise the MSK exists, the EMSK may or may not exist, and the
+> peer allows the use of the EMSK Compound-MAC.  The peer may have
+> received one or two Compound-MACs (Flags=1,2,3).  Any Compound-MAC
+> which is present is verified.  No futher action is taken by the peer
+> if a particular Compound-MAC is not present.  No further action is
+> taken by the peer if an unexpected Compound-MAC is present.
+>
+> Note that due to earlier validation of the Flags field
+> ([](#crypto-binding-tlv)), at least one Compound-MAC must now exist.
+> (Flags=1,2,3)
+>
+> If the peer has received an MSK Compound-MAC, it verifies it and
+> returns a fatal error if verification fails.
+>
+> If EMSK is available, and the peer has received an EMSK
+> Compound-MAC, it verifies it and returns a fatal error if
+> verification fails.
+
+The peer creates a crypto binding response by determining which
+Compound-MAC(s) to use, computing their value(s), placing the
+resulting Compond-MAC(s) into the Crypto-Binding TLV, and then sending
+it to the server.
+
+The steps taken by the peer are then as follows.
+
+> If the peer received an MSK Compound-MAC from the server:
+>
+>> Since the MSK always exists, this step is always possible. The peer
+>> computes the MSK Compound-MAC for the response.  (Flags=2)
+>
+> If the peers site policy requires the use of the EMSK Compound-MAC,
+>
+>> The preceding steps taken by the peer ensures that the EMSK exists,
+>> and the server had sent an EMSK Compound-MAC.  The peer computes
+>> the EMSK Compound-MAC for the response.  The Flags field is
+>> updated. (Flags=1,3)
+>
+> Otherwise if the EMSK exists:
+>
+>> The peer computes the EMSK Compound-MAC for the response. The Flags
+>> field is updated. (Flags=1,3)
+
+The server processes the response from the peer via the following steps:
+
+> If the server site policy requires the use of the EMSK Compound-MAC:
+>
+>> The server checks if the Flags field indicates the presence of the
+>> EMSK Compound MAC (Flags=1 or 3).  If the Flags field has any other
+>> value, the server returns a fatal error.
+>>
+>> The server checks if the inner method has derived an EMSK.  If not,
+>> the server returns a fatal error.
+>
+> If the inner method is known to generate only MSK and not EMSK:
+>>
+>> The server checks if the Flags field indicates that only the MSK
+>> Compound-MAC exists (Flags=2).  If the Flags field has any other
+>> value, the server returns a fatal error.
+>
+> Otherwise the MSK exists, and the EMSK may or may not exist.  The
+> server may have received one or two Compound-MACs (Flags=1,2,3).
+> Any Compound-MAC which is present is verified.  No further action is
+> taken by the server if a particular Compound-MAC is not present.  No
+> further action is taken by the server if an unexpected Compound-MAC is
+> present.
+>
+> If the server has received an MSK Compound-MAC, it verifies it and
+> returns a fatal error if verification fails.
+>
+> If EMSK is available, and the server has received an EMSK
+> Compound-MAC, it verifies it and returns a fatal error if
+> verification fails.
+
+Once the above steps have concluded, the server either continues
+authentication with another inner method, or it returns a Result TLV.
 
 ### Unintended Side Effects {#oops}
 
-The above descriptions have issues which were only discovered after TEAP
-had been widely implemented, following draft publications of this
-document.  These issues need to be documented in order to enable
-interoparable implementations.
+In earlier drafts of this document, the descriptions of the key
+derivations had issues which were only discovered after TEAP had been
+widely implemented.  These issues need to be documented in order to
+enable interoparable implementations.
 
 As noted above, some inner EAP methods derive MSK, but do not derive
 EMSK.  When there is no EMSK, it is therefore not possible to derive
@@ -3370,6 +3503,7 @@ Value,Description,Reference
 2006,The MSK Compound-MAC fails verification,[THIS-DOCUMENT]
 2007,The Crypto-Binding TLV did not include a required EMSK Compound-MAC,[THIS-DOCUMENT]
 2008,The EMSK Compound-MAC fails verification,[THIS-DOCUMENT]
+2009,The EMSK Compound-MAC exists, but the inner method did not derive EMSK,[THIS-DOCUMENT]
 ~~~~
 
 ## TLS Exporter Labels

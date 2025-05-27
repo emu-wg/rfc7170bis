@@ -2284,7 +2284,7 @@ If any of the above checks fails, then the TLV is invalid.  An
 invalid Crypto-Binding TLV is a fatal error and is handled as
 described in [](#phase-2-errors)
 
-See {#cryptographic-calculations} for a more detailed discussion of
+See [](#cryptographic-calculations) for a more detailed discussion of
 how the Compound-MAC fields are constructed and verified.
 
 The Crypto-Binding TLV is defined as follows:
@@ -2687,7 +2687,7 @@ peer on how certificate signing requests should be formed.  The
 purpose of CSR attributes is described in Section 4.5 of {{RFC7030}}.
 Servers MAY send the CSR-Attributes TLV directly after the TLS session has
 been established.  A server MAY also send in the same message a
-Request Action frame for a PKCS#10 TLV.  This is an indication to the
+Request-Action frame for a PKCS#10 TLV.  This is an indication to the
 peer that the server would like the peer to renew its certificate
 using the parameters provided in this TLV.  Servers shall construct
 the contents of the CSR-Attributes TLV as specified in {{RFC7030, Section 4.5.2}} with the
@@ -4983,7 +4983,7 @@ knowledge (TLS-POK).  The conversation will appear as follows:
   |        TLS finished) TLS channel established       |
   |  - - - - - - - - - - - - - - - - - - - - - - - - - >
   |                                                    |
-  |               Send Request Action TLV              |
+  |               Send Request-Action TLV              |
   | <- - - - - - - - - - - - - - - - - - - - - - - - - -
   |                                                    |
   |                   Send PKCS10 TLV                  |
@@ -5038,7 +5038,7 @@ will appear as follows:
   |             TLS channel established                     |
   |  - - - - - - - - - - - - - - - - - - - - - - - - - - - ->
   |                                                         |
-  |                    Request Action TLV                   |
+  |                    Request-Action TLV                   |
   | <- - - - - - - - - - - - - - - - - - - - - - - - - - - -
   |                                                         |
   |                      Bad PKCS10 TLV                     |

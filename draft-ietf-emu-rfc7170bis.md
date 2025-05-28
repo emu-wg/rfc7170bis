@@ -1,7 +1,7 @@
 ---
 title: Tunnel Extensible Authentication Protocol (TEAP) Version 1
 abbrev: TEAP
-docname: draft-ietf-emu-rfc7170bis-21
+docname: draft-ietf-emu-rfc7170bis-22
 
 stand_alone: true
 ipr: trust200902
@@ -160,6 +160,28 @@ Note that while it is technically possible to use TEAPv1 with TLS 1.0
 and TLS 1.1, those protocols have been deprecated in {{RFC8996}}.  As
 such, the definitions given here are only applicable for TLS 1.2, and
 for TLS 1.3.
+
+## Interoperability Issues  {#interoperability}
+
+This document contains substantial changes from {{RFC7170}}.  These
+changes are largely clarifications and corrections to that
+specification.
+
+However, there is one major change from {{RFC7170}}, in the
+specification of the cryptographic binding information.  While there
+were multiple implementations of {{RFC7170}}, the text in that
+document was interpreted differently by each implementation.  The
+implementations are interoperable, but only for a subset of the
+functionality described in {{RFC7170}}.
+
+This specification describes how TEAPv1 works in theory, but also
+explains what subset of TEAPv1 is currently interoperable.  In order
+to simplify the description of an already complex specification, all
+interoperabiliy issues are documented separately from the normal
+protocol operation.
+
+Please see [](#limitations), below, for further discussion of
+interoperability issues.
 
 ## Specification Requirements
 
@@ -628,6 +650,15 @@ Intermediate-Result TLV and Result TLV as is done with other
 authentication methods.
 
 ### Inner Method Ordering {#inner-method-ordering}
+
+Due to issues noted in [](#limitations), the order of inner methods has
+implications for both security and interoperability.
+
+Where the authentication is expected to use multiple inner methods,
+implementations SHOULD order the methods so that a method which
+derives an EMSK is used first, before any other method.  This ordering
+helps to securely tie the inner method to TLS session, and therefore
+can prevent attacks.
 
 Implementations SHOULD support both EAP and basic password for inner
 methods.  Implementations which support multiple types of inner method
@@ -2867,7 +2898,102 @@ Result TLV MUST be marked as optional.  Also, the CSR-Attributes TLV
 is never transmitted by the peer, and so is treated as a request
 in this table.
 
+# Limitations of TEAPv1 {#limitations}
+
+As noted in [](#interoperability), TEAPv1 implementations are limited
+in functionality as compared to what the protocol is theoretically
+capable of.  These limitations mean that only a small number of inner
+methods are fully supported by existing TEAPv1 implementations.
+
+While [](#cryptographic-calculations), below, defines the
+cryptographic calculations used for key derivation and crypto-binding,
+this section documents which inner methods are known to work, and why
+those methods work.  Other inner methods may work, but those results
+are likely to be implementation-specific.
+
+We discuss the issues here without naming particular implementations
+or making any negative inference about them.  The implementations work
+well enough together in limited situations.  Any interoperability
+issues are due to the complexity and incompleteness of the definitions
+given in {{RFC7170}}, and are not due to issues with any particular
+implementation.
+
+The interoperability issues are limited to the use and derivation of
+the Compound-MAC(s), which are derived from the inner MSK and EMSK.
+In short, implementations are known to derive different values for the
+Compound-MAC(s) when more than one inner methods provides an EMSK.
+
+## Interoperable Inner Methods
+
+The following inner methods are known to work.  These methods work for
+both User and Machine credentials.
+
+* EAP-MSCHAPv2
+* EAP-TLS
+
+The following combinations of inner methods are known to work.  These
+methods work for any order of User and Machine credentials.
+
+* EAP-MSCHAPv2 followed by EAP-MSCHAPv2
+* EAP-TLS followed by EAP-MSCHAPv2
+
+The following combinations of inner methods are known to work when
+both supplicant and authenticator ignore the EMSK Compound-MAC field
+of the Crypto-Binding TLV.  These methods work for any order of User
+and Machine credentials .
+
+* EAP-MSCHAPv2 followed by EAP-TLS
+* EAP-TLS followed by EAP-TLS
+
+## Explanation and Background
+
+The main reason for the limited set of inner methods is that the most
+well-known TEAP supplicant supports only EAP-MSCHAPv2 and EAP-TLS for
+the inner methods.  Further, this implementation does not encode the
+EMSK Compound-MAC field in all of the Crypto-Binding TLVs that it
+sends, and ignores that field in all of the Crypto-Binding TLVs that
+it receives.
+
+The known authenticator implementations support this client, but any
+other combination of inner methods was not tested.  The result is that
+due to both the complexity of the cryptographic derivations and the
+lack of interoperability testing, each authenticator implemented
+entirely different deriviations of the EMSK Compound-MAC field of the
+Crypto-Binding TLV.  This difference was discovered only after
+multiple implementations had been shipping for years.
+
+## Next Steps
+
+Any attempt to change TEAPv1 to address these issues would likely
+result in one or more implementations being non-compliant with the
+updated specification.  Even worse, updates to this specification
+would result in multiple incompatible versions of TEAPv1.
+
+That approach is not acceptable.
+
+In the interest of maintaining known interoperability, this
+specification simply documents these issues rather than trying to
+correct the problem.  Since the TEAP protocol and the Crypto-Binding
+TLV both contain a version field, the better path forward is to
+publish this specification while documenting the large caveats for
+TEAPv1.  Any changes to the TEAP protocol can then be done in a future
+TEAPv2 specification.
+
 # Cryptographic Calculations {#cryptographic-calculations}
+
+The definitions given in this section are known to work with all
+implementations, but ony for a few inner methods, as described above
+in [](#limitations).  In the interest of avoiding additional
+complexity in an already complex process, those definitions are given
+as if they work for all possible inner methods.
+
+We note that some interoperable implementations have been written
+based on these definitions, which support inner methods other than
+EAP-MSCHAPv2 and EAP-TLS.  It is therefore useful to document the full
+operation of TEAPv1, despite the known issues.  We only caution
+implemnters that inner methods which are not listed in above in
+[](#limitations) are likly to work with only a subset of existing
+TEAPv1 implementations.
 
 For key derivation and crypto-binding, TEAP uses the Pseudorandom
 Function (PRF) and MAC algorithms negotiated in the underlying TLS
@@ -3730,6 +3856,12 @@ cipher suite derives the master secret from the contribution of
 secrets from both sides of the conversation (such as in cipher suites
 based on Diffie-Hellman), then crypto binding can detect an attacker
 in the conversation if a strong inner method is used.
+
+TEAP crypto binding does not guarantee protection from on-path attacks
+when the client does not verify the server, and the inner method does
+not produce an EMSK.  The only way to close this vulnerability is to
+define TEAPv2, which would then have different crypto binding
+derivations.
 
 ## Protecting against Forged Cleartext EAP Packets
 
